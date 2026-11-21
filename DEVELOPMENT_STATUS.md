@@ -1,5 +1,27 @@
 # Woodtruss development status
 
+## Batch 010 — 2026-11-21T23:03:09Z (UTC)
+
+**Reviewed implementation:** [`a800268be82af1c7aa81684eaa356097b4008d11`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/a800268be82af1c7aa81684eaa356097b4008d11). Baseline `8622670`: 257 passing tests. Integrated `npm run check`: **271 passed, 0 failed, 0 skipped**. Six isolated workers; all outputs remain preliminary.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/receiving-girder-case.ts`: separately expected receiving model/revision and explicit carried source-case mapping, ownership and bearing reaction replay, then a globally and locally checked receiving solve. No implicit loads or horizontal/coupled transfer. |
+| 2 Lumber | `packages/lumber/src/{rectangular-section-shear,index}.ts`: explicit signed shear resultants give separate rectangular-section parabolic stress profiles. No capacity, torsion, combined checks or design rules. |
+| 3 Connector plates | `packages/connections/src/plate-member-overlap-review.ts`: computes independent convex projected intersections in an exact local frame, distinguishing zero overlap from missing or stale evidence. Does not add overlapping polygons or infer usable grip, placement or strength. |
+| 4 Geometry | `packages/analysis/src/raised-heel-common-analysis.ts`: preliminary solve for one symmetric level-bearing raised-heel topology, with uniform illustrative stiffness, authored point loads and equilibrium checks. Independent triangulation proof for the scoped graph; not a connection/bearing detail. |
+| 5 Manufacturing | `packages/fabrication/src/preliminary-review-receipt.ts`: binds offline self-attested acknowledgments to exact independently verified checklist scope, digest and item IDs. Tracks pending items separately without approval or fabricated reviewer authentication. |
+| 6 Testing | `tests/independent-split-nodal-load-benchmark.test.mjs`: verifies that split load entries preserve the signed forces and displacements; held-axis direct loads change only reactions. |
+| Integration | Updated engineering roadmap for the two narrow level-bearing common variants and the non-coupled girder receiving study. |
+
+**Other changed tests:** `tests/{lumber-rectangular-section-shear,plate-member-overlap-review,preliminary-review-receipt,raised-heel-common-analysis,receiving-girder-case}.test.mjs`.
+
+**Independent checks:** two-model internal action/reaction cancellation and 180 lb total external reaction; raised-heel moment arm and analytical triangulation; integrated shear profile reproducing input signed force; convex projection areas; split-load hand statics/compatibility; stale and extra release fields excluded. These do not establish structural capacity or code compliance.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Licensed design values, site/adopted inputs, production review and qualified approvals still open.
+
+**Next batch:** consolidate supported geometry-and-solver capability checks so previews cannot imply unsupported behavior; extend source/revision load traceability and appropriate synthetic mechanics only where independently checked; keep the plate and manufacturing lanes fail-closed. The 50-foot maximum and production hold remain.
+
 ## Batch 009 — 2026-11-21T22:48:09Z (UTC)
 
 **Reviewed implementation:** [`9f22006e4f03602992be27fd5c80865adb748c49`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/9f22006e4f03602992be27fd5c80865adb748c49). Baseline `39b13aa`: 242 passing tests. Integrated `npm run check`: **257 passed, 0 failed, 0 skipped**. Six isolated workers; all outputs remain preliminary.
