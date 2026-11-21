@@ -55,6 +55,7 @@ test('CLI capabilities separate runnable demos from the limited library dispatch
   assert.deepEqual(scope.spanRangeFt, { minimum:8, maximum:50 });
   assert.deepEqual(scope.explicitPointLoadApiVariants, ['common-level','common-asymmetric','common-raised-heel','mono-level','scissor-level']);
   assert.match(scope.explicitPointLoadApiScope, /not the CLI/);
+  assert.deepEqual(scope.atticScope, { geometry:'CENTERLINE_CLEARANCE_ONLY', analysisAvailable:false });
   assert.equal(scope.fabricationAuthorized,false);
   assert.equal(scope.notice,'NOT FOR FABRICATION');
   assert.equal(run('--capabilities','--family','mono').status,1);

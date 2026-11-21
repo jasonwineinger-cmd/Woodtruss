@@ -21,6 +21,7 @@ async function run(args) {
       spanRangeFt: { minimum: 8, maximum: 50 },
       explicitPointLoadApiVariants: [...EXPLICIT_POINT_LOAD_VARIANTS],
       explicitPointLoadApiScope: 'These variants are for the library dispatcher only, not the CLI or a complete family list.',
+      atticScope: { geometry: 'CENTERLINE_CLEARANCE_ONLY', analysisAvailable: false },
       notice: 'NOT FOR FABRICATION',
       fabricationAuthorized: false,
     }, null, 2) + '\n');

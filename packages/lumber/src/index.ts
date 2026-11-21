@@ -38,3 +38,5 @@ export { studyPreliminaryRectangularSection, type RectangularSectionStudyInput }
 export { studyPreliminaryRectangularShear, type RectangularShearStudyInput } from "./rectangular-section-shear.js";
 export { studyRectangularLongitudinalStrain, type RectangularLongitudinalStrainInput } from "./rectangular-longitudinal-strain.js";
 export { studyRectangularEccentricAxial, type RectangularEccentricAxialInput } from "./rectangular-eccentric-axial.js";
+export { studyPreliminarySteppedAxialDeformation, type AxialStep,
+  type SteppedAxialDeformationInput } from "./stepped-axial-deformation.js";
