@@ -1,5 +1,28 @@
 # Woodtruss development status
 
+## Batch 003 — 2026-11-21T21:19:26Z (UTC)
+
+**Reviewed implementation:** [`635d88961a51e38f2c0a44a5315582f062edeacb`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/635d88961a51e38f2c0a44a5315582f062edeacb). Baseline GitHub `main` `b7dcb20` had 145 passing tests. Full integrated `npm run check`: **161 passed, 0 failed, 0 skipped**. Six isolated worktrees. No default site values, licensed capacities, or release authority added.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/site-hazard-snapshot.ts`: offline ground-snow metadata binds exact site, edition/risk/units, evidence and original PDF digest. Does not authenticate source/transcription or derive roof loads. |
+| 2 Lumber | `packages/lumber/src/{modulus-provenance,index}.ts`: separate E and Emin receipts tied to exact catalog selection and expected Supplement plus addendum evidence; stale or swapped input holds the preliminary study. No NDS readiness or tables. |
+| 3 Connector plates | `packages/connections/src/plate-reference-evidence.ts`: manufacturer/product family and revision/use/measurement metadata checks across toothed, nail-applied and hinge references. Explicit gross/net, orientation, moisture and single/paired basis; capacity fields are rejected. |
+| 4 Geometry | `packages/{geometry/src/agricultural-topology,analysis/src/agricultural-gable-analysis}.ts`: small tied Fink-like agricultural gable subset, level pin/roller bearings, zero heel/overhang offsets, explicit signed joint loads, equilibrium audits, 50-ft cap. Not agricultural family completion or roof load placement. |
+| 5 Manufacturing | `packages/fabrication/src/preliminary-materials-traceability.ts`: strict v1 expected design/revision and independent canonical schematic geometry SHA-256. Preserves only source geometry provenance and rejects equal-length model substitution; no load, stock, cut or machine output. |
+| 6 Testing | Independent analytic two-bar rotation/translation test and root end-to-end agricultural model → schematic material manifest validation with equal-length geometry substitution rejected. |
+
+**Changed test files:** `tests/{agricultural-gable-analysis,batch-003-cross-workstream,independent-rotation-benchmark,lumber-modulus-provenance,plate-reference-evidence,preliminary-materials-traceability,site-hazard-snapshot}.test.mjs`.
+
+**Independent checks:** closed-form combined-load agricultural bearing reactions, analytical rotation of two-bar displacements/reactions preserving signed member forces, standard SHA-256 comparison and substitution tests. Synthetic metadata tests do not verify adopted editions, real site values, published capacities, or use on a project.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, fabrication/Panelizer integration **20%**. The narrow agricultural subset and evidence adapters extend a previously counted preliminary milestone; they do not close a new major gate.
+
+**Next batch:** 1) add explicit typed project hazard/report context or demand envelope evidence without turning ground snow into roof design, 2) implement explicit preliminary candidate constraint/trace diagnostics and hold unsupported criteria, 3) bind reviewed connector metadata to case/model evidence with deterministic no-capacity status, 4) investigate a bounded seated attic topology or reject unsupported options, 5) extend provenance-aware preliminary downstream reports without machine access, 6) continue independent hand/falsification benchmarks and full integration.
+
+Provenance guidance only: [ASCE Hazard Tool](https://www.asce.org/publications-and-news/asce-hazard-tool/about/), [AWC 2024 Supplement](https://awc.org/resources/2024-nds-supplement/), [ICC-ES ESR-1118](https://cdn-v2.icc-es.org/wp-content/uploads/report-directory/ESR-1118.pdf) and [ESR-1988](https://cdn-v2.icc-es.org/wp-content/uploads/report-directory/ESR-1988.pdf). Confirm the exact authorized file revision and applicability before using actual values. No source tables or design values are embedded. Fabrication stays fail-closed.
+
 ## Batch 002 — 2026-11-21T21:05:31Z (UTC)
 
 **Reviewed implementation:** [`a8268245c423b6eed6e5ee9e310905a377fd6d5e`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/a8268245c423b6eed6e5ee9e310905a377fd6d5e). Baseline GitHub `main` `04fc26f` had 127 passing tests. Full integrated `npm run check`: **145 passed, 0 failed, 0 skipped**. Six isolated workers. No code factors, licensed capacity data, or authorization added.
