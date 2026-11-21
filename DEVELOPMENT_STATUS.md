@@ -1,5 +1,26 @@
 # Woodtruss development status
 
+## Batch 002 — 2026-11-21T21:05:31Z (UTC)
+
+**Reviewed implementation:** [`a8268245c423b6eed6e5ee9e310905a377fd6d5e`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/a8268245c423b6eed6e5ee9e310905a377fd6d5e). Baseline GitHub `main` `04fc26f` had 127 passing tests. Full integrated `npm run check`: **145 passed, 0 failed, 0 skipped**. Six isolated workers. No code factors, licensed capacity data, or authorization added.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/distributed-line-load.ts`: explicit signed linear intensity over a partial horizontal interval to statically equivalent loads on existing adjacent chord-panel joints. Preserves force/moment; no local bending, shear or site code loads. |
+| 2 Lumber | `packages/lumber/src/{axial-stability-study,index}.ts`: separate tension/compression and ideal Euler/slenderness reference on both axes for stated modulus, unbraced lengths, factors and restraint context. Not NDS design or qualification. |
+| 3 Connector plates | `packages/connections/src/{plate-screen,plate-model-binding}.ts`: exact revision, coordinates, connectivity, stiffness, supports and named load binding; solver replay rejects stale or swapped force evidence. No verified resultant/capacity/plate selection. |
+| 4 Geometry | `packages/analysis/src/mono-analysis.ts`: audited idealized mono analysis from the schematic topology, named pin/roller and authored point loads. Enforces 50-ft bound and unsupported options. |
+| 5 Manufacturing | `packages/fabrication/src/{preliminary-materials,preliminary-materials-revisions}.ts`: strict frozen v1 parse and same-design revision diffs, retains identifiers and centerline-only scope. Extra fields, altered geometry and release flags rejected. |
+| 6 Testing | Hand-derived two-panel reactions, all member-force signs including zero-force chord, and displacement regression. Root integrated a partial mono load with exact plate binding and frozen materials snapshots. |
+
+**Changed test files:** `tests/{batch-002-cross-workstream,distributed-line-load,independent-multipanel-benchmark,lumber-axial-stability-study,mono-analysis,plate-model-binding,preliminary-materials-revisions}.test.mjs`.
+
+**Independent checks:** partial uniform, linear and signed panel resultant and first moments; asymmetric mono bearing reactions; hand equilibrium and axial compatibility for a two-panel example; rectangular section stress and both Euler reference axes. These are math/software checks, not project design verification.
+
+**Estimates:** Lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, fabrication/Panelizer integration **20%**. Batch 002 strengthens the previously counted preliminary milestone in each lane; it does not close any additional major engineering gate. Edition/site loads, verified licensed lumber and plate data, independent qualified review, capacity-based optimization, and production integration remain open.
+
+**Next batch:** 1) independently verify explicit roof load transfer toward site-specific intake without inferring factors; 2) preserve provenance across separate explicit modulus/restraint choices and prepare licensed reference adapters; 3) validate manufacturer dataset identity and use-bound attestation without capacities shipped by default; 4) advance attic, agricultural or mono options only where supported by an audited topology; 5) enforce preliminary consumer revision/source compatibility and add QA semantics; 6) continue hand benchmarks, falsification and complete tests. Fabrication stays fail-closed.
+
 ## Batch 001 — 2026-11-21T20:54:30Z (UTC)
 
 **Reviewed implementation:** [`91bbeb7e038183efbdbc94115d5851eaf09da6b4`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/91bbeb7e038183efbdbc94115d5851eaf09da6b4). Based on GitHub main `baf0e10`. Full `npm run check`: **127 passed, 0 failed, 0 skipped**; baseline 111. Six isolated worktrees were used; only the reviewed implementation and status were integrated. The 50-foot limit and fail-closed fabrication gate are unchanged.
