@@ -1,5 +1,26 @@
 # Woodtruss development status
 
+## Batch 005 — 2026-11-21T21:49:06Z (UTC)
+
+**Reviewed implementation:** [`0a9906ad06d3737ff7e905f8b93e7b7db9315cf1`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/0a9906ad06d3737ff7e905f8b93e7b7db9315cf1). Baseline GitHub `main` `9c0c655` had 176 passing tests. Full integrated `npm run check`: **192 passed, 0 failed, 0 skipped**. Six isolated worker lanes. New outputs remain preliminary and cannot authorize fabrication.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/load-source-aggregation.ts`: combines explicitly named signed nodal load channels and preserves their separate provenance. Rejects duplicate channels or within-channel joints, unknown nodes, and nonfinite accumulation. No code combinations or load factors. |
+| 2 Lumber | `packages/lumber/src/{stock-evidence-frontier,index}.ts`: gates schematic area/waste comparisons on exact catalog, stock and explicitly expected named-case receipt identity. Missing/held/mismatched records cannot hide a documented alternative. Documentation is not verification, capacity or sizing. |
+| 3 Connector plates | `packages/connections/src/plate-orientation-review.ts`: joins one explicit long/short plate axis to replayed joint/model/revision and incident bars. Reports unsigned planar member-axis angles only, without placement, grain angle, selection or capacity. |
+| 4 Geometry | `packages/geometry/src/hip-roof-reference.ts`: rectangular equal-pitch roof reference, four geometric hips and one level ridge, both dimensions within 8–50 ft. Not a hip truss topology, load path, design or assembly. |
+| 5 Manufacturing | `packages/fabrication/src/preliminary-review-handoff.ts`: versioned external-review identity and manifest digest, replayed against independently expected source and revision; no members, cut instructions, stock, press or release. No Panelizer production integration. |
+| 6 Testing | Benchmarked horizontal-reaction roller behavior and rotation when it loses its moment arm; also checked signed nodal loading, source-bound review handoff and fail-closed release together. |
+
+**Changed tests:** `tests/{batch-005-cross-workstream,hip-roof-reference,independent-horizontal-roller-benchmark,load-source-aggregation,lumber-stock-evidence-frontier,plate-orientation-review,preliminary-review-handoff}.test.mjs`.
+
+**Independent checks:** force and moment balance with signed cancellation; closed-form roller reactions, signed axial forces and displacements; rigid-body mechanism rejection; equal-pitch ridge inset, rise and length; 0°, 45° and 90° axis relationships; exact scope and substituted-revision rejections. These check the software and synthetic examples, not site loads, engineering performance, licensed material data, or plate capacity.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. The hip reference is not a truss geometry gate and the handoff is a metadata-only contract, not a design export. The tested preliminary workflows do not close any major engineering gate.
+
+**Next batch:** link authored load channels to a replayable revision/case envelope; bind stock case receipts to independently replayed demands before advancing ranking; preserve signed per-member end forces separately from unsigned connector angle; advance a bounded supported geometry option without inventing an attic brace, hip girder, or bearing detail; harden the preliminary consumer contract with independent version/scope checks; add numerical regression and integrated acceptance. Actual NDS and manufacturer data, project load verification, independent qualified review, and trusted fabrication release remain blocked.
+
 ## Batch 004 — 2026-11-21T21:33:51Z (UTC)
 
 **Reviewed implementation:** [`c0735630b46042bde5e2eb35166952aed8a23942`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/c0735630b46042bde5e2eb35166952aed8a23942). Baseline GitHub `main` `cb5e1fc` had 161 passing tests. Full integrated `npm run check`: **176 passed, 0 failed, 0 skipped**. Six isolated worktrees. Only preliminary workflows were added.
