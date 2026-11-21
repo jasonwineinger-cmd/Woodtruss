@@ -40,9 +40,10 @@ export function generateRoofOutline(input: RoofInput): Outline {
   }
   const span = spanFt * 12;
   const slope = pitchRisePer12 / 12;
+  const leftX = overhang === 0 ? 0 : -overhang;
   const topChord: PointInches[] = family === "mono"
-    ? [{x:-overhang,y:heel-overhang*slope},{x:span+overhang,y:heel+(span+overhang)*slope}]
-    : [{x:-overhang,y:heel-overhang*slope},{x:span/2,y:heel+(span/2)*slope},{x:span+overhang,y:heel-overhang*slope}];
+    ? [{x:leftX,y:heel-overhang*slope},{x:span+overhang,y:heel+(span+overhang)*slope}]
+    : [{x:leftX,y:heel-overhang*slope},{x:span/2,y:heel+(span/2)*slope},{x:span+overhang,y:heel-overhang*slope}];
   const bottomChord: PointInches[] = family === "scissor"
     ? [{x:0,y:0},{x:span/2,y:(span/2)*(input.bottomPitchRisePer12! / 12)},{x:span,y:0}]
     : [{x:0,y:0},{x:span,y:0}];

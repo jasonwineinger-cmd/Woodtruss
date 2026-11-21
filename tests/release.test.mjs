@@ -14,6 +14,8 @@ test('missing or stale approval is blocked',()=>{
 });
 test('verified status requires every independent evidence field',()=>{
  const evidence={independentReviewApproved:true,structuralChecksPassed:true,lumberChecksPassed:true,connectorChecksPassed:true,loadCombinationsPassed:true,manufacturingChecksPassed:true,approvedRevisionId:'rev1'};
- assert.equal(evaluateFabricationRelease({designId:'T1',revisionId:'rev1',status:'ENGINEERING_VERIFIED',evidence}).allowed,false);
+ const result=evaluateFabricationRelease({designId:'T1',revisionId:'rev1',status:'ENGINEERING_VERIFIED',evidence});
+ assert.equal(result.allowed,false);
+ assert.ok(result.reasons.includes('No trusted engineering approval issuer is configured'));
  assert.equal(evaluateFabricationRelease({designId:'T1',revisionId:'rev1',status:'ENGINEERING_VERIFIED',evidence:{...evidence,connectorChecksPassed:false}}).allowed,false);
 });
