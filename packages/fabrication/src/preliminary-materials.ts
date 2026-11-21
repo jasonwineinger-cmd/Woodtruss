@@ -30,7 +30,10 @@ function validateId(id: string, label: string): void {
  *  The revision is a caller-provided traceability label, not an approval or content hash.
  */
 export function createPreliminaryMaterialsReport(
-  designId: string, revisionId: string, model: Pick<TrussModel, "nodes" | "bars">,
+  designId: string, revisionId: string, model: {
+    readonly nodes: ReadonlyArray<TrussModel["nodes"][number]>;
+    readonly bars: ReadonlyArray<Pick<TrussModel["bars"][number], "id" | "a" | "b">>;
+  },
 ): PreliminaryMaterialsReport {
   validateId(designId, "design");
   validateId(revisionId, "revision");

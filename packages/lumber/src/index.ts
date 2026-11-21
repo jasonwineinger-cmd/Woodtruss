@@ -24,3 +24,4 @@ export function summarizeMemberDemands(model:TrussModel,result:TrussResult):Memb
 }
 
 export { assessLumberDesignInputEvidence, type LumberInputEvidence } from "./design-readiness.js";
+export { studyPreliminaryAxialStability, type AxialStabilityStudyInput } from "./axial-stability-study.js";

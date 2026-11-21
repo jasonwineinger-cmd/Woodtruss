@@ -58,7 +58,9 @@ type SignedForceCase={id:string;axialForceLb:Record<string,number>};
 
 /** Retain coincident signed member-end forces by case, with no governing plate
  * resultant, grip/capacity check, load-factor inference or approval. The caller
- * must supply axial results from the exact same model, not an envelope.
+ * must supply axial results from the exact same model, not an envelope. This
+ * projection alone does not verify that binding; use the bound inventory from
+ * plate-model-binding before treating a report as revision-specific evidence.
  */
 export function inventoryScenarioConnectorPlateDemands(
  joints:DemandJoint[],members:DemandMember[],plates:PlateReference[],cases:SignedForceCase[]
