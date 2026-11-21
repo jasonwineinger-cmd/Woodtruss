@@ -43,6 +43,10 @@ export function envelopePreliminaryCases(cases:NamedCase[]):LoadEnvelope {
      throw new Error("Different support conditions");
    if(!Number.isFinite(item.result.residualForceLb)||item.result.residualForceLb<0)
      throw new Error("Invalid solver residual");
+   if(Object.values(item.result.displacementIn).some(d=>!Number.isFinite(d.x)||!Number.isFinite(d.y)))
+     throw new Error("Nonfinite solver displacement");
+   if(Object.keys(item.result.displacementIn).length!==nodeIds.length)
+     throw new Error("Incomplete solver displacements");
    if(Object.keys(item.result.axialForceLb).length!==memberIds.length||
       Object.keys(item.result.reactionLb).length!==nodeIds.length)
      throw new Error("Incomplete solver result");
