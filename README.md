@@ -64,4 +64,10 @@ To save only the JSON, without npm's command banners:
 npm start --silent -- --span-ft 24 --pitch 5 > woodtruss-preview.json
 ```
 
+For a picture, write a visibly watermarked, dimensionless review diagram. The SVG is normalized to a generic viewport and is not a shop drawing or a scaled pattern:
+
+```sh
+npm start --silent -- --family mono --format svg > woodtruss-preview.svg
+```
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.

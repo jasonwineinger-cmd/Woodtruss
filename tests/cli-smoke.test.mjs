@@ -36,8 +36,19 @@ test('CLI mono preview uses its own asymmetric synthetic load and retains the re
   assert.equal(E.y.governingMaxCase, 'demo-mono-quarter-point-load');
 });
 
+test('CLI emits only a watermarked dimensionless schematic for each demo family', () => {
+  for (const family of ['common', 'mono']) {
+    const r = run('--family', family, '--format', 'svg');
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /^<svg [^>]*viewBox="0 0 640 360"/u);
+    assert.match(r.stdout, /<line x1="/u);
+    assert.match(r.stdout, /<text [^>]*>PRELIMINARY - NOT FOR FABRICATION<\/text>/u);
+    assert.doesNotMatch(r.stdout, /cutLength|centerlineLength|plateSchedule|machine|<script/u);
+  }
+});
+
 test('CLI rejects invalid or unsupported arguments without emitting any package', () => {
-  for (const args of [['--span-ft', '51'], ['--pitch', '0'], ['--fabrication'], ['--family', 'hip'], ['--family'], ['--family', 'mono', '--span-ft', '51'], ['--span-ft'], ['--pitch', '6', '--pitch', '7']]) {
+  for (const args of [['--span-ft', '51'], ['--pitch', '0'], ['--fabrication'], ['--format', 'dxf'], ['--format'], ['--family', 'hip'], ['--family'], ['--family', 'mono', '--span-ft', '51'], ['--span-ft'], ['--pitch', '6', '--pitch', '7']]) {
     const r = run(...args);
     assert.equal(r.status, 1);
     assert.equal(r.stdout, '');

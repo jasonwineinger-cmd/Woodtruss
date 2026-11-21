@@ -3,26 +3,32 @@ import { analyzePreliminaryCommonTruss } from '../dist/analysis/src/common.js';
 import { analyzePreliminaryMonoTruss } from '../dist/analysis/src/mono-analysis.js';
 import { envelopePreliminaryCases } from '../dist/analysis/src/envelope.js';
 import { createPreliminaryTrussPackage } from '../dist/contracts/src/preview.js';
+import { createPreliminaryMaterialsReport } from '../dist/fabrication/src/preliminary-materials.js';
+import { createPreliminaryMaterialsTraceabilityManifest, fingerprintPreliminaryMaterialsSource } from '../dist/fabrication/src/preliminary-materials-traceability.js';
+import { createPreliminarySchematicReview } from '../dist/fabrication/src/preliminary-schematic-review.js';
 
-const usage = 'Usage: npm start -- [--family common|mono] [--span-ft 30] [--pitch 6]\n'
+const usage = 'Usage: npm start -- [--family common|mono] [--span-ft 30] [--pitch 6] [--format json|svg]\n'
   + 'Runs a synthetic example: a 1,000 lb point load at the common ridge or mono quarter-point.';
 
-function run(args) {
+async function run(args) {
   if (args.length === 1 && args[0] === '--help') {
     process.stdout.write(usage + '\n');
     return;
   }
 
-  const values = new Map([['--family', 'common'], ['--span-ft', 30], ['--pitch', 6]]);
+  const values = new Map([['--family', 'common'], ['--format', 'json'], ['--span-ft', 30], ['--pitch', 6]]);
   const seen = new Set();
   for (let i = 0; i < args.length; i += 2) {
     const [flag, value] = [args[i], args[i + 1]];
     if (!values.has(flag) || seen.has(flag)) {
-      throw new Error('Options may be supplied once: --family, --span-ft, --pitch.');
+      throw new Error('Options may be supplied once: --family, --span-ft, --pitch, --format.');
     }
     seen.add(flag);
     if (flag === '--family') {
       if (!['common', 'mono'].includes(value)) throw new Error('Preview family must be common or mono.');
+      values.set(flag, value);
+    } else if (flag === '--format') {
+      if (!['json', 'svg'].includes(value)) throw new Error('Preview format must be json or svg.');
       values.set(flag, value);
     } else {
       if (!/^\d+(\.\d+)?$/u.test(value ?? '')) throw new Error('Expected a numeric value for ' + flag);
@@ -39,6 +45,19 @@ function run(args) {
       id: caseId, description: 'Synthetic 1,000 lb downward point load at the first mono top joint',
       jointLoads: [{ nodeId: 'T1', fyLb: -1000 }],
     } });
+  if (values.get('--format') === 'svg') {
+    const designId = family + '-truss-cli-example';
+    const revisionId = 'synthetic-schematic-v1';
+    const source = { nodes: solved.model.nodes, bars: solved.model.bars };
+    const snapshot = createPreliminaryMaterialsReport(designId, revisionId, source);
+    const expected = { designId, revisionId, sourceGeometrySha256: await fingerprintPreliminaryMaterialsSource(source) };
+    const traceabilityManifest = await createPreliminaryMaterialsTraceabilityManifest(snapshot);
+    const preview = await createPreliminarySchematicReview({ snapshot, expected, traceabilityManifest });
+    if (preview.fabricationAuthorized !== false || preview.format !== 'NORMALIZED_VECTOR_REVIEW_NO_DIMENSIONS' ||
+        preview.notice !== 'PRELIMINARY - NOT FOR FABRICATION') throw new Error('Unexpected schematic release status.');
+    process.stdout.write(preview.drawingSvg + '\n');
+    return;
+  }
   const envelope = envelopePreliminaryCases([{ id: caseId, ...solved }]);
   const preview = createPreliminaryTrussPackage(family + '-truss-cli-example', 'demo-v1', solved.model, envelope);
   if (preview.fabricationAuthorized !== false || preview.status !== 'PRELIMINARY_NOT_ENGINEERED') {
@@ -49,7 +68,7 @@ function run(args) {
 }
 
 try {
-  run(process.argv.slice(2));
+  await run(process.argv.slice(2));
 } catch (error) {
   process.stderr.write(`Woodtruss preview: ${error instanceof Error ? error.message : 'Unknown error'}\n${usage}\n`);
   process.exitCode = 1;

@@ -32,3 +32,5 @@ export { recomputePreliminaryStockDemands, reviewStockWithRecomputedDemand,
   type StockDemandCaseInput, type StockDemandOptionEvidence } from "./stock-demand-evidence.js";
 export { reviewLumberReferenceQuantityIntake, type LumberPublicationIntake, type LumberQuantityExpectation,
   type LumberQuantityReceipt } from "./reference-quantity-intake.js";
+export { reviewLumberIntakeWithPrivatePublicationBytes,
+  type PrivateLumberPublicationArtifact } from "./publication-byte-evidence.js";
