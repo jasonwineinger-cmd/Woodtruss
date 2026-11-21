@@ -1,5 +1,27 @@
 # Woodtruss development status
 
+## Batch 013 — 2026-11-21T23:48:30Z (UTC)
+
+**Reviewed implementation:** [`c3172d34da3d9e0d7bbb734d8a235c91319a27ee`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/c3172d34da3d9e0d7bbb734d8a235c91319a27ee). Baseline `6263544`: 301 passing tests. Integrated `npm run check`: **315 passed, 0 failed, 0 skipped**. Six isolated workers; all engineering outputs preliminary.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/authored-serviceability-replay.ts`: exact independently expected model/revision/cases replay signed relative movement against explicit modeled bearings. Untrusted solver outputs are not used; no code deflection criteria. |
+| 2 Lumber | `packages/lumber/src/{stepped-axial-deformation,index}.ts`: explicit ordered segments under one signed force, with continuous ideal axial deformation, compliance and elastic energy. No grade, capacity, connection or selection. |
+| 3 Connector plates | `packages/connections/src/plate-footprint-revision-review.ts`: exact two-revision, same-face local outline margins; gap comparison is held unless projected member scope and evidence agree. No grip, capacity or acceptable plate location. |
+| 4 Geometry | `packages/geometry/src/attic-clearance-limits.ts`: explicit centerline width/height/margin limits and minimum feasible span, preserves infeasible requests and exact 50-ft boundary. No floor structure, concealed brace or stability solve. |
+| 5 Manufacturing | `packages/fabrication/src/preliminary-member-trace.ts`: independently replays two schematic revisions and compares exact selected IDs and endpoint changes. Equal ID or length can mask movement; physical reuse/continuity is never granted. |
+| 6 Testing | `tests/independent-raised-chord-benchmark.test.mjs`: hand force, moment and virtual-work displacement check, plus missing vertical tie mechanism. |
+| Integration | CLI capabilities identify attic as centerline-clearance only and analysis unavailable. |
+
+**Other changed tests:** `tests/{attic-clearance-limits,authored-serviceability-replay,cli-smoke,lumber-stepped-axial-deformation,plate-footprint-revision-review,preliminary-member-trace}.test.mjs`.
+
+**Independent checks:** attic geometric extrema at the exact span cap, signed relative deflection and raised-chord work, stepped member deformation energy, rotated outline deltas, and exact two-revision replay negatives. These are numerical/software checks, not engineering approvals.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Licensed inputs, code validation and qualified project signoff remain open.
+
+**Next batch:** expose an explicitly labeled geometry-only attic study if useful; preserve open stability and floor-design holds. Advance independently checked demand and traceability diagnostics without inferring licensed values, placement, or release. The 50-ft maximum and preliminary fabrication hold remain.
+
 ## Batch 012 — 2026-11-21T23:33:20Z (UTC)
 
 **Reviewed implementation:** [`3bbc257014b86447fe7c82c9e30c1e355293cbde`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/3bbc257014b86447fe7c82c9e30c1e355293cbde). Baseline `a7fd011`: 287 passing tests. Integrated `npm run check`: **301 passed, 0 failed, 0 skipped**. Six isolated workers, all engineering outputs remain preliminary.
