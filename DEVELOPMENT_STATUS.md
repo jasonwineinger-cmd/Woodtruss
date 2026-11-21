@@ -1,5 +1,27 @@
 # Woodtruss development status
 
+## Batch 008 — 2026-11-21T22:33:40Z (UTC)
+
+**Reviewed implementation:** [`d270b04621b7d839f433b2f408546a1a67a8d58c`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/d270b04621b7d839f433b2f408546a1a67a8d58c). Baseline `3f24f9c`: 225 passing tests. Integrated `npm run check`: **242 passed, 0 failed, 0 skipped**. Six isolated worker lanes plus integration. All work remains preliminary and not for fabrication.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/girder-source-patch-ownership.ts`: requires independent expected case, girder, source patch, joint station, face and direct/carried route. Rejects the same patch counted twice before aggregation. Does not detect unmarked spatial overlap, verify a carried reaction or derive any load. |
+| 2 Lumber | `packages/lumber/src/{publication-byte-evidence,index}.ts`: checks exact local Supplement/addendum artifacts against independently expected hashes and edition/quantity receipts. It neither transmits nor validates licensing or values. |
+| 3 Connector plates | `packages/connections/src/plate-artifact-joint-review.ts`: exact authorized local article bytes, product/use metadata, joint and replayed cases must agree for a review-only result. Manufacturer applicability and capacity remain held even when records match. |
+| 4 Geometry | `packages/analysis/src/asymmetric-common-analysis.ts`: audited narrow two-pitch gable analysis with level end pin/roller and explicit signed points; rejects over span, raised heels, overhangs and invalid models. No actual bearing, code load, connection or material verification. |
+| 5 Manufacturing | `packages/fabrication/src/preliminary-schematic-comparison.ts`: two same-design revision SVGs are replayed against independently expected inputs. Identical normalized viewports are distinguished from identical model geometry. No cuts, shop drawings, production Panelizer or release. |
+| 6 Testing | `tests/independent-offcenter-gable-benchmark.test.mjs`: method-of-joints check of all nine forces, support equilibrium, virtual-work deflection and mechanism rejection with unchanged outer outline. |
+| Integration | `scripts/preview.mjs`, `tests/cli-smoke.test.mjs`, `README.md`: optional normalized SVG view of the common or mono synthetic model, visibly stamped NOT FOR FABRICATION, with no real-world dimensions. JSON remains default. |
+
+**Other changed tests:** `tests/{asymmetric-common-analysis,girder-source-patch-ownership,lumber-publication-byte-evidence,plate-artifact-joint-review,preliminary-schematic-comparison}.test.mjs`.
+
+**Independent checks:** authored distinct synthetic 60 lb + 60 lb point contributions on a 12 ft girder reference produce 80/40 lb reactions. Adding the duplicate would still balance at 120/60 lb but is rejected by the patch-identity guard. [SBCA's Figure 2](https://www.sbcacomponents.com/media/understand-the-space-between) documents the overlap failure mode; this implementation does not embed its geometry or assume any correction method. Also verified mirrored two-pitch force/moment response, virtual work and repeated-SVG/changed-model comparison. None is qualified engineering approval.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Better analysis and review aids do not close any major design, sourcing, or production gate.
+
+**Next batch:** bind an authored carried force to an independently replayed exact support/case and keep the source ownership guard; reject ambiguous physical transfer instead of guessing. Continue edition/licensed material and plate use evidence without values or assumptions, and extend bounded geometry/review tooling without removing any production hold. No field, site or manufacturer data verified and no engineering or manufacturing approval.
+
 ## Batch 007 — 2026-11-21T22:19:16Z (UTC)
 
 **Reviewed implementation:** [`8ba76af3b800acd8474643eaf2905bad08306ec6`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/8ba76af3b800acd8474643eaf2905bad08306ec6). Baseline `fcc7d02` had 209 passing tests. Integrated `npm run check`: **225 passed, 0 failed, 0 skipped**. Six isolated workers plus integration. Preliminary and not for fabrication.
