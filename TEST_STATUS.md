@@ -1,15 +1,10 @@
 # Woodtruss test status
 
-Verified 2026-11-21 (UTC) with `npm run check` on GitHub `main`.
+- Batch: 001
+- Integrated verification: 2026-11-21T20:54:30Z (UTC)
+- Command: `npm run check` (TypeScript check, compile, and complete automated suite)
+- Result: **127 passed, 0 failed, 0 skipped**
+- Latest tested implementation: [`91bbeb7e038183efbdbc94115d5851eaf09da6b4`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/91bbeb7e038183efbdbc94115d5851eaf09da6b4)
+- Baseline: `baf0e104ea585a459d11b6954f927aa210e16e37` (111 passed)
 
-| Check | Result |
-| --- | --- |
-| TypeScript type check | Passed |
-| TypeScript build | Passed |
-| Automated tests | **107 passed, 0 failed, 0 skipped** |
-
-**Latest tested code SHA:** [`7ad1d41ea8f6263481b22937790a9962c3eaa54b`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/7ad1d41ea8f6263481b22937790a9962c3eaa54b). This is the parent of the documentation-only commit that records this run.
-
-**Environment:** Node.js v24.22.3; TypeScript `Version 5.9.3`.
-
-**Remaining issues:** No failing checks in this run. The 50-foot maximum span and preliminary-only engineering restrictions are unchanged. Preliminary analysis cannot authorize fabrication; this test result is not an engineering approval or a validation of an installed truss. No new features were added.
+The status-only commit records the tested implementation SHA, not its own SHA. No failing software checks remain in this run. Engineering limits are unchanged: **50-foot maximum span**, no verified design data added, and preliminary outputs cannot authorize fabrication. See [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md) for the exact batch, coverage and holds.
