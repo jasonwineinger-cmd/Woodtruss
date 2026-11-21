@@ -19,6 +19,9 @@ export interface Outline {
 const finite = (n: number) => Number.isFinite(n);
 export function generateRoofOutline(input: RoofInput): Outline {
   const { family, spanFt, pitchRisePer12 } = input;
+  if (family === "scissor" || family === "attic" || family === "agricultural") {
+    throw new Error(`${family} geometry is not yet implemented; refusing to return a misleading common-truss outline`);
+  }
   const heel = input.heelHeightIn ?? 0;
   const overhang = input.overhangIn ?? 0;
   if (!["common", "scissor", "attic", "mono", "agricultural"].includes(family)) throw new Error("Unsupported truss family");
