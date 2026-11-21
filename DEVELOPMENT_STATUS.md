@@ -1,5 +1,26 @@
 # Woodtruss development status
 
+## Batch 004 — 2026-11-21T21:33:51Z (UTC)
+
+**Reviewed implementation:** [`c0735630b46042bde5e2eb35166952aed8a23942`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/c0735630b46042bde5e2eb35166952aed8a23942). Baseline GitHub `main` `cb5e1fc` had 161 passing tests. Full integrated `npm run check`: **176 passed, 0 failed, 0 skipped**. Six isolated worktrees. Only preliminary workflows were added.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/member-line-load.ts`: explicit signed planar line loads per actual member inch over an interval on one real modeled bar; equivalent endpoint forces preserve resultant and moment, not local bending/shear. |
+| 2 Lumber | `packages/lumber/src/{stock-frontier,index}.ts`: explicit, traceable schematic eligible/held stock offers and non-dominated area/unused-length options. No hidden preferred pick, stock reservation, structural NDS sizing, or capacity. |
+| 3 Connector plates | `packages/connections/src/plate-joined-review.ts`: joins independently expected product/use basis to exact joint, model/revision and replayed named cases; missing/swapped evidence holds, no release or capacity fields. |
+| 4 Geometry | `packages/geometry/src/attic-topology.ts`: central clearance and edges/centerlines for a narrow schematic seated attic graph, current 50-ft cap. The open bay is explicitly not a stable pin-jointed model; no solver, floor structure, or fabricated brace. |
+| 5 Manufacturing | `packages/fabrication/src/preliminary-materials-change-catalog.ts`: deterministic directional QA change catalog replays two independently expected geometry revisions; rejects stale, newer and forged outputs. No issue/cut/stock/machine instructions. |
+| 6 Testing | Independent unequal-stiffness reciprocity and strain-energy benchmark. Root end-to-end comparison of two attic room revisions demonstrates correct schematic changes without bypassing structural or release holds. |
+
+**Changed test files:** `tests/{attic-room-topology,batch-004-cross-workstream,independent-reciprocity-benchmark,lumber-stock-frontier,member-line-load,plate-joined-review,preliminary-materials-change-catalog}.test.mjs`.
+
+**Independent checks:** planar force/moment conservation including reversed bar endpoints, closed-form cross-work and strain energy for unequal stiffness, explicit room clearance and member-count falsification, and deterministic synthetic stock comparisons. No site conclusions, licensed material/plate data or actual load capacity verified.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, fabrication/Panelizer integration **20%**. The additions strengthen preliminary evidence and options, not independent engineering verification. Additional topology, site inputs, licensed capacity/edition data, approved capacity-based optimization, trusted release and production integration remain open.
+
+**Next batch:** 1) robust source/demand aggregation or independently verified numerical stability; 2) strict evidence for grade/load-case eligibility before candidate ranking; 3) precise metadata for actual plate use/load/orientation without capacity inference; 4) bound one additional family or supported option without inserting an unverified attic brace; 5) deterministic review-only cut/stock/press exclusions in a consumer handoff; 6) add independent analytical/falsification and integrated checks. Fabrication remains fail-closed.
+
 ## Batch 003 — 2026-11-21T21:19:26Z (UTC)
 
 **Reviewed implementation:** [`635d88961a51e38f2c0a44a5315582f062edeacb`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/635d88961a51e38f2c0a44a5315582f062edeacb). Baseline GitHub `main` `b7dcb20` had 145 passing tests. Full integrated `npm run check`: **161 passed, 0 failed, 0 skipped**. Six isolated worktrees. No default site values, licensed capacities, or release authority added.
