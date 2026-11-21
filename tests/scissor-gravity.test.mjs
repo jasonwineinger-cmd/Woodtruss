@@ -6,6 +6,7 @@ test('scissor preliminary gravity model balances force and moment',()=>{
   areaIn2:5.25,elasticModulusPsi:1000000,roofPressurePsf:20,trussSpacingFt:2});
  assert.equal(r.totalAppliedGravityLb,1600);
  assert.equal(r.equilibrium.passes,true);
+ assert.equal(r.jointEquilibrium.passes,true);
  assert.ok(Math.abs(r.result.reactionLb.L.y+r.result.reactionLb.E.y-1600)<1e-5);
  assert.equal(r.status,'PRELIMINARY_NOT_ENGINEERED');
 });
