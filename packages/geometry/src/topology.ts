@@ -13,6 +13,7 @@ export interface TrussTopology {
 export function generateCommonTopology(input: RoofInput): TrussTopology {
   if (input.family !== "common") throw new Error("Only common truss topology is implemented");
   if ((input.overhangIn ?? 0) !== 0) throw new Error("Overhang topology not yet supported");
+  if ((input.heelHeightIn ?? 0) !== 0) throw new Error("Raised-heel topology requires distinct heel joints and is not yet implemented");
   const roof = generateRoofOutline(input);
   const span = roof.spanIn;
   const heel = input.heelHeightIn ?? 0;
