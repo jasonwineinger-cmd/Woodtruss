@@ -1,5 +1,27 @@
 # Woodtruss development status
 
+## Batch 006 — 2026-11-21T22:04:01Z (UTC)
+
+**Reviewed implementation:** [`f1ff125c353dac19c9068df7c5afee4c0c4a3853`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/f1ff125c353dac19c9068df7c5afee4c0c4a3853). Baseline GitHub `main` `e0972db` had 192 passing tests. Full integrated `npm run check`: **209 passed, 0 failed, 0 skipped**. Six isolated lanes plus integration and the standalone preview CLI.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/authored-case-replay.ts`: binds exact named case, model revision, joint geometry, stiffness, supports and ordered signed channel evidence before recomputing a globally and jointly audited solve. Same-total changes still reject. No code load factors. |
+| 2 Lumber | `packages/lumber/src/{stock-demand-evidence,index}.ts`: recomputes audited explicit member demands and holds stock candidates whose exact revision, case, modeled demand or documented basis does not match. No NDS design, lumber capacity, allocation or recommendation. |
+| 3 Connector plates | `packages/connections/src/plate-orientation-demand.ts`: shows independently scope-matched signed per-case axial and member-on-joint force components beside the unsigned geometrical angle. No grain or tooth orientation, plate placement or capacity. |
+| 4 Geometry | `packages/geometry/src/hip-roof-section.ts`: transverse profile through the bounded equal-pitch reference, including both end regions and the ridge transitions. Roof planes only, not hip trusses, bearings, load paths or fabrication geometry. |
+| 5 Manufacturing | `packages/fabrication/src/preliminary-review-consumer.ts`: separately expected schema, identity-only purpose, revision and digests are checked before frozen replay. Unknown or manufacturing fields quarantine the payload. No production integration. |
+| 6 Testing | `tests/independent-indeterminate-square-benchmark.test.mjs`: elastic compatibility for a square with independent crossing bars, plus the sway mechanism without them. |
+| Integration | `package.json`, `scripts/preview.mjs`, `README.md`: `npm start` builds and runs a fixed synthetic common-truss example; verified the 24-ft 5:12 run and the default 30-ft example. No site loads, permits, engineered designs, or cut/press/machine instructions. |
+
+**Other changed tests:** `tests/{authored-case-replay,cli-smoke,hip-roof-section,lumber-stock-demand-evidence,plate-orientation-demand,preliminary-review-consumer}.test.mjs`.
+
+**Independent checks:** closed-form indeterminate displacements, support and bar forces; 500-lb symmetric reactions in the fixed CLI example; signed reversal and zero end forces; four-plane section minima through both hips; single-bar force replay; stale/replaced/future contract holds. These are synthetic checks, not independently approved project engineering.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. A runnable local preview, broader numerical checks and exact record binding do not verify any full engineering or production subsystem.
+
+**Next batch:** improve explicit load and serviceability evidence with independent numerical benchmarks; advance edition-specific lumber and authorized maker-data interfaces without filling missing values; isolate supported truss geometry from roof-only references; implement only clearly documented review workflows in the standalone preview; keep production and machine outputs blocked. Licensed references, adopted/site inputs, actual connections and manufacturing validation, and qualified trusted engineering approval remain open.
+
 ## Batch 005 — 2026-11-21T21:49:06Z (UTC)
 
 **Reviewed implementation:** [`0a9906ad06d3737ff7e905f8b93e7b7db9315cf1`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/0a9906ad06d3737ff7e905f8b93e7b7db9315cf1). Baseline GitHub `main` `9c0c655` had 176 passing tests. Full integrated `npm run check`: **192 passed, 0 failed, 0 skipped**. Six isolated worker lanes. New outputs remain preliminary and cannot authorize fabrication.
