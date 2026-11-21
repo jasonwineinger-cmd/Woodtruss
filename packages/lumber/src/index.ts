@@ -26,3 +26,4 @@ export function summarizeMemberDemands(model:TrussModel,result:TrussResult):Memb
 export { assessLumberDesignInputEvidence, type LumberInputEvidence } from "./design-readiness.js";
 export { studyPreliminaryAxialStability, type AxialStabilityStudyInput } from "./axial-stability-study.js";
 export { studyWithDocumentedModulus, type LumberModulusEvidence, type LumberModulusPublication } from "./modulus-provenance.js";
+export { reviewPreliminaryStockFrontier, type PreliminaryStockOffer, type SchematicMemberStockNeed } from "./stock-frontier.js";
