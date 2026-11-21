@@ -56,6 +56,8 @@ The default example solves a 30 ft common truss at 6:12 with a single illustrati
 npm start -- --span-ft 24 --pitch 5
 ```
 
+Select the mono demo with `npm start -- --family mono`. Its separate synthetic 1,000 lb point load acts at the first upper joint, one quarter of the span from the low bearing. Neither demonstration derives site or code loads. Other families are not exposed by the command.
+
 To save only the JSON, without npm's command banners:
 
 ```sh

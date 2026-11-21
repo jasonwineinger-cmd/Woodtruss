@@ -30,3 +30,5 @@ export { reviewPreliminaryStockFrontier, type PreliminaryStockOffer, type Schema
 export { reviewPreliminaryStockWithCaseEvidence, type StockCaseExpectation, type StockOptionEvidence } from "./stock-evidence-frontier.js";
 export { recomputePreliminaryStockDemands, reviewStockWithRecomputedDemand,
   type StockDemandCaseInput, type StockDemandOptionEvidence } from "./stock-demand-evidence.js";
+export { reviewLumberReferenceQuantityIntake, type LumberPublicationIntake, type LumberQuantityExpectation,
+  type LumberQuantityReceipt } from "./reference-quantity-intake.js";
