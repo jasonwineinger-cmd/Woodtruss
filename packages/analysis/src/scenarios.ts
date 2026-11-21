@@ -5,9 +5,11 @@ import {auditJointEquilibrium} from "./joint-equilibrium.js";
 import {assertAuditedTrussModel} from "./model-audit.js";
 import {envelopePreliminaryCases,type NamedCase,type LoadEnvelope} from "./envelope.js";
 import {makeExplicitLoadCase,type ExplicitLoadCase} from "./cases.js";
+import {envelopeJointDisplacements,type DisplacementEnvelope} from "./displacement-envelope.js";
 
 export interface PreliminaryScenarioResult {
   envelope:LoadEnvelope;
+  displacements:DisplacementEnvelope;
   cases:NamedCase[];
   status:"PRELIMINARY_NOT_ENGINEERED";
   warnings:string[];
@@ -37,6 +39,7 @@ export function analyzeExplicitScenarios(
   }
   return {
     envelope:envelopePreliminaryCases(cases),
+    displacements:envelopeJointDisplacements(cases),
     cases,
     status:"PRELIMINARY_NOT_ENGINEERED",
     warnings:["Explicit scenarios are not building-code load combinations.",
