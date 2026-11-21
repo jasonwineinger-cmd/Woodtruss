@@ -28,3 +28,5 @@ export { studyPreliminaryAxialStability, type AxialStabilityStudyInput } from ".
 export { studyWithDocumentedModulus, type LumberModulusEvidence, type LumberModulusPublication } from "./modulus-provenance.js";
 export { reviewPreliminaryStockFrontier, type PreliminaryStockOffer, type SchematicMemberStockNeed } from "./stock-frontier.js";
 export { reviewPreliminaryStockWithCaseEvidence, type StockCaseExpectation, type StockOptionEvidence } from "./stock-evidence-frontier.js";
+export { recomputePreliminaryStockDemands, reviewStockWithRecomputedDemand,
+  type StockDemandCaseInput, type StockDemandOptionEvidence } from "./stock-demand-evidence.js";

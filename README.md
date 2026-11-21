@@ -12,14 +12,17 @@ Independent wood-truss design and manufacturing application, intended for eventu
 **This repository is not currently capable of producing approved truss designs.** Geometry or preliminary analysis must never be presented as a certified truss design. Fabrication release requires verified structural calculations, applicable code checks, validated plate capacities, engineering review, and manufacturing quality controls.
 
 ## Architecture
-- `packages/geometry`: deterministic, unit-aware geometry models
-- `packages/analysis`: independently benchmarked structural solver
-- `packages/lumber`: code-edition-specific lumber design rules
-- `packages/connectors`: tested manufacturer plate catalogs and joint checks
-- `packages/fabrication`: cut lists, dimensions, jig data and inspection records
-- `packages/contracts`: versioned, read-only integration contract for Prefab Panelizer
-- `apps/web`: interactive truss editor
-- `apps/api`: application API
+
+Implemented packages are preliminary:
+
+- `packages/geometry`: deterministic geometric references and selected truss topologies
+- `packages/analysis`: idealized 2D solver, explicit load cases and numerical benchmarks
+- `packages/lumber`: reference provenance, schematic stock and demand screening; not NDS design
+- `packages/connections`: joint demand and connector-reference review; no plate capacities or selection
+- `packages/fabrication`: schematic lengths, watermarked previews, revision QA and identity-only handoff
+- `packages/contracts`: preliminary data contracts and the fail-closed fabrication gate
+
+Interactive web editor, API, and production workflows are future work. See [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md) for the tested scope.
 
 ## Integration strategy
 No runtime imports from Prefab Panelizer or TrussForge. Export a versioned, documented JSON design package with units, geometry, reactions, material selections, design status, warnings, and revision IDs. Prefab Panelizer must reject unapproved designs for manufacturing.
@@ -37,3 +40,26 @@ Do not copy GPL/AGPL or other copyleft code into this project without a delibera
 2. Structural solver with benchmark fixtures and reactions/deflection tests.
 3. Lumber and connection engineering with documented assumptions and validation.
 4. Shop drawings, cut lists, production data, and controlled Prefab Panelizer integration.
+
+## Run locally
+
+This repository currently runs a command-line preview, not a browser app. From the repository folder with Node.js 22 and npm:
+
+```sh
+npm install
+npm start
+```
+
+The default example solves a 30 ft common truss at 6:12 with a single illustrative 1,000 lb ridge point load and prints a preliminary JSON package. It is not a project load case or a truss design. To preview a different span and pitch (span 8–50 ft, pitch greater than zero and at most 18:12):
+
+```sh
+npm start -- --span-ft 24 --pitch 5
+```
+
+To save only the JSON, without npm's command banners:
+
+```sh
+npm start --silent -- --span-ft 24 --pitch 5 > woodtruss-preview.json
+```
+
+Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
