@@ -1,4 +1,4 @@
-import type {TrussModel,TrussResult} from "./index.js";
+import type {TrussModel} from "./index.js";
 
 /** Checks numerical model quality, without implying code compliance. */
 export interface ModelAudit {
@@ -17,10 +17,14 @@ export function auditTrussModel(model:TrussModel):ModelAudit {
     if(!Number.isFinite(node.x)||!Number.isFinite(node.y))issues.push("Nonfinite node coordinate");
   }
   const members=new Set<string>();
+  const memberPairs=new Set<string>();
   const adjacency=new Map(model.nodes.map(n=>[n.id,new Set<string>()]));
   for(const member of model.bars){
     if(!member.id||members.has(member.id))issues.push("Missing or duplicate member ID");
     members.add(member.id);
+    const pair=[member.a,member.b].sort().join("\\u0000");
+    if(memberPairs.has(pair))issues.push("Duplicate physical member between the same joints");
+    memberPairs.add(pair);
     if(!ids.has(member.a)||!ids.has(member.b)||member.a===member.b){
       issues.push("Invalid member endpoints");continue;
     }
