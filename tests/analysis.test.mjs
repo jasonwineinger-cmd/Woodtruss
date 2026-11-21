@@ -8,7 +8,7 @@ test('single horizontal bar has analytic elongation and reaction',()=>{
  close(r.displacementIn.B.x,0.05);close(r.axialForceLb.AB,1000);close(r.reactionLb.A.x,-1000);close(r.residualForceLb,0);
 });
 test('symmetric two-bar triangular truss carries vertical point load',()=>{
- const m={nodes:[{id:'A',x:0,y:0},{id:'B',x:120,y:120},{id:'C',x:240,y:0}],bars:[{id:'AB',a:'A',b:'B',areaIn2:2,elasticModulusPsi:1000000},{id:'BC',a:'B',b:'C',areaIn2:2,elasticModulusPsi:1000000}],loads:[{nodeId:'B',fyLb:-1000}],supports:[{nodeId:'A',fixX:true,fixY:true},{nodeId:'C',fixX:false,fixY:true}]};
+ const m={nodes:[{id:'A',x:0,y:0},{id:'B',x:120,y:120},{id:'C',x:240,y:0}],bars:[{id:'AB',a:'A',b:'B',areaIn2:2,elasticModulusPsi:1000000},{id:'BC',a:'B',b:'C',areaIn2:2,elasticModulusPsi:1000000},{id:'AC',a:'A',b:'C',areaIn2:2,elasticModulusPsi:1000000}],loads:[{nodeId:'B',fyLb:-1000}],supports:[{nodeId:'A',fixX:true,fixY:true},{nodeId:'C',fixX:false,fixY:true}]};
  const r=analyzePinJointedTruss(m);
  close(r.reactionLb.A.y,500);close(r.reactionLb.C.y,500);
  close(r.axialForceLb.AB,-1000/Math.sqrt(2));close(r.axialForceLb.BC,-1000/Math.sqrt(2));
