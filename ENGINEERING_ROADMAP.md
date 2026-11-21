@@ -16,11 +16,11 @@ Maximum supported planning span: **50 ft**. Passing software tests does not esta
 - Current: exact joint/revision/load cases and signed member-end demands, separate unsigned geometry angles, and optional local maker-document identity. **No plate capacities, recommended placement or manufacturer approval.**
 
 ## 3. Truss families
-- Common and scissor: selected preliminary pin-jointed models, including a level-bearing unequal-pitch common reference. No production design.
+- Common and scissor: selected preliminary pin-jointed models, including two narrow level-bearing common references: unequal pitches, or a symmetric raised heel with no overhang. Neither is a connection or production design.
 - Attic: room-clearance schematic; the open room bay is not qualified for a pin-jointed solve. Floor loading, stability and connections are unverified.
 - Mono: a narrow four-panel preliminary model with authored point loads and level end supports. No raised heel or cantilever analysis.
 - Agricultural: a narrow level-bearing tied-gable preliminary model. Purlin loading, site wind/snow, bearings, connections and bracing remain open.
-- Hip: bounded rectangular roof envelope and transverse section references only. A reviewed source-patch ledger models explicit load ownership separately. Neither is hip-truss topology, load-path validation or shop geometry.
+- Hip: bounded rectangular roof envelope and transverse section references only. The separate receiving-girder review solves explicit replayed vertical transfers on two independent models; it does not solve a coupled roof or verify installed load paths. Neither is hip-truss topology or shop geometry.
 
 ## 4. Automatic member optimization
 - Current: deterministic schematic stock trade-offs with explicitly matched case and catalog evidence. Area and waste are comparison quantities, not a structural optimization result.
