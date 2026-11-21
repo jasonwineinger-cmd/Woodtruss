@@ -1,5 +1,27 @@
 # Woodtruss development status
 
+## Batch 012 — 2026-11-21T23:33:20Z (UTC)
+
+**Reviewed implementation:** [`3bbc257014b86447fe7c82c9e30c1e355293cbde`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/3bbc257014b86447fe7c82c9e30c1e355293cbde). Baseline `a7fd011`: 287 passing tests. Integrated `npm run check`: **301 passed, 0 failed, 0 skipped**. Six isolated workers, all engineering outputs remain preliminary.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/support-vertical-demand.ts`: replays exact authored cases and restrained supports; separates compression from required hold-down, preserves signed extrema and ties. No anchor, contact, capacity or site design. |
+| 2 Lumber | `packages/lumber/src/{rectangular-eccentric-axial,index}.ts`: explicit axial force and two eccentricities yield signed first-order moments and corner stresses. No load introduction, connection behavior, second-order or allowable checks. |
+| 3 Connector plates | `packages/connections/src/plate-projected-gaps.ts`: geometric uncovered area only when every exact projected member is present, same face and nonoverlapping and the plate is in-face. Does not infer usable area, grip, design or placement. |
+| 4 Geometry | `packages/analysis/src/scissor-explicit-analysis.ts`: narrow level-bearing pin-jointed scissor study under explicit signed joint loads. Audits global/local equilibrium and holds unsupported cases; attic stability remains held. |
+| 5 Manufacturing | `packages/fabrication/src/preliminary-review-closure.ts`: paired revision evidence and exact receipt replay distinguish pending, acknowledged, and empty reviews. None is approval or verified identity. |
+| 6 Testing | `tests/independent-self-equilibrated-load-benchmark.test.mjs`: zero net force and moment still produce internal compression and displacement; missing load path rejects. |
+| Integration | Exposed `scissor-level` in `packages/analysis/src/explicit-family-dispatch.ts`; assertions distinguish its exact 50-ft limit and selection from both existing CLI demo families. |
+
+**Other changed tests:** `tests/{cli-smoke,explicit-family-dispatch,lumber-rectangular-eccentric-axial,plate-projected-gaps,preliminary-review-closure,scissor-explicit-analysis,support-vertical-demand}.test.mjs`.
+
+**Independent checks:** signed compression/uplift reactions, scissor moment arm and 50-ft cap, rectangle stress resultant recovery, self-equilibrated closed-form deflection and mechanism falsification, and exact measured geometry/evidence rejection. These are synthetic numerical and software checks, not code compliance or qualified engineering verification.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Licensed lumber/plate capacities, adopted project/site loads, independent review and safe production remain open.
+
+**Next batch:** broaden limited, explicitly supported families or preserve honest holds; connect trusted review-only case/result and serviceability evidence, and improve CLI/documentation only when inputs are independently checked. Do not infer attic stability, approved plate/member sizing or manufacturing authority.
+
 ## Batch 011 — 2026-11-21T23:18:48Z (UTC)
 
 **Reviewed implementation:** [`d500e9502b1de962c7f034c051f930fbc1c371d1`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/d500e9502b1de962c7f034c051f930fbc1c371d1). Baseline `e53ea9a`: 271 passing tests. Integrated `npm run check`: **287 passed, 0 failed, 0 skipped**. Six isolated workers; all outputs remain preliminary.
