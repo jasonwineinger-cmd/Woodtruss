@@ -1,5 +1,27 @@
 # Woodtruss development status
 
+## Batch 009 — 2026-11-21T22:48:09Z (UTC)
+
+**Reviewed implementation:** [`9f22006e4f03602992be27fd5c80865adb748c49`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/9f22006e4f03602992be27fd5c80865adb748c49). Baseline `39b13aa`: 242 passing tests. Integrated `npm run check`: **257 passed, 0 failed, 0 skipped**. Six isolated workers; all outputs remain preliminary.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/carried-bearing-transfer.ts`: validates independent source-patch ownership before replaying the named source case/revision. Checks that the selected restrained bearing's vertical reaction has the exact opposite sign and magnitude at the receiving girder station; blocks reusing a full source bearing. Horizontal transfer, loaded areas, bearing adequacy and attachment remain held. |
+| 2 Lumber | `packages/lumber/src/{rectangular-section-mechanics,index}.ts`: calculates centered section properties and separates explicit axial and two-axis bending stress for all four corners. No strength limits, code factors, buckling, or selection. |
+| 3 Connector plates | `packages/connections/src/plate-footprint-review.ts`: compares a supplied convex outline with explicit rectangular face coordinates and reports signed geometric clearances/touch/protrusion in the exact frame. Not plate placement, required edge distance, capacity or grip. |
+| 4 Geometry | `packages/geometry/src/raised-heel-common-topology.ts`: level-bearing symmetric raised-heel schematic, with separate top and bottom heel nodes and 50-ft maximum; unsupported offsets and degenerate inputs are held. No solver, connection detail or fabrication. |
+| 5 Manufacturing | `packages/fabrication/src/preliminary-review-checklist.ts`: versioned review checklist from exactly replayed comparison; preserves digests, affected IDs and review-only exclusions, including a flag when the normalized view looks unchanged despite geometry changes. No drawing, stock, cuts or machine data. |
+| 6 Testing | `tests/independent-uplift-reaction-benchmark.test.mjs`: independent force, moment and displacement under signed horizontal-plus-upward loading, with artificial rotational restraint removal as a negative test. |
+| Integration | `ENGINEERING_ROADMAP.md`: aligns current supported scopes and unfinished gates with the implementation without claiming structural or production readiness. |
+
+**Other changed tests:** `tests/{carried-bearing-transfer,lumber-rectangular-section-mechanics,plate-footprint-review,preliminary-review-checklist,raised-heel-common-topology}.test.mjs`.
+
+**Independent checks:** synthetic vertical reaction transfer in both signs without rounding, four-corner stress and moduli calculated by hand, rotated outline distances, symmetric heel elevations/end triangles, uplift reaction and mechanism falsification, and modified review record rejection. These are numerical/software checks, not engineering approvals.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. No new licensed inputs, qualified engineering sign-off, or finished operational gate.
+
+**Next batch:** clarify exact load-case mappings and independence at supported transfers, build on independently verified section mechanics without inventing allowable stresses, and expand valid schematic/analysis capabilities or review acceptance only with scoped guarantees. The 50-foot cap, independently qualified engineering review and trusted release requirements remain.
+
 ## Batch 008 — 2026-11-21T22:33:40Z (UTC)
 
 **Reviewed implementation:** [`d270b04621b7d839f433b2f408546a1a67a8d58c`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/d270b04621b7d839f433b2f408546a1a67a8d58c). Baseline `3f24f9c`: 225 passing tests. Integrated `npm run check`: **242 passed, 0 failed, 0 skipped**. Six isolated worker lanes plus integration. All work remains preliminary and not for fabrication.
