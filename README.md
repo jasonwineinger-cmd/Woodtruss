@@ -70,4 +70,6 @@ For a picture, write a visibly watermarked, dimensionless review diagram. The SV
 npm start --silent -- --family mono --format svg > woodtruss-preview.svg
 ```
 
+Run `npm start --silent -- --capabilities` to see the demo families, formats and span limit. The separately listed library point-load variants are not additional CLI options or a list of complete truss designs.
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.

@@ -1,6 +1,7 @@
 // Command-line demonstration only. This script has no production output path.
 import { analyzePreliminaryCommonTruss } from '../dist/analysis/src/common.js';
 import { analyzePreliminaryMonoTruss } from '../dist/analysis/src/mono-analysis.js';
+import { EXPLICIT_POINT_LOAD_VARIANTS } from '../dist/analysis/src/explicit-family-dispatch.js';
 import { envelopePreliminaryCases } from '../dist/analysis/src/envelope.js';
 import { createPreliminaryTrussPackage } from '../dist/contracts/src/preview.js';
 import { createPreliminaryMaterialsReport } from '../dist/fabrication/src/preliminary-materials.js';
@@ -8,9 +9,23 @@ import { createPreliminaryMaterialsTraceabilityManifest, fingerprintPreliminaryM
 import { createPreliminarySchematicReview } from '../dist/fabrication/src/preliminary-schematic-review.js';
 
 const usage = 'Usage: npm start -- [--family common|mono] [--span-ft 30] [--pitch 6] [--format json|svg]\n'
+  + 'Use --capabilities by itself to list the supported scope.\n'
   + 'Runs a synthetic example: a 1,000 lb point load at the common ridge or mono quarter-point.';
 
 async function run(args) {
+  if (args.length === 1 && args[0] === '--capabilities') {
+    process.stdout.write(JSON.stringify({
+      schemaVersion: 'woodtruss.cli-preview-scope.v1',
+      demoFamilies: ['common', 'mono'],
+      demoFormats: ['json', 'svg'],
+      spanRangeFt: { minimum: 8, maximum: 50 },
+      explicitPointLoadApiVariants: [...EXPLICIT_POINT_LOAD_VARIANTS],
+      explicitPointLoadApiScope: 'These variants are for the library dispatcher only, not the CLI or a complete family list.',
+      notice: 'NOT FOR FABRICATION',
+      fabricationAuthorized: false,
+    }, null, 2) + '\n');
+    return;
+  }
   if (args.length === 1 && args[0] === '--help') {
     process.stdout.write(usage + '\n');
     return;

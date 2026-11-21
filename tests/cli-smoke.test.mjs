@@ -47,6 +47,19 @@ test('CLI emits only a watermarked dimensionless schematic for each demo family'
   }
 });
 
+test('CLI capabilities separate runnable demos from the limited library dispatcher', () => {
+  const r = run('--capabilities');
+  assert.equal(r.status, 0, r.stderr);
+  const scope = JSON.parse(r.stdout);
+  assert.deepEqual(scope.demoFamilies, ['common','mono']);
+  assert.deepEqual(scope.spanRangeFt, { minimum:8, maximum:50 });
+  assert.deepEqual(scope.explicitPointLoadApiVariants, ['common-level','common-asymmetric','common-raised-heel','mono-level']);
+  assert.match(scope.explicitPointLoadApiScope, /not the CLI/);
+  assert.equal(scope.fabricationAuthorized,false);
+  assert.equal(scope.notice,'NOT FOR FABRICATION');
+  assert.equal(run('--capabilities','--family','mono').status,1);
+});
+
 test('CLI rejects invalid or unsupported arguments without emitting any package', () => {
   for (const args of [['--span-ft', '51'], ['--pitch', '0'], ['--fabrication'], ['--format', 'dxf'], ['--format'], ['--family', 'hip'], ['--family'], ['--family', 'mono', '--span-ft', '51'], ['--span-ft'], ['--pitch', '6', '--pitch', '7']]) {
     const r = run(...args);
