@@ -4,6 +4,7 @@ import {analyzePinJointedTruss,type TrussModel,type TrussResult} from "./index.j
 import {roofGravityNodalLoads} from "./loading.js";
 import {auditGlobalEquilibrium,type EquilibriumAudit} from "./equilibrium.js";
 import {assertAuditedTrussModel} from "./model-audit.js";
+import {auditJointEquilibrium,type JointEquilibriumAudit} from "./joint-equilibrium.js";
 
 export interface CommonGravityCase {
   roof: RoofInput;
@@ -17,6 +18,7 @@ export interface CommonGravityResult {
   result: TrussResult;
   totalAppliedGravityLb: number;
   equilibrium: EquilibriumAudit;
+  jointEquilibrium: JointEquilibriumAudit;
   warnings: string[];
 }
 /** Preliminary gravity case, not a code load combination or approved design. */
@@ -40,7 +42,9 @@ export function analyzeCommonGravityCase(input:CommonGravityCase):CommonGravityR
   const result=analyzePinJointedTruss(model);
   const equilibrium=auditGlobalEquilibrium(model,result);
   if(!equilibrium.passes)throw new Error("Global force or moment equilibrium audit failed");
-  return {model,result,equilibrium,totalAppliedGravityLb:-loads.reduce((sum,l)=>sum+(l.fyLb??0),0),
+  const jointEquilibrium=auditJointEquilibrium(model,result.axialForceLb,result.reactionLb);
+  if(!jointEquilibrium.passes)throw new Error("Joint force equilibrium audit failed");
+  return {model,result,equilibrium,jointEquilibrium,totalAppliedGravityLb:-loads.reduce((sum,l)=>sum+(l.fyLb??0),0),
     warnings:[...topology.warnings,
       "Uniform vertical gravity pressure on horizontal projection only.",
       "No unbalanced snow, wind, uplift, dead/live combinations, eccentricity, joint slip, lumber capacities or plate checks.",
