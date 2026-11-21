@@ -20,7 +20,9 @@ export function envelopePreliminaryCases(cases:NamedCase[]):LoadEnvelope {
  const ids=new Set<string>();
  const reference=cases[0].model;
  const memberIds=reference.bars.map(b=>b.id);
+ if(new Set(memberIds).size!==memberIds.length)throw new Error("Duplicate reference member IDs");
  const nodeIds=reference.nodes.map(n=>n.id);
+ if(new Set(nodeIds).size!==nodeIds.length)throw new Error("Duplicate reference node IDs");
  for(const item of cases){
    if(!item.id||ids.has(item.id))throw new Error("Duplicate or missing load case ID");
    ids.add(item.id);
@@ -39,6 +41,8 @@ export function envelopePreliminaryCases(cases:NamedCase[]):LoadEnvelope {
    }
    if(JSON.stringify(item.model.supports)!==JSON.stringify(reference.supports))
      throw new Error("Different support conditions");
+   if(!Number.isFinite(item.result.residualForceLb)||item.result.residualForceLb<0)
+     throw new Error("Invalid solver residual");
    if(Object.keys(item.result.axialForceLb).length!==memberIds.length||
       Object.keys(item.result.reactionLb).length!==nodeIds.length)
      throw new Error("Incomplete solver result");
