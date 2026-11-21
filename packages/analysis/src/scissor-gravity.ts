@@ -4,6 +4,7 @@ import {analyzePinJointedTruss,type TrussModel,type TrussResult} from "./index.j
 import {roofGravityNodalLoads} from "./loading.js";
 import {assertAuditedTrussModel} from "./model-audit.js";
 import {auditGlobalEquilibrium,type EquilibriumAudit} from "./equilibrium.js";
+import {auditJointEquilibrium,type JointEquilibriumAudit} from "./joint-equilibrium.js";
 
 export interface ScissorGravityInput {
  roof:RoofInput;
@@ -16,6 +17,7 @@ export interface ScissorGravityResult {
  model:TrussModel;
  result:TrussResult;
  equilibrium:EquilibriumAudit;
+ jointEquilibrium:JointEquilibriumAudit;
  totalAppliedGravityLb:number;
  status:"PRELIMINARY_NOT_ENGINEERED";
  warnings:string[];
@@ -38,7 +40,9 @@ export function analyzeScissorGravity(input:ScissorGravityInput):ScissorGravityR
  const result=analyzePinJointedTruss(model);
  const equilibrium=auditGlobalEquilibrium(model,result);
  if(!equilibrium.passes)throw new Error("Scissor model equilibrium audit failed");
- return {model,result,equilibrium,
+ const jointEquilibrium=auditJointEquilibrium(model,result.axialForceLb,result.reactionLb);
+ if(!jointEquilibrium.passes)throw new Error("Scissor joint force equilibrium audit failed");
+ return {model,result,equilibrium,jointEquilibrium,
   totalAppliedGravityLb:-loads.reduce((sum,l)=>sum+(l.fyLb??0),0),
   status:"PRELIMINARY_NOT_ENGINEERED",
   warnings:[...topology.warnings,
