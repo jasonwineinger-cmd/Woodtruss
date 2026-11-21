@@ -12,6 +12,7 @@ const cases=[
  ['common-asymmetric',{spanFt:40,leftPitchRisePer12:4,rightPitchRisePer12:8},'R',13,800*2/3],
  ['common-raised-heel',{...roof,heelHeightIn:12},'HL',17,0],
  ['mono-level',{...roof,family:'mono'},'T3',15,600],
+ ['scissor-level',{...roof,family:'scissor',bottomPitchRisePer12:3},'Q3',13,600],
 ];
 
 test('explicit routes solve only their scoped graph with matching statics and held fabrication',()=>{

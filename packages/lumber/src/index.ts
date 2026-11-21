@@ -37,3 +37,4 @@ export { reviewLumberIntakeWithPrivatePublicationBytes,
 export { studyPreliminaryRectangularSection, type RectangularSectionStudyInput } from "./rectangular-section-mechanics.js";
 export { studyPreliminaryRectangularShear, type RectangularShearStudyInput } from "./rectangular-section-shear.js";
 export { studyRectangularLongitudinalStrain, type RectangularLongitudinalStrainInput } from "./rectangular-longitudinal-strain.js";
+export { studyRectangularEccentricAxial, type RectangularEccentricAxialInput } from "./rectangular-eccentric-axial.js";

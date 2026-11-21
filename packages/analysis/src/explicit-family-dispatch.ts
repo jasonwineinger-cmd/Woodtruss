@@ -9,6 +9,8 @@ import { auditJointEquilibrium } from "./joint-equilibrium.js";
 import { analyzePreliminaryMonoTruss, type PreliminaryMonoAnalysisInput } from "./mono-analysis.js";
 import { analyzePreliminaryRaisedHeelCommonTruss, type PreliminaryRaisedHeelCommonInput } from "./raised-heel-common-analysis.js";
 
+import { analyzePreliminaryScissorExplicit, type PreliminaryScissorExplicitInput } from "./scissor-explicit-analysis.js";
+
 interface CommonInput {
   roof: RoofInput;
   areaIn2: number;
@@ -20,11 +22,12 @@ export type ExplicitFamilyRequest =
   | ({ variant:"common-level" } & CommonInput)
   | ({ variant:"common-asymmetric" } & PreliminaryAsymmetricCommonInput)
   | ({ variant:"common-raised-heel" } & PreliminaryRaisedHeelCommonInput)
-  | ({ variant:"mono-level" } & PreliminaryMonoAnalysisInput);
+  | ({ variant:"mono-level" } & PreliminaryMonoAnalysisInput)
+  | ({ variant:"scissor-level" } & PreliminaryScissorExplicitInput);
 
 /** This list covers this dispatcher only; it is not a repo-wide capability claim. */
 export const EXPLICIT_POINT_LOAD_VARIANTS = Object.freeze([
-  "common-level","common-asymmetric","common-raised-heel","mono-level",
+  "common-level","common-asymmetric","common-raised-heel","mono-level","scissor-level",
 ] as const);
 
 /** Dispatch signed authored point loads only, without topology fallback or manufacturing approval. */
@@ -45,6 +48,9 @@ export function analyzeExplicitFamily(request: ExplicitFamilyRequest) {
     case "mono-level":
       requireRoofKeys([...options,"family","pitchRisePer12","bottomPitchRisePer12"]);
       return { variant:request.variant,...analyzePreliminaryMonoTruss(request) };
+    case "scissor-level":
+      requireRoofKeys([...options,"family","pitchRisePer12","bottomPitchRisePer12"]);
+      return { variant:request.variant,...analyzePreliminaryScissorExplicit(request) };
     case "common-level":
       requireRoofKeys([...options,"family","pitchRisePer12","bottomPitchRisePer12"]);
       return { variant:request.variant,...analyzeCommonLevel(request) };
