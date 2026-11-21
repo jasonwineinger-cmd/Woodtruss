@@ -3,6 +3,7 @@ import type {RoofInput} from "../../geometry/src/index.js";
 import {analyzePinJointedTruss,type TrussModel,type TrussResult} from "./index.js";
 import {roofGravityNodalLoads} from "./loading.js";
 import {auditGlobalEquilibrium,type EquilibriumAudit} from "./equilibrium.js";
+import {assertAuditedTrussModel} from "./model-audit.js";
 
 export interface CommonGravityCase {
   roof: RoofInput;
@@ -35,6 +36,7 @@ export function analyzeCommonGravityCase(input:CommonGravityCase):CommonGravityR
     loads,
     supports:[{nodeId:"L",fixX:true,fixY:true},{nodeId:"E",fixX:false,fixY:true}]
   };
+  assertAuditedTrussModel(model);
   const result=analyzePinJointedTruss(model);
   const equilibrium=auditGlobalEquilibrium(model,result);
   if(!equilibrium.passes)throw new Error("Global force or moment equilibrium audit failed");
