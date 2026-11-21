@@ -14,6 +14,7 @@ test('explicit gravity and uplift scenarios produce signed axial envelopes',()=>
   {id:'uplift',description:'illustrative upward load',jointLoads:[{nodeId:'B',fyLb:500}]}
  ]);
  assert.equal(r.cases.length,2);
+ assert.equal(r.displacements.joints.B.y.governingAbsoluteCase,'gravity');
  assert.equal(r.envelope.memberForces.AB.governingMinCase,'gravity');
  assert.equal(r.envelope.memberForces.AB.governingMaxCase,'uplift');
  assert.equal(r.status,'PRELIMINARY_NOT_ENGINEERED');
