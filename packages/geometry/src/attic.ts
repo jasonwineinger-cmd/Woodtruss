@@ -1,4 +1,4 @@
-import {generateRoofOutline,type RoofInput,type PointInches} from "./index.js";
+import type {RoofInput,PointInches} from "./index.js";
 
 /** Attic clearance envelope for early space planning only.
  * Does not define a load-bearing attic truss, floor system, webs, or fabrication geometry.
