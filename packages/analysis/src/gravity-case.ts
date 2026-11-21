@@ -2,6 +2,7 @@ import {generateCommonTopology} from "../../geometry/src/topology.js";
 import type {RoofInput} from "../../geometry/src/index.js";
 import {analyzePinJointedTruss,type TrussModel,type TrussResult} from "./index.js";
 import {roofGravityNodalLoads} from "./loading.js";
+import {auditGlobalEquilibrium,type EquilibriumAudit} from "./equilibrium.js";
 
 export interface CommonGravityCase {
   roof: RoofInput;
@@ -14,6 +15,7 @@ export interface CommonGravityResult {
   model: TrussModel;
   result: TrussResult;
   totalAppliedGravityLb: number;
+  equilibrium: EquilibriumAudit;
   warnings: string[];
 }
 /** Preliminary gravity case, not a code load combination or approved design. */
@@ -34,7 +36,9 @@ export function analyzeCommonGravityCase(input:CommonGravityCase):CommonGravityR
     supports:[{nodeId:"L",fixX:true,fixY:true},{nodeId:"E",fixX:false,fixY:true}]
   };
   const result=analyzePinJointedTruss(model);
-  return {model,result,totalAppliedGravityLb:-loads.reduce((sum,l)=>sum+(l.fyLb??0),0),
+  const equilibrium=auditGlobalEquilibrium(model,result);
+  if(!equilibrium.passes)throw new Error("Global force or moment equilibrium audit failed");
+  return {model,result,equilibrium,totalAppliedGravityLb:-loads.reduce((sum,l)=>sum+(l.fyLb??0),0),
     warnings:[...topology.warnings,
       "Uniform vertical gravity pressure on horizontal projection only.",
       "No unbalanced snow, wind, uplift, dead/live combinations, eccentricity, joint slip, lumber capacities or plate checks.",
