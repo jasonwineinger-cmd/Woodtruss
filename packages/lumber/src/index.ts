@@ -22,3 +22,5 @@ export function summarizeMemberDemands(model:TrussModel,result:TrussResult):Memb
    axialStressPsi:axialForceLb/bar.areaIn2,eulerBucklingLb:null};
  });
 }
+
+export { assessLumberDesignInputEvidence, type LumberInputEvidence } from "./design-readiness.js";

@@ -38,3 +38,63 @@ export function inventoryConnectorPlateDemands(
    "Independent engineering review"]
  }));
 }
+
+export interface SignedPlateMemberDemand {
+ memberId:string;
+ /** Solver convention: positive tension, negative compression. */
+ axialLb:number;
+ /** Force the member applies to this joint in model axes, not a plate force. */
+ memberOnJointFxLb:number;
+ memberOnJointFyLb:number;
+}
+
+export interface ScenarioPlateDemand extends PlateDemand {
+ scenarios:{scenarioId:string;members:SignedPlateMemberDemand[]}[];
+}
+
+type DemandJoint={id:string;x:number;y:number};
+type DemandMember={id:string;start:string;end:string};
+type SignedForceCase={id:string;axialForceLb:Record<string,number>};
+
+/** Retain coincident signed member-end forces by case, with no governing plate
+ * resultant, grip/capacity check, load-factor inference or approval. The caller
+ * must supply axial results from the exact same model, not an envelope.
+ */
+export function inventoryScenarioConnectorPlateDemands(
+ joints:DemandJoint[],members:DemandMember[],plates:PlateReference[],cases:SignedForceCase[]
+):ScenarioPlateDemand[] {
+ const inventory=inventoryConnectorPlateDemands(joints,members,plates);
+ if(!joints.length||!members.length||!cases.length)
+  throw new Error("Connector demand requires joints, members, and signed scenarios");
+ const jointById=new Map(joints.map(j=>[j.id,j]));
+ const memberById=new Map(members.map(m=>[m.id,m]));
+ if(joints.some(j=>!j.id.trim()||!Number.isFinite(j.x)||!Number.isFinite(j.y)))
+  throw new Error("Invalid connector demand joint coordinates");
+ const unitVectors=new Map(members.map(m=>{
+  const a=jointById.get(m.start)!,b=jointById.get(m.end)!;
+  const dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy);
+  if(!Number.isFinite(length)||length<=0)throw new Error("Invalid connector demand member length");
+  return [m.id,{x:dx/length,y:dy/length}] as const;
+ }));
+ const caseIds=new Set<string>();
+ for(const scenario of cases){
+  if(!scenario.id.trim()||caseIds.has(scenario.id))
+   throw new Error("Duplicate or empty connector demand scenario ID");
+  caseIds.add(scenario.id);
+  if(Object.keys(scenario.axialForceLb).length!==members.length||
+     members.some(m=>!Object.hasOwn(scenario.axialForceLb,m.id)||
+       !Number.isFinite(scenario.axialForceLb[m.id])))
+   throw new Error("Invalid signed axial coverage for scenario "+scenario.id);
+ }
+ const normalizeZero=(n:number)=>n===0?0:n;
+ return inventory.map(joint=>({...joint,scenarios:cases.map(scenario=>({
+  scenarioId:scenario.id,
+  members:joint.incidentMemberIds.map(memberId=>{
+   const member=memberById.get(memberId)!,unit=unitVectors.get(memberId)!;
+   const axialLb=normalizeZero(scenario.axialForceLb[memberId]);
+   const direction=member.start===joint.jointId?1:-1;
+   return {memberId,axialLb,memberOnJointFxLb:normalizeZero(direction*axialLb*unit.x),
+    memberOnJointFyLb:normalizeZero(direction*axialLb*unit.y)};
+  })
+ }))}));
+}
