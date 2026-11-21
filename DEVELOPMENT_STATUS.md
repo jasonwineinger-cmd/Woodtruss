@@ -1,5 +1,27 @@
 # Woodtruss development status
 
+## Batch 007 — 2026-11-21T22:19:16Z (UTC)
+
+**Reviewed implementation:** [`8ba76af3b800acd8474643eaf2905bad08306ec6`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/8ba76af3b800acd8474643eaf2905bad08306ec6). Baseline `fcc7d02` had 209 passing tests. Integrated `npm run check`: **225 passed, 0 failed, 0 skipped**. Six isolated workers plus integration. Preliminary and not for fabrication.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/relative-joint-serviceability.ts`: checks the explicitly expected solved case IDs and compatible models, reports signed joint-Y movement relative to the modeled bearing-datum line at the original station; optional user-only threshold. No code deflection limit, slip, creep or bending. |
+| 2 Lumber | `packages/lumber/src/{reference-quantity-intake,index}.ts`: ties six catalog quantities to exact grade, product dimensions, edition/Supplement/addenda, reviewer axis basis and psi receipt. Existing values are checked against receipts, not authenticated or authorized for design; no tables distributed. |
+| 3 Connector plates | `packages/connections/src/plate-source-artifact.ts`: matches caller-authorized local bytes to exact independently expected maker document, product, family, revision, scope and SHA-256. No origin authentication, report interpretation or plate capacity. |
+| 4 Geometry | `packages/geometry/src/asymmetric-common-topology.ts`: unequal pitches meet at one calculated ridge with level end bearings, mirrored and equal-pitch controls, and 50-ft cap. Reference centerline graph only, not an approved truss or solver path. |
+| 5 Manufacturing | `packages/fabrication/src/preliminary-schematic-review.ts`: builds a revision-bound, stamped, dimensionless normalized SVG from independently expected frozen evidence; replays before exposing it and rejects changed or rehashed markup. No fabrication/stock/machine data or active integration. |
+| 6 Testing | `tests/independent-series-axial-benchmark.test.mjs`: independent cut forces, relative elongations, and transverse zero-mode falsification for unequal lengths and stiffnesses. |
+| Integration | `scripts/preview.mjs`, `README.md`, `tests/cli-smoke.test.mjs`: a separate fixed illustrative mono-pitch example, with an explicit quarter-point point load and independent 750/250 lb expected reactions. Common example remains default; no user/site design loads or releases. |
+
+**Additional tests:** `tests/{asymmetric-common-topology,lumber-reference-quantity-intake,plate-source-artifact,preliminary-schematic-review,relative-joint-serviceability}.test.mjs`.
+
+**Independent checks:** virtual-work relative Y, moving datum interpolation and fixed-datum falsification; two-slope ridge coordinates; synthetic axial series displacements and stability; exact artifact identity and unchanged preview holds. No structural design or code compliance verified.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. These are preliminary improvements. No new licensed data, code design workflow, production export, or qualified review has closed a major gate.
+
+**Next batch:** independently verify the industry reference and test duplicate source-area ownership on synthetic carried-to-girder loads; keep design geometry and reaction-transfer evidence separate. Advance documented edition/material checks, plate applicability metadata and geometry modeling only where inputs are verified. Continue exact review-render replay and independent numerical regressions. Do not infer unprovided capacities or allow fabrication.
+
 ## Batch 006 — 2026-11-21T22:04:01Z (UTC)
 
 **Reviewed implementation:** [`f1ff125c353dac19c9068df7c5afee4c0c4a3853`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/f1ff125c353dac19c9068df7c5afee4c0c4a3853). Baseline GitHub `main` `e0972db` had 192 passing tests. Full integrated `npm run check`: **209 passed, 0 failed, 0 skipped**. Six isolated lanes plus integration and the standalone preview CLI.
