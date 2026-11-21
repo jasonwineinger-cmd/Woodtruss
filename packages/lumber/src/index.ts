@@ -34,3 +34,4 @@ export { reviewLumberReferenceQuantityIntake, type LumberPublicationIntake, type
   type LumberQuantityReceipt } from "./reference-quantity-intake.js";
 export { reviewLumberIntakeWithPrivatePublicationBytes,
   type PrivateLumberPublicationArtifact } from "./publication-byte-evidence.js";
+export { studyPreliminaryRectangularSection, type RectangularSectionStudyInput } from "./rectangular-section-mechanics.js";

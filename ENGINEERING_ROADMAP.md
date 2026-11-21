@@ -8,29 +8,32 @@ Maximum supported planning span: **50 ft**. Passing software tests does not esta
 - Implement and independently benchmark applicable duration, wet-service, temperature, size, incising, repetitive-member and other factors, including exclusions and interactions.
 - Implement compression stability, effective unbraced lengths, tension, bending, shear, bearing, combined loading, and serviceability.
 - Verify against worked examples and independent engineer review before marking a candidate as structurally adequate.
-- Current: catalog provenance and preliminary axial stress ranking; **not NDS sizing**.
+- Current: exact edition, addendum and quantity receipts; local document-byte checks; preliminary axial demand and schematic stock comparisons. These are **not NDS sizing** and do not establish applicability or authorization.
 
 ## 2. Connector plates
 - Obtain manufacturer-approved plate data, orientation, grip, tooth embedment, joint-force transfer, and applicable TPI design rules.
 - Validate plate sizing, placement, lumber species, splices, joints, press process, and inspection requirements.
-- Current: per-joint inventory and required-check checklist; **no plate capacities**.
+- Current: exact joint/revision/load cases and signed member-end demands, separate unsigned geometry angles, and optional local maker-document identity. **No plate capacities, recommended placement or manufacturer approval.**
 
 ## 3. Truss families
-- Common/scissor: preliminary pin-jointed structural models, not production design.
-- Attic: room clearance only; needs floor loading, web topology, member checks, and connection design.
-- Agricultural: roof outline only; needs purlin loading, unbalanced wind/snow/uplift, stability, bracing, bearings, and connections.
-- Additional mono/hip profiles need their own verified topology and analysis.
+- Common and scissor: selected preliminary pin-jointed models, including a level-bearing unequal-pitch common reference. No production design.
+- Attic: room-clearance schematic; the open room bay is not qualified for a pin-jointed solve. Floor loading, stability and connections are unverified.
+- Mono: a narrow four-panel preliminary model with authored point loads and level end supports. No raised heel or cantilever analysis.
+- Agricultural: a narrow level-bearing tied-gable preliminary model. Purlin loading, site wind/snow, bearings, connections and bracing remain open.
+- Hip: bounded rectangular roof envelope and transverse section references only. A reviewed source-patch ledger models explicit load ownership separately. Neither is hip-truss topology, load-path validation or shop geometry.
 
 ## 4. Automatic member optimization
-- Current: deterministic candidate ranking by material area with axial demand stresses, always unapproved.
+- Current: deterministic schematic stock trade-offs with explicitly matched case and catalog evidence. Area and waste are comparison quantities, not a structural optimization result.
 - Future: only select members after all applicable strength, buckling, interaction, serviceability, and plate constraints pass; account for stock lengths, waste, and manufacturing constraints.
 - No optimization result may set fabricationAuthorized=true without trusted independent engineering approval.
 
 ## 5. Shop drawings and fabrication
-- Current: watermarked SVG schematic and schematic centerline length reports.
+- Current: standalone common and mono previews, dimensionless watermarked SVG, schematic centerline records and revision-aware external review identity. No manufacturing export or production Panelizer connection.
 - Future: controlled revisioned shop drawings, verified saw cuts and angles, heel/bearing details, plate schedules and orientation, bracing notes, traceability, QA checks, and machine-safe exports.
 - Existing C-press capacity and connector plate approval must be verified before any manufacturing workflow.
 - Fabrication release remains fail-closed pending trusted signed engineering approval.
+
+See [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md) for the exact verified implementation and next batch.
 
 ## Verification protocol
 1. Run `npm run check` on each batch and record exact passing/failing counts in `TEST_STATUS.md`.
