@@ -33,7 +33,7 @@ export function evaluateFabricationRelease(request:DesignReleaseRequest):DesignR
     if(!e.manufacturingChecksPassed) reasons.push("Manufacturing checks incomplete");
     if(!e.approvedRevisionId || e.approvedRevisionId!==request.revisionId) reasons.push("Approval revision mismatch");
   }
-  return {allowed:reasons.length===0,reasons};
+  // A caller-provided boolean is not an authenticated engineering approval.\n  // Until signed, independently validated approval records are supported, fail closed.\n  reasons.push("No trusted engineering approval issuer is configured");\n  return {allowed:false,reasons};
 }
 /** Current engine has no verified engineering approval issuer; do not generate
  * ENGINEERING_VERIFIED records from preliminary calculations. */
