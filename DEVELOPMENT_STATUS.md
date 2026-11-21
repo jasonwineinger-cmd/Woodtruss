@@ -1,5 +1,27 @@
 # Woodtruss development status
 
+## Batch 011 — 2026-11-21T23:18:48Z (UTC)
+
+**Reviewed implementation:** [`d500e9502b1de962c7f034c051f930fbc1c371d1`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/d500e9502b1de962c7f034c051f930fbc1c371d1). Baseline `e53ea9a`: 271 passing tests. Integrated `npm run check`: **287 passed, 0 failed, 0 skipped**. Six isolated workers; all outputs remain preliminary.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/receiving-reaction-envelope.ts`: verifies exact independent case coverage and one receiving revision; preserves signed extrema, ties and provenance from replayed separate-model cases. No invented cases, factors, coupled solve or capacity. |
+| 2 Lumber | `packages/lumber/src/{rectangular-longitudinal-strain,index}.ts`: signed longitudinal strains and separate biaxial gradients from an explicitly uniform modulus. Does not set material values, allowable strain or adequacy. |
+| 3 Connector plates | `packages/connections/src/plate-coverage-conflicts.ts`: pairwise overlapping projected member area clipped inside the given plate is held separately from no contact and unresolved input. Never sums pairwise areas or infers usable grip, plate strength or placement. |
+| 4 Geometry | `packages/analysis/src/explicit-family-dispatch.ts`: explicitly dispatches level common, asymmetric common, raised-heel common and level mono point-load studies only. Rejects unknown variants and invalid options rather than falling back. This is not the list of all engine entry points or complete engineering capabilities. |
+| 5 Manufacturing | `packages/fabrication/src/preliminary-review-invalidation.ts`: exactly verified prior receipt and next checklist; all current items need fresh acknowledgment, even when the IDs and normalized drawing match. No sign-off or inherited approval. |
+| 6 Testing | `tests/independent-redundant-axial-restraint-benchmark.test.mjs`: verifies the stiffness-dependent force split and its change when one axial restraint is freed. |
+| Integration | `scripts/preview.mjs`, `README.md`, `tests/cli-smoke.test.mjs`: `--capabilities` lists the exact CLI demo options separately from library-only point-load variants, and repeats the release hold. |
+
+**Other changed tests:** `tests/{explicit-family-dispatch,lumber-rectangular-longitudinal-strain,plate-coverage-conflicts,preliminary-review-invalidation,receiving-reaction-envelope}.test.mjs`.
+
+**Independent checks:** signed bearing extrema and tie attribution, hand-derived strain-field resultants and restraint-dependent load sharing, exact projected overlap conflicts, hand-equilibrium reactions and 50 ft boundary for each route. These are synthetic numerical/software checks, not structural approval.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Licensed inputs, reviewed site load cases and verified capacity/production workflows are still missing.
+
+**Next batch:** build useful explicit scoped dispatch and bench cases, bind review-only serviceability and revision records where needed, and continue verified inputs without guessing material or plate capacities. Keep the 50-foot maximum and fail-closed release.
+
 ## Batch 010 — 2026-11-21T23:03:09Z (UTC)
 
 **Reviewed implementation:** [`a800268be82af1c7aa81684eaa356097b4008d11`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/a800268be82af1c7aa81684eaa356097b4008d11). Baseline `8622670`: 257 passing tests. Integrated `npm run check`: **271 passed, 0 failed, 0 skipped**. Six isolated workers; all outputs remain preliminary.
