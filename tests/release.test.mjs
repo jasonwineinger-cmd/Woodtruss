@@ -14,6 +14,6 @@ test('missing or stale approval is blocked',()=>{
 });
 test('verified status requires every independent evidence field',()=>{
  const evidence={independentReviewApproved:true,structuralChecksPassed:true,lumberChecksPassed:true,connectorChecksPassed:true,loadCombinationsPassed:true,manufacturingChecksPassed:true,approvedRevisionId:'rev1'};
- assert.equal(evaluateFabricationRelease({designId:'T1',revisionId:'rev1',status:'ENGINEERING_VERIFIED',evidence}).allowed,true);
+ assert.equal(evaluateFabricationRelease({designId:'T1',revisionId:'rev1',status:'ENGINEERING_VERIFIED',evidence}).allowed,false);
  assert.equal(evaluateFabricationRelease({designId:'T1',revisionId:'rev1',status:'ENGINEERING_VERIFIED',evidence:{...evidence,connectorChecksPassed:false}}).allowed,false);
 });
