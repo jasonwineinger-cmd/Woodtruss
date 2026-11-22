@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 045 — 2026-11-22T07:48:26Z (UTC)
+
+**Reviewed implementation:** [`cf8f5c86ef8bb842274de05a8d46ff3a8af38118`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/cf8f5c86ef8bb842274de05a8d46ff3a8af38118). Baseline `1ce108d`: 658 passing. Full `npm run check`: **663 passed, 0 failed, 0 skipped**. Six parallel audit, implementation, source and test lanes, plus root integration.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Source role audit | Identified the gap between matching a publication inventory and specifying its exact source artifact per quantity. |
+| 2 Interface and safety audit | Confirmed library-only, no production consumer; only existing six quantities are checked, no perpendicular compression or member-fit inference. |
+| 3 Private artifact bytes | `edition-private-artifact-bytes.ts`: bound complete distinct inventory, copy exact nonshared byte views before any digest, hold any artifact mismatch without disclosure. |
+| 4 Tests | `lumber-edition-bound-intake.test.mjs`: six complete synthetic receipts by source role; missing/corrupt base and update files and wrong-role quantity/digest hold as a whole. |
+| 5 Evidence docs | `awc-2024-lumber-publication-boundary.md`: distinguish March Hem-Fir (North) and February Red Alder corrections and avoid applying the same addition twice. |
+| 6 Byte race audit and root | `edition-bound-intake.ts`, index, README and `lumber-edition-private-artifact-bytes.test.mjs`: independently declared artifact IDs, no private fields in result, races and malformed buffers held. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. No licensed material data was enrolled, no factors were authored, and release remains locked.
+
+**Next:** Advance an independent connector-plate source/evidence lane. Identify exact primary TPI scope and manufacturer-specific source limitations; prefer test/citation provenance boundaries rather than unverified capacities. For lumber, eventual per-factor source evidence and edition/applicability checks require independent authorization and shop/project facts; byte equality cannot substitute.
+
 ## Batch 044 — 2026-11-22T07:33:43Z (UTC)
 
 **Reviewed implementation:** [`ea75b87c90760093e181f0db40121b4174b3da36`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/ea75b87c90760093e181f0db40121b4174b3da36). Baseline `08a6454`: 651 passing. Full `npm run check`: **658 passed, 0 failed, 0 skipped**. Six parallel source, implementation and verification lanes, plus root integration.
