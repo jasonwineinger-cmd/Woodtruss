@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 039 — 2026-11-22T06:18:01Z (UTC)
+
+**Reviewed implementation:** [`f3e4729f0a1c13ea6623f9ac91a52bbea32180b4`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/f3e4729f0a1c13ea6623f9ac91a52bbea32180b4). Baseline `1c20005`: 610 passing. Full `npm run check`: **619 passed, 0 failed, 0 skipped**. Six isolated lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `scissor-authored-release-comparison.ts` solves the same bounded weighted cases once per explicitly authored variant, returning selected member end actions, both local deflection references and a physical resultant. |
+| 2 Geometry and connection inputs | `scissor-authored-release-variants.ts` and direct tests only change the two explicit end flags on the exact directed member. Geometry, supports, shear and section data remain detached and unchanged. |
+| 3 Engineering evidence | Scope note explains why a determinate reaction balance cannot establish joint release, actual semi-rigid behavior, applicable limits or fabrication. |
+| 4 Numerical verification | `scissor-authored-release-comparison-benchmark.test.mjs` keeps the same hand support reactions while an explicitly released top-panel end loses moment and its motion changes. |
+| 5 QA | `scissor-authored-release-comparison-boundaries.test.mjs` holds all results for a late incompatible ridge couple and rejects changed identity, forged properties, repeated variants and invalid requests. |
+| 6 and root verification | Direction/ordering and detached variant boundary checks, independent chord-relative simple-span UDL bending test on a scissor member released at both ends, and README. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Synthetic benchmarks test model behavior, not the stiffness of a real plate joint or a physical truss.
+
+**Next:** Pin the geometry, support and loading scope of the published USDA FPL-RP-499 physical scissor specimens and its measured three-point stiffness observable. Reproduction remains held until the actual topology, boundary conditions, member properties and applied forces are accounted for without tuning to the observed result.
+
 ## Batch 038 — 2026-11-22T06:04:41Z (UTC)
 
 **Reviewed implementation:** [`883aadeeb3382c6afd819f24fb4138713da66d53`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/883aadeeb3382c6afd819f24fb4138713da66d53). Baseline `21cb5d1`: 601 passing. Full `npm run check`: **610 passed, 0 failed, 0 skipped**. Six independently scoped lanes.
