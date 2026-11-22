@@ -179,7 +179,20 @@ test('USDA sampled comparison does not bound the exact moment at the applied poi
   // The historical reconstruction represented the physical point as supplied
   // nodal equivalents in solve; give section recovery the actual interior force.
   const demand=recoverElasticFrameSectionDemand({lengthIn,localEndActions:action,
-    uniform:null,point:{stationIn,fxLb:0,fyLb:-550}});
+    uniform:null,point:{stationIn,fxLb:0,fyLb:-550}},[
+    {stationIn:44.96,side:'continuous'},
+    {stationIn,side:'left'},
+    {stationIn,side:'right'},
+  ]);
+  const [atSample,left,right]=demand.requestedCuts;
+  // Same section and side: left-piece cut V=-dM/dx, the negative
+  // of the derivative of the printed-moment arithmetic below.
+  near(atSample.axialLb,316.166,.0011,'sample co-located axial tension');
+  near(atSample.shearLb,-158.712,.0011,'sample co-located cut shear');
+  near(atSample.momentLbIn,4734.05552,.03,'sample co-located bending');
+  near(left.axialLb,right.axialLb,1e-10,'no axial point component');
+  near(right.shearLb-left.shearLb,550,1e-10,'negative transverse force causes positive cut shear jump');
+  near(left.momentLbIn,right.momentLbIn,1e-10,'no point couple');
   const peak=demand.extrema.momentLbIn.max;
   assert.equal(peak.stationIn,stationIn);
   near(peak.momentLbIn,4938.794,.03,'exact hand moment from Table VIII at load');

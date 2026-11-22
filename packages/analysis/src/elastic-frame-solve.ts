@@ -10,7 +10,7 @@ import { recoverElasticFrameShearEndActions } from "./elastic-frame-shear-end-ac
 import { localizeElasticFrameSectionForce } from "./elastic-frame-section-load-basis.js";
 import { recoverElasticFrameDeflectionExtrema } from "./elastic-frame-deflection-extrema.js";
 import { recoverElasticFrameSectionDisplacement } from "./elastic-frame-section-displacement.js";
-import { recoverElasticFrameSectionDemand } from "./elastic-frame-section-demand.js";
+import { recoverElasticFrameSectionDemand, type ElasticFrameSectionDemandCut } from "./elastic-frame-section-demand.js";
 import { recoverElasticFrameLocalEndActions } from "./elastic-frame-local-end-actions.js";
 import type {ElasticFrameElementProperties} from "./elastic-frame-element.js";
 
@@ -40,6 +40,8 @@ export interface ElasticFrameInput {
   loads:readonly {nodeId:string;fxLb:number;fyLb:number;momentLbIn:number}[];
   memberLoads?:readonly ElasticFrameUniformAction[];
   memberPointLoads?:readonly ElasticFramePointAction[];
+  /** Signed, co-located cuts in an exact ordered member, not design demands. */
+  memberSectionCuts?:readonly {memberId:string;cuts:readonly ElasticFrameSectionDemandCut[]}[];
   /** Requested points in each member's ordered local axis, not a deflection envelope. */
   memberDisplacementStations?:readonly {memberId:string;stationsIn:readonly number[]}[];
   /** Opt into numerical transverse extrema for exact members, without a design limit. */
@@ -59,6 +61,8 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   const hasPointLoads=!!input&&Object.hasOwn(input,"memberPointLoads");
   const hasStations=!!input&&Object.hasOwn(input,"memberDisplacementStations");
   const hasExtrema=!!input&&Object.hasOwn(input,"memberDeflectionExtrema");
+  const hasCuts=!!input&&Object.hasOwn(input,"memberSectionCuts");
+  if(hasCuts) fields.push("memberSectionCuts");
   if(hasExtrema) fields.push("memberDeflectionExtrema");
   if(hasMemberLoads) fields.push("memberLoads");
   if(hasPointLoads) fields.push("memberPointLoads");
@@ -71,6 +75,10 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   const pointLoads=hasPointLoads?input.memberPointLoads!:[];
   const stationRequests=hasStations?input.memberDisplacementStations:undefined;
   const extremaRequests=hasExtrema?input.memberDeflectionExtrema:undefined;
+  const cutRequests=hasCuts?input.memberSectionCuts:undefined;
+  if(hasCuts&&(!Array.isArray(cutRequests)||!cutRequests.length||cutRequests.length>100||
+    Reflect.ownKeys(cutRequests).length!==cutRequests.length+1))
+    throw new Error("Invalid frame member section cut requests");
   if(hasExtrema&&(!Array.isArray(extremaRequests)||!extremaRequests.length||extremaRequests.length>100))
     throw new Error("Invalid frame member deflection extrema requests");
   if(hasStations&&(!Array.isArray(stationRequests)||!stationRequests.length||stationRequests.length>100))
@@ -153,6 +161,15 @@ export function solveElasticFrame(input:ElasticFrameInput) {
       extremaMembers.has(request.memberId)||!memberEnds.has(request.memberId))
       throw new Error("Invalid, unknown or repeated frame member deflection extrema request");
     extremaMembers.add(request.memberId);
+  }
+  const sectionCutsByMember=new Map<string,readonly ElasticFrameSectionDemandCut[]>();
+  for(const request of Array.from(cutRequests??[])) {
+    if(!exact(request,["memberId","cuts"])||!validId(request.memberId)||
+       sectionCutsByMember.has(request.memberId)||!memberEnds.has(request.memberId))
+      throw new Error("Invalid, unknown or repeated frame member section cut request");
+    if(!Array.isArray(request.cuts)||!request.cuts.length||request.cuts.length>64)
+      throw new Error("Invalid frame member section cut count");
+    sectionCutsByMember.set(request.memberId,request.cuts);
   }
   if(!K.every(finite)) throw new Error("Nonfinite assembled frame stiffness");
   const visited=new Set<number>([0]),frontier=[0];
@@ -380,7 +397,8 @@ export function solveElasticFrame(input:ElasticFrameInput) {
       endActionScales[dof]+=Math.abs(end[j]);
     });
     const section=recoverElasticFrameSectionDemand({lengthIn:properties.lengthIn,
-      localEndActions:recovered.localEndActions,uniform:record.sectionUniform,point:record.sectionPoint});
+      localEndActions:recovered.localEndActions,uniform:record.sectionUniform,point:record.sectionPoint},
+      sectionCutsByMember.get(memberId));
     sectionEntries.push([memberId,section]);
     const stationsIn=displacementStationsByMember.get(memberId);
     const wantsExtrema=extremaMembers.has(memberId);
@@ -423,5 +441,5 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   return {displacements,reactions,memberEndActions,memberSectionDemand,memberSectionDisplacements,memberDeflectionExtrema,equilibrium:{passes:true as const,
     forceXLb:errs[0],forceYLb:errs[1],momentLbIn:errs[2],originNodeId:nodes[0].id},
     status:"PRELIMINARY_NOT_ENGINEERED" as const,fabricationAuthorized:false as const,
-    scope:"Linear axial/bending frame with rigid or explicitly released member ends, ideal global or inclined restraints, nodal actions and bounded full uniform or concentric interior point forces. Explicit shear-flexible members use dedicated consistent actions and ideal release condensation/recovery. Section force extrema cover only the bounded action shapes; Local section samples and optional local transverse extrema concern only the modeled member and action state, not a governing case envelope or serviceability approval. No design or capacity approval."};
+    scope:"Linear axial/bending frame with rigid or explicitly released member ends, ideal global or inclined restraints, nodal actions and bounded full uniform or concentric interior point forces. Explicit shear-flexible members use dedicated consistent actions and ideal release condensation/recovery. Section force extrema and requested co-located cuts cover only the bounded action shapes for this solved state; Local section samples and optional local transverse extrema concern only the modeled member and action state, not a governing case envelope or serviceability approval. No design or capacity approval."};
 }

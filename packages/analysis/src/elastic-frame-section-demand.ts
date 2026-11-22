@@ -8,9 +8,8 @@ export interface ElasticFrameSectionDemandInput {
   point: { stationIn: number; fxLb: number; fyLb: number } | null;
 }
 type SectionLimit = "left" | "right" | "continuous";
-export type ElasticFrameSectionDemand = {
-  stationIn: number;
-  side: SectionLimit;
+export type ElasticFrameSectionDemandCut = { stationIn: number; side: SectionLimit };
+export type ElasticFrameSectionDemand = ElasticFrameSectionDemandCut & {
   axialLb: number;
   shearLb: number;
   momentLbIn: number;
@@ -44,8 +43,13 @@ function matchesRight(value: number, expected: number, terms: readonly number[])
 /** Local actions on the left segment's right cut, excluding any out-of-plane
  * behavior. End sections are limits from inside the member; both limits of an
  * interior point force are kept. Positive bending follows the stated equation,
- * dM/dx = -V between point forces. No capacity or design approval is assessed. */
-export function recoverElasticFrameSectionDemand(input: ElasticFrameSectionDemandInput) {
+ * dM/dx = -V between point forces. Optional caller-authored cuts are reported
+ * separately from the physical extrema; they do not alter the extrema search.
+ * No capacity or design approval is assessed. */
+export function recoverElasticFrameSectionDemand(
+  input: ElasticFrameSectionDemandInput,
+  cuts: readonly ElasticFrameSectionDemandCut[] = [],
+) {
   if (!exactFields(input, ["lengthIn", "localEndActions", "uniform", "point"])) {
     throw new Error("Unknown or missing frame section-demand field");
   }
@@ -86,6 +90,30 @@ export function recoverElasticFrameSectionDemand(input: ElasticFrameSectionDeman
     throw new Error("Recovered section demand does not close against the local right end actions");
   }
 
+  if (!Array.isArray(cuts) || cuts.length > 64 ||
+      Reflect.ownKeys(cuts).length !== cuts.length + 1 ||
+      Array.from(cuts).some((_, i) => !Object.hasOwn(cuts, i))) {
+    throw new Error("At most 64 explicit dense section-demand cuts are permitted");
+  }
+  const seenCuts = new Map<number, Set<SectionLimit>>();
+  const requestedCuts = Array.from(cuts, cut => {
+    if (!exactFields(cut, ["stationIn", "side"]) || !Number.isFinite(cut.stationIn) ||
+        cut.stationIn < 0 || cut.stationIn > L ||
+        (cut.side !== "left" && cut.side !== "right" && cut.side !== "continuous")) {
+      throw new Error("Each requested cut requires an exact station within the member and side");
+    }
+    const stationIn = clean(cut.stationIn);
+    const atPoint = point !== null && stationIn === point.stationIn;
+    if (atPoint ? cut.side === "continuous" : cut.side !== "continuous") {
+      throw new Error("A cut at the exact point-load station requires left or right; all other cuts require continuous");
+    }
+    const sides = seenCuts.get(stationIn) ?? new Set<SectionLimit>();
+    if (sides.has(cut.side)) throw new Error("Duplicate requested section cut station and side");
+    sides.add(cut.side);
+    seenCuts.set(stationIn, sides);
+    return at(stationIn, cut.side);
+  });
+
   const sections = [at(0)];
   function addInteriorRoot(from: number, to: number, afterPoint: boolean) {
     if (qy === 0) return;
@@ -111,7 +139,7 @@ export function recoverElasticFrameSectionDemand(input: ElasticFrameSectionDeman
     }
     return { min, max };
   };
-  return { sections, extrema: { axialLb: extremaFor("axialLb"), shearLb: extremaFor("shearLb"),
+  return { sections, requestedCuts, extrema: { axialLb: extremaFor("axialLb"), shearLb: extremaFor("shearLb"),
       momentLbIn: extremaFor("momentLbIn") },
     signConvention: "Local actions on the left segment’s right cut. N and V negate the net left-segment forces; M = -ML + x VL plus transverse load moments." as const,
     status: "PRELIMINARY_NOT_ENGINEERED" as const, manufacturingApproved: false as const };
