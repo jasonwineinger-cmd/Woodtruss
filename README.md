@@ -183,6 +183,8 @@ The companion async `reviewJobTrussInspectionRecordBytes` checks one bounded loc
 
 The [TPSX design-to-QC link boundary](docs/tpsx-design-qc-link-boundary.md) describes a library-only identity check for a locally extracted v0.9.4 projection. It does not read archives, validate the full schema, verify inspections or capacities, certify vendor compatibility, or authorize release.
 
+The separate `reviewTpsxDesignQcRequirements` checks explicit area method, area, and tooth-count declarations against the same exact selected component, joint, and member identities. See the [TPSX requirements boundary](docs/tpsx-design-qc-requirements-boundary.md). It documents declarations, not inspections, capacities, or release.
+
 The library-only `studyAuthoredMonoElasticFrameReactions` replays signed combinations on the exact four-bay mono centerline graph with explicit member stiffness, end releases and ideal bearings. See the [mono study scope](docs/references/mono-authored-elastic-frame-scope.md). Horizontal-projected and actual-member intensity are independent measures; there is no site loading, design selection or fabrication approval.
 
 The library-only `studyAuthoredMonoElasticFrameDisplacements` takes named joints and ordered member stations from the same authored mono model. Fresh signed weighted solves keep global joint motion separate from private local section rotation and translation. See the [displacement scope](docs/references/mono-authored-displacement-scope.md). Selected samples are not a fit to measurements, a design envelope, or fabrication evidence.
