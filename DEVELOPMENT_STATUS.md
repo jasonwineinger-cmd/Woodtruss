@@ -1,5 +1,27 @@
 # Woodtruss development status
 
+## Batch 016 — 2026-11-22T00:35:01Z (UTC)
+
+**Reviewed implementation:** [`4dbadf810505e58bfc4112ee8f7a615cd52c58e9`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/4dbadf810505e58bfc4112ee8f7a615cd52c58e9). Baseline `2dc41ef`: 348 passing tests. Integrated `npm run check`: **366 passed, 0 failed, 0 skipped**. Six isolated workers. All examples are synthetic and review-only.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/authored-case-benchmark.ts`: exact model/case/receipt replay before comparing independently supplied signed numerical targets and tolerances. Missing or unsupported quantities remain held rather than treated as comparisons. |
+| 2 Lumber | `packages/lumber/src/{axial-observation-reconciliation,index}.ts`: signed axial displacement comparison against a separately stated length, area and modulus; exact datum, no fitting or material qualification. |
+| 3 Connector plates | `packages/connections/src/plate-schedule-evidence.ts`: reconciles exact source revision, drawing callout, part designation, face and observed dimensions; refuses unsupported capacity fields or missing rows. |
+| 4 Geometry | `packages/geometry/src/double-fink-topology.ts`: independent symmetric eight-panel double-Fink-style centerline reference; planar check, explicit supported geometry and 50-ft limit, no manufacturer layout or analysis. |
+| 5 Manufacturing | `packages/fabrication/src/preliminary-review-artifact.ts`: detached versioned byte-length/SHA manifest for the existing review-only handoff. Byte integrity does not substitute for source/case/scope checks or release. |
+| 6 Testing | `tests/independent-mixed-chord-line-load-benchmark.test.mjs`: independent translated mixed roof/bottom load moments and bearing reactions, and rejects a station beyond the shorter projected path. |
+| Integration | `packages/analysis/src/projected-bearing-statics.ts`: direct two-bearing equilibrium for explicitly signed projected pressure strips, independent of stiffness; `scripts/preview.mjs` and `README.md` expose geometry-only `--double-fink-reference`. |
+
+**Other changed tests:** `tests/{authored-case-benchmark,cli-smoke,double-fink-topology,lumber-axial-observation-reconciliation,plate-schedule-evidence,preliminary-review-artifact,projected-bearing-statics}.test.mjs`.
+
+**Independent checks:** signed projected-strip force and moment, exact 50-ft cap, explicitly modeled axial witness, planar graph triangulation and no crossings, mixed load path station limits, and a matching checksum that still cannot legitimize an unacceptable handoff. These are engineering software checks, not independently approved structural designs.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. No site-specific verification, licensed sizing inputs, qualified design approval, or production integration.
+
+**Next batch:** advance explicit model and exact benchmark inputs separately from generic sketches. More detailed comparison requires the actual graph, load cases and assumptions, not merely matching overall statics or a family name. Do not infer missing licensed values or approval.
+
 ## Batch 015 — 2026-11-22T00:19:03Z (UTC)
 
 **Reviewed implementation:** [`a31d9814d3311b6e414bdd683e46207487cce5a5`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/a31d9814d3311b6e414bdd683e46207487cce5a5). Baseline `92f3b55`: 331 passing tests. Integrated `npm run check`: **348 passed, 0 failed, 0 skipped**. Six isolated workers; no release changes.
