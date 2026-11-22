@@ -187,4 +187,6 @@ The library-only `studyAuthoredMonoElasticFrameSectionCuts` reports the signed a
 
 The library-only `studyAuthoredRaisedHeelCommonElasticFrameReactions` studies explicitly weighted actions on the level-bearing, flat-bottom common centerline family with a 1–48 in raised heel and no overhang. See the [raised-heel common study scope](docs/raised-heel-common-authored-elastic-frame-scope.md) for exact directed member inputs and the distinction between `L`/`E` bearings and `HL`/`HE` upper heel nodes. It is separate from the uniform pin-joint study and does not authorize fabrication.
 
+The library-only `studyAuthoredDoubleFinkElasticFrameReactions` uses exact directed inputs and fresh signed load combinations on the generic flat-bottom Double Fink centerline graph. See the [Double Fink study scope](docs/double-fink-authored-elastic-frame-scope.md). The geometry-only CLI reference is unchanged; neither path represents a supplier drawing or authorizes fabrication.
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
