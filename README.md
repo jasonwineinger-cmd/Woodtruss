@@ -189,6 +189,8 @@ The library-only `auditCatalogElasticMemberStiffness` checks exact model and rev
 
 The [catalog elastic modulus provenance boundary](docs/catalog-elastic-modulus-provenance-boundary.md) adds documentary agreement for each exact assignment’s selected E or Emin field and its NDS Supplement or update receipt. It does not check publication bytes, source applicability, or design approval.
 
+The [preliminary stock Pareto sweep](docs/stock-pareto-sweep-boundary.md) preserves candidate order and ties in the per-member area and unused-length frontier. It runs after applicable eligibility checks and does not select, reserve, or approve stock.
+
 The library-only `studyAuthoredMonoElasticFrameReactions` replays signed combinations on the exact four-bay mono centerline graph with explicit member stiffness, end releases and ideal bearings. See the [mono study scope](docs/references/mono-authored-elastic-frame-scope.md). Horizontal-projected and actual-member intensity are independent measures; there is no site loading, design selection or fabrication approval.
 
 The library-only `studyAuthoredMonoElasticFrameDisplacements` takes named joints and ordered member stations from the same authored mono model. Fresh signed weighted solves keep global joint motion separate from private local section rotation and translation. See the [displacement scope](docs/references/mono-authored-displacement-scope.md). Selected samples are not a fit to measurements, a design envelope, or fabrication evidence.

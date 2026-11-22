@@ -1,3 +1,4 @@
+import { stockParetoFrontierOfferIds } from "./stock-pareto-sweep.js";
 import { validateLumberCatalog, type LumberCatalog } from "./catalog.js";
 
 export interface PreliminaryStockOffer {
@@ -51,14 +52,16 @@ export function reviewPreliminaryStockFrontier(
       throw new Error("Missing or invalid explicit schematic member constraints");
     memberIds.add(need.memberId);
   }
+  const sortedOffers = [...offers].sort((a,b)=>byId(a.offerId,b.offerId));
   const members = [...needs].sort((a,b)=>byId(a.memberId,b.memberId)).map(need => {
     const requestedLengthIn = need.memberLengthIn + need.addedLengthIn;
-    const candidates = [...offers].sort((a,b)=>byId(a.offerId,b.offerId)).map(offer => {
+    const allowed = new Set(need.allowedReferenceValueIds);
+    const candidates = sortedOffers.map(offer => {
       const stock = references.get(offer.referenceValueId)!;
       const areaIn2 = stock.actualWidthIn * stock.actualDepthIn;
       if (!positive(areaIn2)) throw new Error("Invalid actual section area");
       const holds: Hold[] = [];
-      if (!need.allowedReferenceValueIds.includes(offer.referenceValueId)) holds.push("not-in-schematic-allowlist");
+      if (!allowed.has(offer.referenceValueId)) holds.push("not-in-schematic-allowlist");
       if (stock.actualWidthIn > need.maxWidthIn) holds.push("exceeds-schematic-width");
       if (stock.actualDepthIn > need.maxDepthIn) holds.push("exceeds-schematic-depth");
       if (offer.stockLengthIn < requestedLengthIn) holds.push("stock-too-short");
@@ -68,12 +71,8 @@ export function reviewPreliminaryStockFrontier(
         reportedAvailablePieces:offer.availablePieces, areaIn2, holds, eligible:holds.length === 0,
         unusedLengthIn:offer.stockLengthIn >= requestedLengthIn ? offer.stockLengthIn - requestedLengthIn : null };
     });
-    const eligible = candidates.filter(candidate => candidate.eligible);
-    // Equal points stay visible. Dominance requires one strict improvement.
-    const frontierOfferIds = eligible.filter(left => !eligible.some(right =>
-      right.areaIn2 <= left.areaIn2 && right.unusedLengthIn! <= left.unusedLengthIn! &&
-      (right.areaIn2 < left.areaIn2 || right.unusedLengthIn! < left.unusedLengthIn!),
-    )).map(row=>row.offerId);
+    const frontierOfferIds = stockParetoFrontierOfferIds(candidates.flatMap(({eligible,offerId,areaIn2,unusedLengthIn}) =>
+      eligible && unusedLengthIn !== null ? [{offerId,areaIn2,unusedLengthIn}] : []));
     return { memberId:need.memberId, schematicRecordId:need.schematicRecordId, requestedLengthIn,
       schematicConstraints: { memberLengthIn:need.memberLengthIn, addedLengthIn:need.addedLengthIn,
         maxWidthIn:need.maxWidthIn, maxDepthIn:need.maxDepthIn,

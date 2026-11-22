@@ -1,3 +1,4 @@
+import { stockParetoFrontierOfferIds } from "./stock-pareto-sweep.js";
 import type { LumberCatalog, LumberReference } from "./catalog.js";
 import { reviewPreliminaryStockFrontier, type PreliminaryStockOffer, type SchematicMemberStockNeed } from "./stock-frontier.js";
 
@@ -103,10 +104,8 @@ export function reviewPreliminaryStockWithCaseEvidence(
       return { ...candidate, schematicEligible:candidate.eligible,
         eligible:candidate.eligible && !evidenceHolds.length, evidenceHolds:evidenceHolds.sort(idOrder) };
     });
-    const eligible = candidates.filter(candidate => candidate.eligible && candidate.unusedLengthIn !== null);
-    const frontierOfferIds = eligible.filter(left => !eligible.some(right =>
-      right.areaIn2 <= left.areaIn2 && right.unusedLengthIn! <= left.unusedLengthIn! &&
-      (right.areaIn2 < left.areaIn2 || right.unusedLengthIn! < left.unusedLengthIn!))).map(row=>row.offerId);
+    const frontierOfferIds = stockParetoFrontierOfferIds(candidates.flatMap(({eligible,offerId,areaIn2,unusedLengthIn}) =>
+      eligible && unusedLengthIn !== null ? [{offerId,areaIn2,unusedLengthIn}] : []));
     return { ...member, candidates, frontierOfferIds, evidenceStatus:frontierOfferIds.length ?
       "DOCUMENTED_NOT_VERIFIED" as const : "HOLD_NO_EVIDENCE_ELIGIBLE_STOCK" as const,
       requiredCases:[...expected].sort(([a],[b])=>idOrder(a,b)).map(([caseId,basisId])=>({caseId,basisId})) };
