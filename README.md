@@ -191,6 +191,8 @@ The [catalog elastic modulus provenance boundary](docs/catalog-elastic-modulus-p
 
 The [preliminary stock Pareto sweep](docs/stock-pareto-sweep-boundary.md) preserves candidate order and ties in the per-member area and unused-length frontier. It runs after applicable eligibility checks and does not select, reserve, or approve stock.
 
+The [reported stock contention audit](docs/reported-stock-contention-boundary.md) counts how many needs could be covered simultaneously by reported whole stock pieces, using evidence-screened options without counting aliases twice. It does not assign pieces, verify inventory, or approve fabrication.
+
 The library-only `studyAuthoredMonoElasticFrameReactions` replays signed combinations on the exact four-bay mono centerline graph with explicit member stiffness, end releases and ideal bearings. See the [mono study scope](docs/references/mono-authored-elastic-frame-scope.md). Horizontal-projected and actual-member intensity are independent measures; there is no site loading, design selection or fabrication approval.
 
 The library-only `studyAuthoredMonoElasticFrameDisplacements` takes named joints and ordered member stations from the same authored mono model. Fresh signed weighted solves keep global joint motion separate from private local section rotation and translation. See the [displacement scope](docs/references/mono-authored-displacement-scope.md). Selected samples are not a fit to measurements, a design envelope, or fabrication evidence.
