@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 029 — 2026-11-22T03:47:54Z (UTC)
+
+**Reviewed implementation:** [`5657dd031460a5ea212fcd6f9c5c9ac33aa2e20f`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/5657dd031460a5ea212fcd6f9c5c9ac33aa2e20f). Baseline `955df32`: 507 passing. Full `npm run check`: **518 passed, 0 failed, 0 skipped**. Six isolated engineering, evidence and test lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/elastic-frame-section-displacement.ts`, `tests/elastic-frame-section-displacement.test.mjs`: recover local section motion from signed physical cuts, including explicit shear when present. Independent opposite-end closure in all three local DOFs; positive-part point terms preserve continuous motion. |
+| 2 Lumber | Scope audit: authored joint serviceability still uses exact named joints and re-solved receipts, not sampled interior motion. No design value or sizing changed. |
+| 3 Connector plates | Independent shear sign, point jump, continuity and released rotation check. Motion is not plate force, stiffness, capacity or manufacturing evidence. |
+| 4 Geometry | `tests/elastic-frame-displacement-axis.test.mjs`: signed inclined cantilever calculation and reversal of ordered stations/local translations while preserving the physical CCW rotation. |
+| 5 Manufacturing/source | `docs/references/usda-ppsa-frame-output-scope.md`: distinguish legacy joint motion, discrete maximum member deflection and physical between-end displacement. No new manufacturing input or approval. |
+| 6 Testing | `tests/elastic-frame-interior-displacement-benchmark.test.mjs`: independent mixed-action cantilever and loaded doubly released beams with and without shear, plus strict station/identity rejection. |
+| Integration | `packages/analysis/src/elastic-frame-solve.ts`, `README.md`: explicit requests only, at most 64 stations per member. Preserve original action/resultant balance, local axes, and the 50-ft cap. |
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Selected section motions are neither relative-chord limits nor a complete deflection envelope. Licensed plate values and qualified engineering review still gate manufacturing.
+
+**Next:** Benchmark exact transverse deflection extrema and a clearly defined chord-relative reference separately from sampled motion, with independent signed continuous and point-load cases. Continue the separate co-located demand and authored-combination work before design use. No fabrication release.
+
 ## Batch 028 — 2026-11-22T03:35:40Z (UTC)
 
 **Reviewed implementation:** [`ae9f686b99a76aafbb6d54292eb7a708e686166c`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/ae9f686b99a76aafbb6d54292eb7a708e686166c). Baseline `5b8ee8d`: 495 passing. Full `npm run check`: **507 passed, 0 failed, 0 skipped**. Six independent lanes.
