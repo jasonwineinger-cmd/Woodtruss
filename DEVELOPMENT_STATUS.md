@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 038 — 2026-11-22T06:04:41Z (UTC)
+
+**Reviewed implementation:** [`883aadeeb3382c6afd819f24fb4138713da66d53`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/883aadeeb3382c6afd819f24fb4138713da66d53). Baseline `21cb5d1`: 601 passing. Full `npm run check`: **610 passed, 0 failed, 0 skipped**. Six independently scoped lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `scissor-authored-elastic-frame-study.ts`: bind one scissor family geometry to explicitly weighted frame reactions without implicit supports, loads or factors. |
+| 2 Lumber/connection inputs | `scissor-authored-elastic-frame-model.ts`: complete exact per-directed-member A/I/E, both explicit rotations, optional paired shear; exact authored L/E supports; no size or fixity inferred. |
+| 3 Engineering evidence | `scissor-elastic-frame-study-scope.md` and README distinguish axial pin-joint and bending frame assumptions, 50-ft scope, hand checks and remaining barriers. |
+| 4 Geometry verification | `scissor-authored-elastic-frame-topology-boundaries.test.mjs`: eight joints and 13 directed members match the known level topology across both analyses; near-equal represented pitches with coincident members hold. |
+| 5 Analytical verification | `scissor-authored-elastic-frame-study-benchmark.test.mjs`: two independent signed weighted bearing balances with elevated horizontal load, explicit couple and projected uniform top chord action. |
+| 6 QA | `scissor-authored-elastic-frame-study-boundaries.test.mjs`: exact properties, supports, unsupported roof options, implicit or injected outputs and unused source targeting hold. |
+| Root | `scissor-authored-elastic-frame-pin-limit.test.mjs`: at the 50-ft boundary, the explicitly all-released axial limit checks against hand reactions and the existing pin-jointed solver. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Geometry and model reaction agreement cover only the cases tested, not physical bearing, uplift, design or fabrication.
+
+**Next:** Add a scoped, like-for-like scissor frame comparison of explicitly authored rotation assumptions and solved member/deflection diagnostics. Keep matched input identities and exclude implied joint stiffness, generalized project loads, allowable design values or release.
+
 ## Batch 037 — 2026-11-22T05:48:58Z (UTC)
 
 **Reviewed implementation:** [`e225935f614226a16f1e722d42fba43d70ffb932`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/e225935f614226a16f1e722d42fba43d70ffb932). Baseline `f19206e`: 592 passing. Full `npm run check`: **601 passed, 0 failed, 0 skipped**. Six isolated engineering, analysis evidence and test lanes.
