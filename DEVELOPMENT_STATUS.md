@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 023 — 2026-11-22T02:21:06Z (UTC)
+
+**Reviewed implementation:** [`5622cef3dd393289145024c14c5c9bae3560ba25`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/5622cef3dd393289145024c14c5c9bae3560ba25). Baseline `977b09a`: 442 passing. Full `npm run check`: **453 passed, 0 failed, 0 skipped**. Six isolated lanes and an independent numerical diagnostic.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/elastic-frame-release-load.ts`, `tests/elastic-frame-release-load.test.mjs`: Schur-reduced consistent applied RHS for ideal one/both end releases. Verified point and uniform resultants. |
+| 2 Lumber | Method audit separated condensed actions, private member-end rotation, and between-end section demand. No sizing or verified lumber values changed. |
+| 3 Connector/source | Independently transcribed public USDA source geometry, groups, loads, members and pins; `docs/references/usda-ppsa-frame-output-scope.md` documents exactly what's held. No physical plate fixity or capacity inferred. |
+| 4 Geometry | `tests/elastic-frame-release-topology.test.mjs`: shared joint retains connected rotation, unconnected support rotation rejects, and missing real translational restraint remains a mechanism. |
+| 5 Manufacturing | `tests/elastic-frame-ideal-release-capacity-boundary.test.mjs`: modeled releases do not accept inferred plate stiffness/capacity or enter fabrication. |
+| 6 Testing | `tests/elastic-frame-release-benchmark.test.mjs`: analytical loaded fixed/prop and pin-pin cases; `tests/independent-bent-elastic-frame-benchmark.test.mjs` retains strict unsupported-field coverage. |
+| Integration and independent comparison | `packages/analysis/src/elastic-frame-solve.ts`, `README.md`, `tests/usda-ppsa-no-shear-diagnostic.test.mjs`: exact per-member end releases, unconnected global rotations reported null, 50-ft cap, and full USDA example input geometry matches independent no-shear bearing resultants (not the original USDA output). |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Validation covers scoped software cases, not structural adequacy or approval.
+
+**Next:** Recover private member-end rotations and local end actions from unreduced stiffness and applied RHS; verify them independently. Then add a separately benchmarked shear model. The legacy USDA discrepancy and node 2 display convention remain open. Keep fabrication locked.
+
 ## Batch 022 — 2026-11-22T02:05:41Z (UTC)
 
 **Reviewed implementation:** [`d040c5c2191176ca7000f9d96c05bbc5a254f626`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/d040c5c2191176ca7000f9d96c05bbc5a254f626). Baseline `356ff9e`: 431 passing. Full `npm run check`: **442 passed, 0 failed, 0 skipped**. Six independent implementation, evidence and audit lanes.
