@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 050 — 2026-11-22T09:03:53Z (UTC)
+
+**Reviewed implementation:** [`7f50587dabb9600a5b4f3d364378cb8a2cc17584`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/7f50587dabb9600a5b4f3d364378cb8a2cc17584). Baseline `e13c0c3`: 685 passing. Full `npm run check`: **689 passed, 0 failed, 0 skipped**. Six parallel model, review, evidence and validation lanes plus integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Selection | `mono-authored-displacement-selection.ts`: exact ordered node/station requests and directed member identities without extrapolation. |
+| 2 Boundaries | `mono-authored-displacement-boundaries.test.mjs`: 50-ft cap, requested ordering, malformed/out-of-member requests and no injected results. |
+| 3 Independent model benchmark | `mono-authored-displacement-benchmark.test.mjs`: verified global T4 motion and distinct private section rotation in the all-release pin limit with signed load reversal. |
+| 4 Scope | `mono-authored-displacement-scope.md` and README: global vs local movement, authored cases only and no physical measurement. |
+| 5 Solve audit | Require same-frame target checks even on unused sources, fresh per-case results and no partial success. |
+| 6 Independent mechanics and root | `mono-authored-elastic-frame-displacements.ts`: exact fresh solve; checked the continuous member sample and distinct axial shortening either side of the synthetic midpoint action. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. The numerical benchmarks do not verify gauged response, seating, allowable motion, design or release.
+
+**Next:** Add a co-located signed section-demand review or a separate topology scope with an independent mechanics check. Keep model outputs segregated from stock, manufacturing and field evidence.
+
 ## Batch 049 — 2026-11-22T08:48:53Z (UTC)
 
 **Reviewed implementation:** [`a44dcdc14a6215b92980a8dc2cc3b4fd1e05f4f6`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/a44dcdc14a6215b92980a8dc2cc3b4fd1e05f4f6). Baseline `00bd7c8`: 679 passing. Full `npm run check`: **685 passed, 0 failed, 0 skipped**. Six isolated geometry, model, test, documentation and audit lanes plus integration.
