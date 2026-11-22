@@ -44,3 +44,4 @@ export { studyIdealBuiltUpRectangularGeometry, type BuiltUpRectangle } from "./b
 export { studyRectangularNetSection, type RectangularSectionVoid, type RectangularNetSectionInput } from "./rectangular-net-section.js";
 export { comparePreliminaryAxialBarObservations, type AxialBarObservationInput } from "./axial-observation-reconciliation.js";
 export { auditPreliminaryMemberStiffnessAssignments, type MemberCatalogStiffnessAssignment } from "./member-stiffness-assignment-audit.js";
+export { summarizeRepeatedAxialSecants, type AxialSecantReading, type RepeatedAxialSecantInput } from "./repeated-axial-secants.js";

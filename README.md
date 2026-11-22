@@ -146,4 +146,9 @@ npm start --silent -- --authored-model < authored-model.json
 
 The modeled left bearing is a pin and the right bearing a vertical roller at the same elevation, 8–50 ft apart. Joints outside that span and malformed or unstable input are rejected. Each bar keeps its own supplied area and elastic modulus; none is a material recommendation. Results include preliminary displacements, reactions and axial forces and are not a substitute for the independent reference or a design approval. Keep private source drawings and their transcribed inputs out of version control.
 
+### Independent checks
+
+- The numerical suite replays [Jönköping University’s pin-and-roller example](https://mechanics.ju.se/SolidMechanics/TrussAnalysis.html#example-2-a-larger-structure), comparing the published member forces, translations and roller reaction. This checks the idealized static solver, not a built wood truss.
+- The [USDA 6M3 source review](docs/references/usda-fpl492-6m3-evidence.md) identifies a measured 28-ft timber-truss specimen and exactly which published quantities are comparable. No physical-model match is claimed. An isolated beam deflection benchmark is also kept separate from the truss solver; it does not add chord bending or connection slip to truss results.
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
