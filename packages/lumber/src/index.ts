@@ -45,3 +45,4 @@ export { studyRectangularNetSection, type RectangularSectionVoid, type Rectangul
 export { comparePreliminaryAxialBarObservations, type AxialBarObservationInput } from "./axial-observation-reconciliation.js";
 export { auditPreliminaryMemberStiffnessAssignments, type MemberCatalogStiffnessAssignment } from "./member-stiffness-assignment-audit.js";
 export { summarizeRepeatedAxialSecants, type AxialSecantReading, type RepeatedAxialSecantInput } from "./repeated-axial-secants.js";
+export { studyRectangularPlanarElasticProperties, type RectangularPlanarElasticPropertyInput } from "./rectangular-planar-elastic-properties.js";
