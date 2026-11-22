@@ -185,6 +185,8 @@ The [TPSX design-to-QC link boundary](docs/tpsx-design-qc-link-boundary.md) desc
 
 The separate `reviewTpsxDesignQcRequirements` checks explicit area method, area, and tooth-count declarations against the same exact selected component, joint, and member identities. See the [TPSX requirements boundary](docs/tpsx-design-qc-requirements-boundary.md). It documents declarations, not inspections, capacities, or release.
 
+The library-only `auditCatalogElasticMemberStiffness` checks exact model and revision, directed gross member A/I/E, and explicit axis and modulus provenance against assigned catalog records. See the [catalog elastic member stiffness boundary](docs/catalog-elastic-member-stiffness-boundary.md). The existing axial audit is unchanged; neither audit runs a solver or certifies stock, physical fixity, or release.
+
 The library-only `studyAuthoredMonoElasticFrameReactions` replays signed combinations on the exact four-bay mono centerline graph with explicit member stiffness, end releases and ideal bearings. See the [mono study scope](docs/references/mono-authored-elastic-frame-scope.md). Horizontal-projected and actual-member intensity are independent measures; there is no site loading, design selection or fabrication approval.
 
 The library-only `studyAuthoredMonoElasticFrameDisplacements` takes named joints and ordered member stations from the same authored mono model. Fresh signed weighted solves keep global joint motion separate from private local section rotation and translation. See the [displacement scope](docs/references/mono-authored-displacement-scope.md). Selected samples are not a fit to measurements, a design envelope, or fabrication evidence.
