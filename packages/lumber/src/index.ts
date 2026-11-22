@@ -46,3 +46,4 @@ export { comparePreliminaryAxialBarObservations, type AxialBarObservationInput }
 export { auditPreliminaryMemberStiffnessAssignments, type MemberCatalogStiffnessAssignment } from "./member-stiffness-assignment-audit.js";
 export { summarizeRepeatedAxialSecants, type AxialSecantReading, type RepeatedAxialSecantInput } from "./repeated-axial-secants.js";
 export { studyRectangularPlanarElasticProperties, type RectangularPlanarElasticPropertyInput } from "./rectangular-planar-elastic-properties.js";
+export { rotateAuthoredCentroidalInertia, type CentroidalAreaInertia, type CentroidalInertiaRotationInput } from "./centroidal-inertia-rotation.js";
