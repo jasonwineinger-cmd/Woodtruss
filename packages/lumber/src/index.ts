@@ -36,6 +36,8 @@ export { reviewLumberReferenceQuantityIntake, type LumberPublicationIntake, type
   type LumberQuantityReceipt } from "./reference-quantity-intake.js";
 export { reviewLumberIntakeWithPrivatePublicationBytes,
   type PrivateLumberPublicationArtifact } from "./publication-byte-evidence.js";
+export { reviewLumberIntakeWithEditionEvidence, type EditionBoundLumberIntake,
+  type EditionBoundLumberQuantityExpectation, type EditionBoundLumberQuantityReceipt } from "./edition-bound-intake.js";
 export { studyPreliminaryRectangularSection, type RectangularSectionStudyInput } from "./rectangular-section-mechanics.js";
 export { studyPreliminaryRectangularShear, type RectangularShearStudyInput } from "./rectangular-section-shear.js";
 export { studyRectangularLongitudinalStrain, type RectangularLongitudinalStrainInput } from "./rectangular-longitudinal-strain.js";

@@ -171,4 +171,6 @@ The review-only `compareScissorModeledAndObservedResponse` requires explicit ord
 
 The lumber documentation check separates the NDS rules from the matching edition's Supplement and from each publication's own updates. It compares exact caller-supplied identities and holds stock or factor evidence cited from the wrong role, including older single-document submissions. See the [controlled AWC publication scope](docs/references/awc-2024-lumber-publication-boundary.md). A metadata match is not publisher verification, a license check, proof of applicability, or authority to design or fabricate.
 
+The local-only companion `reviewLumberIntakeWithEditionEvidence` checks caller-supplied private bytes for both publications and their declared updates. It also checks the complete six existing reference-quantity receipts against independently declared Supplement artifact IDs for the same stock row. It does not read table contents, verify licenses, add perpendicular-to-grain compression, establish member fit, or authorize structural use.
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
