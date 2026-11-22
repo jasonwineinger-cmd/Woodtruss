@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 048 — 2026-11-22T08:33:10Z (UTC)
+
+**Reviewed implementation:** [`b52d6ccedfcffeee18ef273c4e7685f96cf1651e`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/b52d6ccedfcffeee18ef273c4e7685f96cf1651e). Baseline `35a6069`: 674 passing. Full `npm run check`: **679 passed, 0 failed, 0 skipped**. Six independent documentation, validation, source and test lanes plus integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Paired detail evidence | `paired-face-inspection-evidence.ts`: both separately documented faces, exact independently scoped detailed joints, method-specific tooth declarations, duplicate and hold rules. |
+| 2 Focused tests | `paired-face-inspection-evidence.test.mjs`: order-neutral exact receipt coverage, incompatible method, foreign/missing/duplicate faces and discrepancies. |
+| 3 Job identity | `inspection-job-identity.ts`: exact job, physical truss ID, revision/hash and plant/setup/shift documentary identities. |
+| 4 Reference note | `tpi-in-plant-inspection-evidence-boundary.md`: blank form vs actual records, prelim vs selected critical joints, correction records and separate weekly log. |
+| 5 Approval audit | No authorization or CLI path; no raw evidence or approving record returned. |
+| 6 Independent source and root | `job-truss-inspection-intake.ts`, its tests and README: exact separate record/signature references, holds unresolved or self-reported closure; nothing is authenticated. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. No real shop, signature, plant, load capacity or inspection verification. No shipping or fabrication authority.
+
+**Next:** Rebalance to a bounded geometry and analysis benchmark. Examine authored mono or raised-heel geometry coverage and select an independent equilibrium/deflection comparison that preserves exact member, load and support assumptions and the 50-ft cap. Keep reported plant corrective work closed for software release.
+
 ## Batch 047 — 2026-11-22T08:18:30Z (UTC)
 
 **Reviewed implementation:** [`1a4f6e7ed8549ee7e968a83749a87bca815a3cf2`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/1a4f6e7ed8549ee7e968a83749a87bca815a3cf2). Baseline `fd02b40`: 668 passing. Full `npm run check`: **674 passed, 0 failed, 0 skipped**. Six isolated evidence, analysis, implementation and test lanes plus integration.
