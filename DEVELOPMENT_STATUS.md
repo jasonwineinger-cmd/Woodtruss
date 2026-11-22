@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 022 — 2026-11-22T02:05:41Z (UTC)
+
+**Reviewed implementation:** [`d040c5c2191176ca7000f9d96c05bbc5a254f626`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/d040c5c2191176ca7000f9d96c05bbc5a254f626). Baseline `356ff9e`: 431 passing. Full `npm run check`: **442 passed, 0 failed, 0 skipped**. Six independent implementation, evidence and audit lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/elastic-frame-member-point-load.ts` and `tests/elastic-frame-member-point-load.test.mjs`: one concentric signed point force at a strict interior ordered station, virtual-work and end reversal checks. |
+| 2 Lumber | Audited orthogonal support basis, normalization and numerical mechanism/force checks. No design values, member demands or sizing changed. |
+| 3 Connector plates | `docs/references/usda-ppsa-frame-output-scope.md` and `tests/usda-ppsa-point-axis-witness.test.mjs`: source inputs, independent equilibrium and held legacy outputs only. No local end capacity or stiffness assigned. |
+| 4 Geometry | `tests/elastic-frame-inclined-support-benchmark.test.mjs`: analytical signed reactions, axial/flexural movements, tangent reversal and unstable orientation. Integration adds simultaneous load and malformed input tests. |
+| 5 Manufacturing | `tests/elastic-frame-release-boundary.test.mjs`: solved frame remains outside materials and release paths even under alleged verification and stale approval. No manufacturable output. |
+| 6 Testing | `tests/elastic-frame-member-point-benchmark.test.mjs`: independent inclined cantilever with signed interior force and reversed ordered station; matches translations, rotations and reactions. |
+| Integration | `packages/analysis/src/elastic-frame-solve.ts`, `README.md`: ideal signed support tangent with zero normal motion, local stability and residual checks, recovered global reactions; original physical actions are still balanced independently. Preserved 50-ft cap. |
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. No code compliance, bearing adequacy, structural approval or fabrication inferred from software results.
+
+**Next:** Assemble explicit per-member end releases (not whole-joint hinges) with consistent load condensation and separate tests; then recover member local end/section forces. Shear formulation and full USDA analysis comparison remain held. Keep manufacturing fail-closed.
+
 ## Batch 021 — 2026-11-22T01:47:54Z (UTC)
 
 **Reviewed implementation:** [`6b5c4c554b874dde8aa8ba8c7f52379abec5ed39`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/6b5c4c554b874dde8aa8ba8c7f52379abec5ed39). Baseline `4067f06`: 421 passing. Integrated `npm run check`: **431 passed, 0 failed, 0 skipped**. Six independent implementation, test and audit lanes. No release change.
