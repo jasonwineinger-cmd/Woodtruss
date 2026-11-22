@@ -7,6 +7,8 @@ import { elasticFrameShearMemberUniformLoad } from "./elastic-frame-shear-unifor
 import { condenseElasticFrameMemberLoad } from "./elastic-frame-release-load.js";
 import { condenseElasticFrameShearLoad } from "./elastic-frame-shear-release.js";
 import { recoverElasticFrameShearEndActions } from "./elastic-frame-shear-end-actions.js";
+import { localizeElasticFrameSectionForce } from "./elastic-frame-section-load-basis.js";
+import { recoverElasticFrameSectionDemand } from "./elastic-frame-section-demand.js";
 import { recoverElasticFrameLocalEndActions } from "./elastic-frame-local-end-actions.js";
 import type {ElasticFrameElementProperties} from "./elastic-frame-element.js";
 
@@ -79,6 +81,8 @@ export function solveElasticFrame(input:ElasticFrameInput) {
     a:number;b:number;properties:ElasticFrameElementProperties;globalToLocal:number[][];
     originalLocalLoad:number[];physicalMemberActions:number[][];
     shear?:ElasticFrameShear;
+    sectionUniform:{qxLbPerIn:number;qyLbPerIn:number}|null;
+    sectionPoint:{stationIn:number;fxLb:number;fyLb:number}|null;
   };
   const memberEnds=new Map<string,MemberRecord>();
   const rotationConnected=Array<boolean>(nodes.length).fill(false);
@@ -104,7 +108,7 @@ export function solveElasticFrame(input:ElasticFrameInput) {
       ...(hasShear?{shear:m.shear!}:{}),
     });
     memberEnds.set(m.id,{a,b,properties:{...properties,lengthIn},globalToLocal:globalToLocalTransform,
-      originalLocalLoad:Array<number>(6).fill(0),physicalMemberActions:[],
+      originalLocalLoad:Array<number>(6).fill(0),physicalMemberActions:[],sectionUniform:null,sectionPoint:null,
       ...(hasShear?{shear:m.shear!}:{})});
     adjacency[a].add(b); adjacency[b].add(a);
     if(!releaseLeftRotation)rotationConnected[a]=true;
@@ -209,6 +213,12 @@ export function solveElasticFrame(input:ElasticFrameInput) {
     const {globalEquivalentLoad,localEquivalentLoad,physicalResultant}=ends.shear
       ? elasticFrameShearMemberUniformLoad({...input,areaIn2,secondMomentIn4,elasticModulusPsi,shear:ends.shear})
       : elasticFrameMemberUniformLoad(input);
+    const local=localizeElasticFrameSectionForce({left,right,fxLb:physicalResultant.fxLb,fyLb:physicalResultant.fyLb});
+    if(local.lengthIn!==ends.properties.lengthIn)throw new Error("Member section load length differs from stiffness extent");
+    const qxLbPerIn=local.axialLb/local.lengthIn,qyLbPerIn=local.transverseLb/local.lengthIn;
+    if(!finite([qxLbPerIn,qyLbPerIn])||(local.axialLb!==0&&qxLbPerIn===0)||(local.transverseLb!==0&&qyLbPerIn===0))
+      throw new Error("Member section intensity is outside the usable numerical range");
+    ends.sectionUniform={qxLbPerIn,qyLbPerIn};
     loadedMembers.add(action.memberId);
     assembleMemberAction(ends,globalEquivalentLoad,localEquivalentLoad,physicalResultant);
   }
@@ -226,6 +236,9 @@ export function solveElasticFrame(input:ElasticFrameInput) {
     const {globalEquivalentLoad,localEquivalentLoad,physicalResultant}=ends.shear
       ?elasticFrameShearMemberPointLoad({...input,areaIn2,secondMomentIn4,elasticModulusPsi,shear:ends.shear})
       :elasticFrameMemberPointLoad(input);
+    const local=localizeElasticFrameSectionForce({left,right,fxLb:physicalResultant.fxLb,fyLb:physicalResultant.fyLb});
+    if(local.lengthIn!==ends.properties.lengthIn)throw new Error("Member section point length differs from stiffness extent");
+    ends.sectionPoint={stationIn:action.stationIn,fxLb:local.axialLb,fyLb:local.transverseLb};
     pointedMembers.add(action.memberId);
     assembleMemberAction(ends,globalEquivalentLoad,localEquivalentLoad,physicalResultant);
   }
@@ -302,6 +315,7 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   // Reconstruct each member from its uncondensed applied RHS. Recover its
   // private released rotations instead of transferring a shared joint rotation.
   const summedEndActions=Array<number>(count).fill(0), endActionScales=Array<number>(count).fill(0);
+  const sectionEntries:(readonly [string,ReturnType<typeof recoverElasticFrameSectionDemand>])[]=[];
   const memberEndActions=Object.fromEntries(Array.from(memberEnds,([memberId,record])=>{
     const {a,b,properties,globalToLocal,originalLocalLoad,physicalMemberActions,shear}=record;
     const dofs=memberDofs(a,b);
@@ -325,6 +339,9 @@ export function solveElasticFrame(input:ElasticFrameInput) {
       summedEndActions[dof]+=end[j];
       endActionScales[dof]+=Math.abs(end[j]);
     });
+    const section=recoverElasticFrameSectionDemand({lengthIn:properties.lengthIn,
+      localEndActions:recovered.localEndActions,uniform:record.sectionUniform,point:record.sectionPoint});
+    sectionEntries.push([memberId,section]);
     return [memberId,{startNodeId:nodes[a].id,endNodeId:nodes[b].id,
       ...recovered,shearDeformationModeled:!!shear}] as const;
   }));
@@ -349,8 +366,9 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   const totals=[0,1,2].map(i=>terms.reduce((sum,row)=>sum+Math.abs(row[i]),0));
   if(!finite(errs)||!finite(totals)||errs.some((e,i)=>Math.abs(e)>1e-7*Math.max(1,totals[i])))
     throw new Error("Global frame equilibrium failed");
-  return {displacements,reactions,memberEndActions,equilibrium:{passes:true as const,
+  const memberSectionDemand=Object.fromEntries(sectionEntries);
+  return {displacements,reactions,memberEndActions,memberSectionDemand,equilibrium:{passes:true as const,
     forceXLb:errs[0],forceYLb:errs[1],momentLbIn:errs[2],originNodeId:nodes[0].id},
     status:"PRELIMINARY_NOT_ENGINEERED" as const,fabricationAuthorized:false as const,
-    scope:"Linear axial/bending frame with rigid or explicitly released member ends, ideal global or inclined restraints, nodal actions and bounded full uniform or concentric interior point forces. Explicit shear-flexible members use dedicated consistent actions and ideal release condensation/recovery. No between-end demand envelope or design approval."};
+    scope:"Linear axial/bending frame with rigid or explicitly released member ends, ideal global or inclined restraints, nodal actions and bounded full uniform or concentric interior point forces. Explicit shear-flexible members use dedicated consistent actions and ideal release condensation/recovery. Between-end section extrema cover only the bounded action shapes; no design or capacity approval."};
 }

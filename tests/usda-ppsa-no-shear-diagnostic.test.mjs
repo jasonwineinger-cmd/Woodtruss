@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {solveElasticFrame} from '../dist/analysis/src/elastic-frame-solve.js';
 import {elasticFrameMemberPointLoad} from '../dist/analysis/src/elastic-frame-member-point-load.js';
+import {recoverElasticFrameSectionDemand} from '../dist/analysis/src/elastic-frame-section-demand.js';
 
 // FPL-GTR-40 Figure 5 and Tables I–VI. These independently transcribed public
 // inputs define an Euler–Bernoulli comparison, NOT a replay of legacy shear.
@@ -169,4 +170,21 @@ test('1984 hypothesis reproduces all 48 Table VIII entries within a last printed
   near(-50.01*upper.fxLb+140.5*slope.fyLb,94542.225,1e-7,'physical support moment');
   assert.equal(r.memberEndActions.M7.shearDeformationModeled,true);
   assert.deepEqual(r.memberEndActions.M7.releasedRotationIndices,[2,5]);
+});
+
+test('USDA sampled comparison does not bound the exact moment at the applied point force',()=>{
+  const {correctedActions}=historicalOutputDiagnostic(6/5);
+  const lengthIn=70.25, stationIn=46.25;
+  const action=correctedActions[5];
+  // The historical reconstruction represented the physical point as supplied
+  // nodal equivalents in solve; give section recovery the actual interior force.
+  const demand=recoverElasticFrameSectionDemand({lengthIn,localEndActions:action,
+    uniform:null,point:{stationIn,fxLb:0,fyLb:-550}});
+  const peak=demand.extrema.momentLbIn.max;
+  assert.equal(peak.stationIn,stationIn);
+  near(peak.momentLbIn,4938.794,.03,'exact hand moment from Table VIII at load');
+  // Table IX reports a sampling station, not the location of the actual peak.
+  const reportedSample=(158.712*44.96-2401.636)/(1.5*3.5**2/6);
+  near(reportedSample,1545.81,.01,'reported historical example stress arithmetic only');
+  assert.ok(peak.momentLbIn>1.04*(158.712*44.96-2401.636));
 });
