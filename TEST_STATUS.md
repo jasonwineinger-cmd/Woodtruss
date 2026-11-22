@@ -1,11 +1,11 @@
 # Woodtruss test status
 
-- Batch: 030
-- Integrated verification: 2026-11-22T04:04:06Z (UTC)
+- Batch: 031
+- Integrated verification: 2026-11-22T04:17:48Z (UTC)
 - Command: `npm run check` (TypeScript check, compilation and complete automated suite)
-- Result: **532 passed, 0 failed, 0 skipped**
-- Latest tested implementation: [`9b33d8e73f302c2445af5ad0a7f25e7fa286a6bf`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/9b33d8e73f302c2445af5ad0a7f25e7fa286a6bf)
-- Baseline: `68038e7a6ecba42d8591539595dbc4a883e829ff` (518 passed)
-- Frame: independent checks distinguish absolute local motion from the straight displaced-end chord and check a true cusp extremum at an explicit point load. No governing case envelope, code check or fabrication claim.
+- Result: **539 passed, 0 failed, 0 skipped**
+- Latest tested implementation: [`432b5b36569efdde0a48413097c4ca71db153a23`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/432b5b36569efdde0a48413097c4ca71db153a23)
+- Baseline: `6275c2b854925910ee874920e4f87b3e7a483e81` (532 passed)
+- Frame: selected cuts preserve coincident axial, shear and moment values, separate exact point-force sides, and leave existing extrema unchanged. No capacity, connector transfer or release claim.
 
 This status-only commit records the tested implementation SHA, not its own SHA. The 50-foot maximum and fabrication lock are unchanged. Passing software tests is not structural verification. See [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md) for remaining work.

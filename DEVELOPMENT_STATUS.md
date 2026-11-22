@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 031 — 2026-11-22T04:17:48Z (UTC)
+
+**Reviewed implementation:** [`432b5b36569efdde0a48413097c4ca71db153a23`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/432b5b36569efdde0a48413097c4ca71db153a23). Baseline `6275c2b`: 532 passing. Full `npm run check`: **539 passed, 0 failed, 0 skipped**. Six isolated engineering, evidence and test lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `elastic-frame-section-demand.ts`, `elastic-frame-section-demand-cuts.test.mjs`: selected exact stations and explicit point-load sides, with bounded dense input and no snapping or mixing of component extrema. |
+| 2 Lumber | Independent scope audit separated exact named pin-joint replay from frame cut forces and a possible future co-located rectangular stress study. No sizing, stock or material design values changed. |
+| 3 Connector plates | Independent right-segment equilibrium and cut-face sign audit. A generalized cut or model end action is not physical plate transfer or capacity. |
+| 4 Geometry | `elastic-frame-section-cuts-axis.test.mjs`: independently resolved inclined point/tip action, reversal of ordered station and side, signed moment reversal. |
+| 5 Manufacturing/source | `usda-ppsa-no-shear-diagnostic.test.mjs`, USDA reference note: co-located printed-station diagnostic and point jump are distinct from historical stresses printed at other locations. |
+| 6 Testing | `elastic-frame-section-cuts-benchmark.test.mjs`: independent mixed uniform and point demands, both sides, separate exact members and rejection of malformed station/member requests. |
+| Integration | `elastic-frame-solve.ts`, `README.md`: optional selected cuts stay nested in the same solved member, with no change to strengths, extrema, 50-ft limit, or fabrication locks. |
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. The co-located vector is preliminary and valid only for one modeled member, station side and solved state. It is not approved plate demand or structural adequacy.
+
+**Next:** Independently bind explicit oriented actual rectangular properties to a single authored case and cut before previewing coincident elastic fiber stress. No code allowables, design interaction, member-wide stress maximum, selection or fabrication are implied.
+
 ## Batch 030 — 2026-11-22T04:04:06Z (UTC)
 
 **Reviewed implementation:** [`9b33d8e73f302c2445af5ad0a7f25e7fa286a6bf`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/9b33d8e73f302c2445af5ad0a7f25e7fa286a6bf). Baseline `68038e7`: 518 passing. Full `npm run check`: **532 passed, 0 failed, 0 skipped**. Six isolated engineering, evidence and test lanes.
