@@ -183,6 +183,8 @@ The library-only `reviewJobTrussInspectionIntake` compares one independently spe
 
 The companion async `reviewJobTrussInspectionRecordBytes` checks one bounded local private record against independently expected identity and SHA-256 after documentary intake matches. See the [private inspection record byte boundary](docs/inspection-private-record-byte-boundary.md). Byte agreement is not form interpretation, signature verification, inspection approval or release.
 
+The library-only `reviewJobTrussInspectionPairedArtifactBytes` checks separate design and inspection files together. See the [paired local artifact boundary](docs/job-truss-paired-local-artifact-boundary.md). A match establishes local byte identity only, not signatures, physical inspection or release.
+
 The [TPSX design-to-QC link boundary](docs/tpsx-design-qc-link-boundary.md) describes a library-only identity check for a locally extracted v0.9.4 projection. It does not read archives, validate the full schema, verify inspections or capacities, certify vendor compatibility, or authorize release.
 
 The separate `reviewTpsxDesignQcRequirements` checks explicit area method, area, and tooth-count declarations against the same exact selected component, joint, and member identities. See the [TPSX requirements boundary](docs/tpsx-design-qc-requirements-boundary.md). It documents declarations, not inspections, capacities, or release.

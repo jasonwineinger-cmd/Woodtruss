@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
 import { reviewJobTrussInspectionRecordBytes as review } from '../dist/fabrication/src/job-truss-inspection-intake.js';
+import { reviewJobTrussInspectionPairedArtifactBytes as reviewPair } from '../dist/fabrication/src/job-truss-inspection-paired-artifacts.js';
 
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
 function fixture() {
@@ -79,4 +80,32 @@ test('finishes from the captured request even if the caller changes scope and by
  assert.equal(result.inspectionRecordBytesMatch,true);
  assertPrivateAndNoAuthority(result);
  assert.equal((await review(input)).inspectionRecordBytesMatch,false);
+});
+
+test('a valid inspection byte receipt alone cannot establish the paired design revision',async()=>{
+ const {intake,artifact}=fixture();
+ const designBytes=new TextEncoder().encode('Synthetic design contents specific to R4; not an approval.');
+ intake.expected.identity.designArtifactSha256=digest(designBytes);
+ intake.supplied.identity.designArtifactSha256=digest(designBytes);
+ const designArtifactId='Sentinel private revision-bound design';
+ const designArtifact={designArtifactId,designRevision:'R4',bytes:designBytes};
+ const paired={intake,expectedDesignArtifactId:designArtifactId,designArtifact,inspectionArtifact:artifact};
+ assert.equal((await review({intake,artifact})).inspectionRecordBytesMatch,true);
+ const exact=await reviewPair(paired);
+ assert.equal(exact.status,'JOB_TRUSS_PAIRED_ARTIFACT_BYTES_MATCH_ONLY');
+ assert.equal(exact.designArtifactBytesMatch,true);
+ assert.equal(exact.inspectionRecordBytesMatch,true);
+ for(const changed of [
+  {...designArtifact,designRevision:'R3'},
+  {...designArtifact,bytes:new TextEncoder().encode('Different but same revision declaration.')},
+ ]) {
+  assert.equal((await review({intake,artifact})).inspectionRecordBytesMatch,true);
+  const held=await reviewPair({...paired,designArtifact:changed});
+  assert.equal(held.status,'HOLD_JOB_TRUSS_INSPECTION_INTAKE');
+  assert.equal(held.designArtifactBytesMatch,false);
+  assert.equal(held.inspectionRecordBytesMatch,false);
+  assertPrivateAndNoAuthority(held);
+ }
+ assertPrivateAndNoAuthority(exact);
+ assert.ok(!JSON.stringify(exact).includes(digest(designBytes)));
 });
