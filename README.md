@@ -177,4 +177,6 @@ The library-only `reviewDatedLocalPlateReport` compares an independently expecte
 
 The library-only `reviewScopedPlateReportEvidence` adds separate product-mark and box-reference roles, resistance mechanism, process, section basis, denominator and orientation categories to the dated report check. It does not turn a label index into a product report or a source match into a plate capacity. See the [connector source boundary](docs/references/plate-resistance-mechanism-and-label-boundary.md).
 
+The library-only `reviewJobTrussInspectionIntake` compares one independently specified job, truss and design revision with separate inspection and signature references and the expected joint faces. A reported correction closure is held without independent reinspection. See the [TPI form scope](docs/references/tpi-in-plant-inspection-evidence-boundary.md). This does not validate a signature, confirm an inspection, approve shipment or change the fabrication lock.
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
