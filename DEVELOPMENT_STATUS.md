@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 071 — 2026-11-22T14:32:22Z (UTC)
+
+**Reviewed implementation:** [`1f9d4277da4f699e603a8985d016c557eb46c21d`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/1f9d4277da4f699e603a8985d016c557eb46c21d). Baseline `e1da27c`: 803 passing. Full `npm run check`: **810 passed, 0 failed, 0 skipped**. Six independent implementation, testing, source and documentation lanes, plus root integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Reported length ledger | `preliminary-reported-length-budget.ts`: bounded exact arithmetic in 1/64-in ticks, one caller-reported stock record, piece lengths, explicit separators and separate end offcut/kerf totals. |
+| 2 Numerical verification | Benchmark test: 192 in short by 48 ticks; 192 47/64 in short by one tick; 192 3/4 in exactly balances the example. Unequal authored terms are verified separately. |
+| 3 Rejection tests | Boundaries test: duplicate IDs, invalid integers, missing or extra records, incomplete trims and inaccessible fields hold without echoing amounts. |
+| 4 Independent arithmetic | Checked n−1 separators, explicit end deductions and distinction between zero balance and a one-tick deficit. |
+| 5 Scope documentation | README and `preliminary-reported-length-budget-boundary.md`: only arithmetic, no angle/order, physical availability, optimization or controller authority. |
+| 6 Independent source check | Verified Alpine M1026-R2 §3.3.3 independently as one corroborating example, with no 1/4-in default. |
+| Root | Reviewed source, published exact green changes and added range/one-piece tests for safe integer overflow, one-tick preservation and bounded row counts. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Reporting a nominal balance is not evidence of actual stock, physically usable length, custody or an approved operation.
+
+**Next:** Advance an independent benchmark for a distinct unresolved solver gap, such as author-prescribed partial uniform loads with deliberately modeled section breaks and known exact statics. Keep installation, code-derived load generation and release out of scope unless independently qualified.
+
 ## Batch 070 — 2026-11-22T14:18:24Z (UTC)
 
 **Reviewed implementation:** [`0c5654c3245c0c37e242de1df5e8d184d6c1c09a`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/0c5654c3245c0c37e242de1df5e8d184d6c1c09a). Baseline `1d5c6af`: 797 passing. Full `npm run check`: **803 passed, 0 failed, 0 skipped**. Six independent implementation, testing and review lanes, plus root integration.
