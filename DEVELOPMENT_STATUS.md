@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 062 — 2026-11-22T12:03:45Z (UTC)
+
+**Reviewed implementation:** [`7b273e1d50bec62b8b711b87530d18016b21c9d7`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/7b273e1d50bec62b8b711b87530d18016b21c9d7). Baseline `c161597`: 755 passing. Full `npm run check`: **760 passed, 0 failed, 0 skipped**. Six independent implementation, benchmark, boundary and review lanes, plus root integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Solver integration | Shared `authored-frame-section-cut-selection.ts` and `authored-frame-section-cut-study.ts`; existing Mono adapters preserved; added `double-fink-authored-elastic-frame-section-cuts.ts`. |
+| 2 Independent numerical oracle | `double-fink-authored-section-cut-benchmark.test.mjs`: independent lever-arm and axial compatibility checks at six cuts in a pin-ended bay with mixed point action and sign reversal. |
+| 3 Boundary QA | `double-fink-authored-section-cut-boundaries.test.mjs`: precise case order, ordered endpoints, physical sides, unused invalid targets and explicit 50-ft limits. |
+| 4 Documentation | README and `double-fink-authored-section-cut-boundary.md`, including why an analysis section is not a shop cut or a connector-demand vector. |
+| 5 Independent validation audit | Replayed selection, weighted actions and point cancellation semantics; checked unused source-target validation and unchanged release state. |
+| 6 Plate boundary audit | Separated signed internal section forces from interface forces and verified no path to plate demand or qualification; proposed an off-center vertical web verification. |
+| Root | `double-fink-authored-section-cut-equilibrium.test.mjs`: independent two-member free-body closure under signed apex combinations and full green integration. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. The two synthetic hand checks do not assert supplier geometry, structural adequacy, plate capacity or fabrication authorization.
+
+**Next:** Independently verify a vertical web or exact incident member-end equilibrium (including endpoint signs and releases) without turning either into a connector-capacity or fabrication readout.
+
 ## Batch 061 — 2026-11-22T11:49:16Z (UTC)
 
 **Reviewed implementation:** [`350025a2f93aae25074135ebc7a2da13f2e4d573`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/350025a2f93aae25074135ebc7a2da13f2e4d573). Baseline `61596de`: 747 passing. Full `npm run check`: **755 passed, 0 failed, 0 skipped**. Six independent count, boundary, source, documentation and verification lanes.
