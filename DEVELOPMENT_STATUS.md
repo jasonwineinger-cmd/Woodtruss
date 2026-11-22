@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 047 — 2026-11-22T08:18:30Z (UTC)
+
+**Reviewed implementation:** [`1a4f6e7ed8549ee7e968a83749a87bca815a3cf2`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/1a4f6e7ed8549ee7e968a83749a87bca815a3cf2). Baseline `fd02b40`: 668 passing. Full `npm run check`: **674 passed, 0 failed, 0 skipped**. Six isolated evidence, analysis, implementation and test lanes plus integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Basis | `plate-resistance-basis-evidence.ts`: independent exact metadata for tooth, steel and hinge resistance, separate process evidence, denominator, section and axes; no manufacturer route qualification. |
+| 2 Test lane | `plate-resistance-basis-evidence.test.mjs`: positive synthetic category matches and negative route, section, face, digest and authority assertions. |
+| 3 Source scope | `plate-resistance-mechanism-and-label-boundary.md`: distinct Alpine and MiTek report categories, index vs product report and jurisdictional attachment. No capacity values copied. |
+| 4 Identification | `plate-identification-reference-evidence.ts`: separate embossing, box token/role and exact product-report identity and hash. |
+| 5 Audit | Reviewed existing library-only report checks and remaining field/lot evidence limits; no production consumer or stock validation. |
+| 6 Independent source and root | Crosschecked official installation conflict and treatment distinctions; `plate-scoped-local-evidence.ts`, its tests and README tie exact source locator, family and independently declared scope to dated local report bytes. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. A report reference, process label or blank form does not qualify a product, stock, plant, press, installer or job.
+
+**Next:** Investigate a local review-only inspection evidence contract for a distinct exact job, truss, joint and both independently documented faces. Use official form semantics only; a blank form or listed plant does not certify an actual job. No capacity calculations, manual machine actions or release.
+
 ## Batch 046 — 2026-11-22T08:02:50Z (UTC)
 
 **Reviewed implementation:** [`56abd3319a06b90111862db4a493baf79080a43f`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/56abd3319a06b90111862db4a493baf79080a43f). Baseline `a194c1d`: 663 passing. Full `npm run check`: **668 passed, 0 failed, 0 skipped**. Six parallel review, source, implementation and test lanes plus integration.
