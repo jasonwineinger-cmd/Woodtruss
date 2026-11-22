@@ -1,3 +1,5 @@
+import { snapshotElasticFrameReviewData } from "../../analysis/src/elastic-frame-reviewed-plain-data.js";
+import { inspectionPrivateBytesMatch } from "./inspection-private-byte-digest.js";
 import { compareInspectionJobIdentity, type InspectionJobIdentity } from "./inspection-job-identity.js";
 import { reviewPairedFaceInspectionEvidence, type InspectionDetailedFace, type InspectionJointExpectation,
   type InspectionPreliminaryFace } from "./paired-face-inspection-evidence.js";
@@ -80,5 +82,39 @@ export function reviewJobTrussInspectionIntake(input: JobTrussInspectionIntake) 
     return faces.status === "PAIRED_FACE_DOCUMENTATION_MATCH_ONLY" ? result([]) : result(faces.outstanding);
   } catch {
     return result(["Malformed or uncheckable inspection documentation"]);
+  }
+}
+
+/** Match one local byte view to an independently expected record ID, design
+ * revision and digest after the documentary gate. No record is parsed, fetched
+ * or trusted. Byte agreement is not signature or inspection verification. */
+export async function reviewJobTrussInspectionRecordBytes(input: unknown) {
+  const hold = (outstanding: string[]) => ({ ...result(outstanding), inspectionRecordBytesMatch: false as const });
+  const own = (value: object, key: string) => Object.getOwnPropertyDescriptor(value, key)?.value as unknown;
+  try {
+    if (!exactRecord(input, ["intake", "artifact"])) return hold(["Malformed private inspection byte scope"]);
+    const request = input as object;
+    const rawIntake = own(request, "intake");
+    const artifact = own(request, "artifact");
+    if (!exactRecord(artifact, ["inspectionRecordId", "designRevision", "bytes"]))
+      return hold(["A local inspection byte view and exact declared record and revision are required"]);
+    const supplied = artifact as object;
+    const inspectionRecordId = own(supplied, "inspectionRecordId");
+    const designRevision = own(supplied, "designRevision");
+    const bytes = own(supplied, "bytes");
+    // Use the same bounded, detached plain-data snapshot for documentary
+    // validation and bindings. Raw reflection is not an external trust boundary.
+    const intake = snapshotElasticFrameReviewData(rawIntake) as JobTrussInspectionIntake;
+    const documentary = reviewJobTrussInspectionIntake(intake);
+    if (documentary.status !== "DOCUMENTED_JOB_TRUSS_REVIEW_ONLY") return hold(documentary.outstanding);
+    if (inspectionRecordId !== intake.expected.record.inspectionRecordId ||
+        designRevision !== intake.expected.identity.designRevision)
+      return hold(["Private inspection bytes must identify the exact independently expected record and design revision"]);
+    if (!await inspectionPrivateBytesMatch(intake.expected.record.signedRecordSha256, bytes))
+      return hold(["Private inspection bytes could not be matched to the independently expected local digest"]);
+    return { ...documentary, status: "JOB_TRUSS_INSPECTION_RECORD_BYTES_MATCH_ONLY" as const,
+      inspectionRecordBytesMatch: true as const };
+  } catch {
+    return hold(["Malformed or uncheckable private inspection byte scope"]);
   }
 }
