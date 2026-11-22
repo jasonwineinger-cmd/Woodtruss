@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 027 — 2026-11-22T03:20:35Z (UTC)
+
+**Reviewed implementation:** [`e8cc6b33956d32a03475b1acb4c2b7b1b12a5e9e`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/e8cc6b33956d32a03475b1acb4c2b7b1b12a5e9e). Baseline `0199607`: 482 passing. Full `npm run check`: **495 passed, 0 failed, 0 skipped**. Six independent lanes and a versioned source comparison.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/elastic-frame-shear-release.ts`, `tests/elastic-frame-shear-release.test.mjs`: paired ideal-release stiffness and applied RHS condensation; checked moment redistribution and exact axial-only homogeneous condition. |
+| 2 Lumber | `packages/analysis/src/elastic-frame-shear-end-actions.ts`, `tests/elastic-frame-shear-end-actions.test.mjs`: private released rotation recovery and signed full-stiffness end actions, dimensionless conditioning and residual guards. No design data or capacity. |
+| 3 Connector/source | `docs/references/usda-ppsa-frame-output-scope.md`, `tests/usda-ppsa-no-shear-diagnostic.test.mjs`: independently reproduced 1972 predecessor reactions and, under a stated combined hypothesis, 48 reported 1984 member actions within one last printed unit. Exact 1984 executable and stated-vs-modeled shear remain distinct. No physical connector validation. |
+| 4 Geometry | `packages/analysis/src/elastic-frame-global-element.ts`, `tests/elastic-frame-shear-global-element.test.mjs`: global transform of exact per-end shear release shapes, orientation reversal and axial-only double release. |
+| 5 Manufacturing | `tests/elastic-frame-shear-scope.test.mjs`: bounded loaded releases remain preliminary, reject invalid release fields, capacity and machine claims. |
+| 6 Testing | `tests/elastic-frame-shear-release-benchmark.test.mjs`: independent force-method propped member reactions and released private rotation with shear. |
+| Integration | `packages/analysis/src/elastic-frame-solve.ts`, `README.md`: hold missing joint rotations while recovering element-private rotations and checking member and joint balance. Normal shear-consistent actions are unchanged by the historical diagnostic. |
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. A historical analytical reproduction is not physical truss validation. Engineering approval and fabrication remain held.
+
+**Next:** Add between-end force/moment recovery and independent peak checks for bounded linear load shapes, and keep code/design data, qualified review and real fixture evidence separate. Continue to hold undocumented legacy implementation equivalence and all release. Preserve 50-ft maximum.
+
 ## Batch 026 — 2026-11-22T03:03:56Z (UTC)
 
 **Reviewed implementation:** [`d4776f780134165e1d933f6bc8697e5a0eb4de05`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/d4776f780134165e1d933f6bc8697e5a0eb4de05). Baseline `22d35da`: 472 passing. Full `npm run check`: **482 passed, 0 failed, 0 skipped**. Six independent lanes.
