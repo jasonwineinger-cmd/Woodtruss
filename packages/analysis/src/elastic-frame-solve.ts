@@ -3,6 +3,7 @@ import { elasticFrameMemberPointLoad } from "./elastic-frame-member-point-load.j
 import { createInclinedSupportAxis } from "../../geometry/src/inclined-support-axis.js";
 import { elasticFrameMemberUniformLoad } from "./elastic-frame-member-load.js";
 import { condenseElasticFrameMemberLoad } from "./elastic-frame-release-load.js";
+import { recoverElasticFrameLocalEndActions } from "./elastic-frame-local-end-actions.js";
 import type {ElasticFrameElementProperties} from "./elastic-frame-element.js";
 
 interface ElasticFrameUniformAction {
@@ -69,6 +70,7 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   const adjacency=Array.from({length:nodes.length},()=>new Set<number>());
   type MemberRecord={
     a:number;b:number;properties:ElasticFrameElementProperties;globalToLocal:number[][];
+    originalLocalLoad:number[];physicalMemberActions:number[][];
   };
   const memberEnds=new Map<string,MemberRecord>();
   const rotationConnected=Array<boolean>(nodes.length).fill(false);
@@ -88,7 +90,8 @@ export function solveElasticFrame(input:ElasticFrameInput) {
     const {matrix,globalToLocalTransform,lengthIn}=elasticFrameElementGlobalStiffness({
       left:{xIn:nodes[a].xIn,yIn:nodes[a].yIn},right:{xIn:nodes[b].xIn,yIn:nodes[b].yIn},...properties,
     });
-    memberEnds.set(m.id,{a,b,properties:{...properties,lengthIn},globalToLocal:globalToLocalTransform});
+    memberEnds.set(m.id,{a,b,properties:{...properties,lengthIn},globalToLocal:globalToLocalTransform,
+      originalLocalLoad:Array<number>(6).fill(0),physicalMemberActions:[]});
     adjacency[a].add(b); adjacency[b].add(a);
     if(!releaseLeftRotation)rotationConnected[a]=true;
     if(!releaseRightRotation)rotationConnected[b]=true;
@@ -151,17 +154,27 @@ export function solveElasticFrame(input:ElasticFrameInput) {
       (nodes[i].xIn-nodes[0].xIn)*f.fyLb-(nodes[i].yIn-nodes[0].yIn)*f.fxLb]);
   }
 
+  const directNodalLoad=F.slice();
+  const memberDofs=(a:number,b:number)=>[3*a,3*a+1,3*a+2,3*b,3*b+1,3*b+2];
+  const multiply=(matrix:readonly number[][],vector:readonly number[])=>
+    matrix.map(row=>row.reduce((sum,value,i)=>sum+value*vector[i],0));
+  const transposeMultiply=(matrix:readonly number[][],vector:readonly number[])=>matrix.map((_,j)=>
+    matrix.reduce((sum,row,i)=>sum+row[j]*vector[i],0));
+
   function assembleMemberAction(member:MemberRecord,globalEquivalentLoad:readonly number[],
     localEquivalentLoad:readonly number[],physicalResultant:{fxLb:number;fyLb:number;momentAboutLeftLbIn:number}) {
     const {a,b,properties,globalToLocal}=member;
     let applied=globalEquivalentLoad;
     if(properties.releaseLeftRotation||properties.releaseRightRotation) {
       const condensed=condenseElasticFrameMemberLoad({...properties,localEquivalentLoad});
-      applied=globalToLocal.map((_,j)=>globalToLocal.reduce((sum,row,i)=>sum+row[j]*condensed[i],0));
+      applied=transposeMultiply(globalToLocal,condensed);
     }
-    const dofs=[3*a,3*a+1,3*a+2,3*b,3*b+1,3*b+2];
-    dofs.forEach((dof,j)=>{F[dof]+=applied[j];});
+    memberDofs(a,b).forEach((dof,j)=>{
+      F[dof]+=applied[j];
+      member.originalLocalLoad[j]+=localEquivalentLoad[j];
+    });
     const {fxLb,fyLb,momentAboutLeftLbIn}=physicalResultant;
+    member.physicalMemberActions.push([fxLb,fyLb,momentAboutLeftLbIn]);
     appliedResultants.push([fxLb,fyLb,momentAboutLeftLbIn+
       (nodes[a].xIn-nodes[0].xIn)*fyLb-(nodes[a].yIn-nodes[0].yIn)*fxLb]);
   }
@@ -266,6 +279,42 @@ export function solveElasticFrame(input:ElasticFrameInput) {
     throw new Error("Frame solution exceeds free-DOF residual tolerance");
   const globalReactions=toGlobal(residual.map((r,i)=>fixed.has(i)?r:0));
   if(!finite(globalReactions))throw new Error("Nonfinite oriented frame reactions");
+  // Reconstruct each member from its uncondensed applied RHS. Recover its
+  // private released rotations instead of transferring a shared joint rotation.
+  const summedEndActions=Array<number>(count).fill(0), endActionScales=Array<number>(count).fill(0);
+  const memberEndActions=Object.fromEntries(Array.from(memberEnds,([memberId,record])=>{
+    const {a,b,properties,globalToLocal,originalLocalLoad,physicalMemberActions}=record;
+    const dofs=memberDofs(a,b);
+    const localDisplacements:(number|null)[]=multiply(globalToLocal,dofs.map(i=>globalQ[i]));
+    if(properties.releaseLeftRotation)localDisplacements[2]=null;
+    if(properties.releaseRightRotation)localDisplacements[5]=null;
+    const recovered=recoverElasticFrameLocalEndActions({...properties,localDisplacements,
+      localEquivalentLoad:originalLocalLoad});
+    const end=transposeMultiply(globalToLocal,recovered.localEndActions);
+    const dx=nodes[b].xIn-nodes[a].xIn,dy=nodes[b].yIn-nodes[a].yIn;
+    const memberTerms=[[end[0],end[1],end[2]],[end[3],end[4],end[5]],
+      [0,0,dx*end[4]],[0,0,-dy*end[3]],...physicalMemberActions];
+    for(let j=0;j<3;j++) {
+      const error=memberTerms.reduce((sum,row)=>sum+row[j],0);
+      const scale=memberTerms.reduce((sum,row)=>sum+Math.abs(row[j]),0);
+      if(!finite([error,scale])||Math.abs(error)>1e-7*Math.max(1,scale))
+        throw new Error("Recovered member end actions fail physical force or moment balance");
+    }
+    dofs.forEach((dof,j)=>{
+      summedEndActions[dof]+=end[j];
+      endActionScales[dof]+=Math.abs(end[j]);
+    });
+    return [memberId,{startNodeId:nodes[a].id,endNodeId:nodes[b].id,...recovered}] as const;
+  }));
+  // On a joint, the opposite (member-on-node) actions balance direct
+  // nodal loads and actual supports. Member loads are already in recovery.
+  for(let i=0;i<count;i++) {
+    const difference=summedEndActions[i]-directNodalLoad[i]-globalReactions[i];
+    const scale=Math.max(1,endActionScales[i],Math.abs(directNodalLoad[i]),Math.abs(globalReactions[i]));
+    if(!finite([difference,scale])||Math.abs(difference)>1e-7*scale)
+      throw new Error("Recovered member end actions fail assembled joint balance");
+  }
+
   const displacements=Object.fromEntries(nodes.map((n,i)=>[n.id,{uxIn:globalQ[3*i],uyIn:globalQ[3*i+1],rotationRad:rotationConnected[i]?globalQ[3*i+2]:null}]));
   const reactions=Object.fromEntries(nodes.map((n,i)=>[n.id,{fxLb:globalReactions[3*i],
     fyLb:globalReactions[3*i+1],momentLbIn:globalReactions[3*i+2]}]));
@@ -278,8 +327,8 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   const totals=[0,1,2].map(i=>terms.reduce((sum,row)=>sum+Math.abs(row[i]),0));
   if(!finite(errs)||!finite(totals)||errs.some((e,i)=>Math.abs(e)>1e-7*Math.max(1,totals[i])))
     throw new Error("Global frame equilibrium failed");
-  return {displacements,reactions,equilibrium:{passes:true as const,
+  return {displacements,reactions,memberEndActions,equilibrium:{passes:true as const,
     forceXLb:errs[0],forceYLb:errs[1],momentLbIn:errs[2],originNodeId:nodes[0].id},
     status:"PRELIMINARY_NOT_ENGINEERED" as const,fabricationAuthorized:false as const,
-    scope:"Linear axial/bending frame with rigid or explicitly released member ends, ideal global or inclined restraints, nodal actions and bounded uniform or interior member forces; no shear deformation or section-demand recovery."};
+    scope:"Linear axial/bending frame with rigid or explicitly released member ends, ideal global or inclined restraints, nodal actions and bounded uniform or interior member forces, with recovered node-on-member local end actions; no shear deformation or between-end demand envelope."};
 }

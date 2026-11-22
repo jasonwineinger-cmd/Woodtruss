@@ -47,3 +47,25 @@ test('published USDA input geometry agrees with independent no-shear diagnostic,
   assert.equal(result.equilibrium.passes,true);
   assert.equal(result.fabricationAuthorized,false);
 });
+
+test('USDA no-shear end-action diagnostic uses consistent local signs and physical closure',()=>{
+  const {memberEndActions, displacements}=solveElasticFrame(model);
+  const loaded=memberEndActions.M6;
+  assert.equal(loaded.startNodeId,'N1');
+  assert.equal(loaded.endNodeId,'N6');
+  const [nL,vL,mL,nR,vR,mR]=loaded.localEndActions;
+  near(nL+nR,0,1e-8,'M6 unforced axial balance');
+  near(vL+vR,550,1e-8,'M6 force balance at printed point load');
+  near(mL+mR+70.25*vR,550*46.25,1e-7,'M6 moment about printed start');
+  const released=memberEndActions.M7;
+  assert.deepEqual(released.releasedRotationIndices,[2,5]);
+  const length=Math.hypot(70.25,26.6);
+  const d=released.localDisplacements, a=released.localEndActions;
+  for(const i of [1,2,4,5]) near(a[i],0,1e-8,'unloaded released member has no shear or end moments');
+  near(a[0],-1_600_000*1.5*3.5*(d[3]-d[0])/length,1e-8,'M7 hand axial law');
+  near(a[3],-a[0],1e-8,'M7 opposed end action');
+  near(d[2],(d[4]-d[1])/length,1e-12,'M7 left private rotation');
+  near(d[5],(d[4]-d[1])/length,1e-12,'M7 right private rotation');
+  assert.ok(Math.abs(d[2]-displacements.N1.rotationRad)>1e-4);
+  assert.equal(released.manufacturingApproved,false);
+});
