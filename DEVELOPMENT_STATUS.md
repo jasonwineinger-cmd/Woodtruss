@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 032 — 2026-11-22T04:32:46Z (UTC)
+
+**Reviewed implementation:** [`bca71bb8bcf2840b528ff9ecc6470c7f9709a9fe`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/bca71bb8bcf2840b528ff9ecc6470c7f9709a9fe). Baseline `827236a`: 539 passing. Full `npm run check`: **550 passed, 0 failed, 0 skipped**. Six isolated engineering, evidence and test lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `elastic-frame-rectangular-cut-study.ts`: re-solve one exact frame and selected ordered cut, then pass only coincident axial and bending demand into ideal rectangular normal stress. |
+| 2 Lumber | `elastic-frame-rectangular-cut-evidence-boundary.test.mjs`: reject swapped/different dimensions, raw demand, invalid selection, and extra strength or competing result inputs. No sizing or design properties. |
+| 3 Connector plates | Independently checked physical face signs, axis reversal and distinction between gross-section stress and connector force transfer. No plate check or capacity. |
+| 4 Geometry | `rectangular-frame-section-binding.ts`, corresponding tests: oriented gross rectangle A and directional I must numerically match the modeled section to arithmetic precision, not just the area. |
+| 5 Manufacturing/source | USDA diagnostic and reference note: separate one-member signed free-body/section stress witness using published end actions and transverse force, without claiming the historical specimen or its capacity. |
+| 6 Testing | `elastic-frame-rectangular-cut-study.test.mjs`: independent signed normal stress, point sides, equal-physical-face reversal, and counterexample to combining peaks from different cuts. |
+| Integration | `README.md`: document library-only ideal section diagnostic, distinct from any material, selection, code, procurement or fabrication workflow. |
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. This is one exact-cut stress diagnostic; no member strength or structural verification. The 50-ft limit and fabrication lock remain.
+
+**Next:** Derive and independently check signed gross-section normal-stress extrema for each continuous force branch and each face. Evaluate both explicit sides of a point load. The stress-extreme station can differ from the bending-only peak; do not mix states or add design capacity.
+
 ## Batch 031 — 2026-11-22T04:17:48Z (UTC)
 
 **Reviewed implementation:** [`432b5b36569efdde0a48413097c4ca71db153a23`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/432b5b36569efdde0a48413097c4ca71db153a23). Baseline `6275c2b`: 532 passing. Full `npm run check`: **539 passed, 0 failed, 0 skipped**. Six isolated engineering, evidence and test lanes.
