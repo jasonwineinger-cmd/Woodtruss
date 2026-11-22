@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 066 — 2026-11-22T13:03:38Z (UTC)
+
+**Reviewed implementation:** [`fff6211994686f2a703a493a983f5b2db96ba18a`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/fff6211994686f2a703a493a983f5b2db96ba18a). Baseline `12da5a8`: 776 passing. Full `npm run check`: **781 passed, 0 failed, 0 skipped**. Six independent implementation, testing, documentation and review lanes, plus root integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Shared joint engine | `authored-frame-joint-balance.ts`, ordinary Double Fink adapter and new raised-heel common adapter: exact incident member-end actions and case-by-case joint selection. |
+| 2 Independent signed-couple oracle | `raised-heel-common-authored-joint-balance-benchmark.test.mjs`: one connected top heel end transmits signed applied moment; only lower nodes react. |
+| 3 Boundary QA | `raised-heel-common-authored-joint-balance-boundaries.test.mjs`: exact 50-ft envelope; wrong supports, joint lists, extra claims and invalid unused sources held. |
+| 4 Documentation | README and `raised-heel-common-authored-joint-balance-boundary.md`: `HL`/`HE` are separate ideal top heel joints, not bearing nodes. |
+| 5 Compatibility audit | Ordinary Double Fink schema, ordering, angles, holds and preliminary warnings remain intact. |
+| 6 Independent statics audit | Verified what the top-heel couple and separated bearing reactions prove, with no physical uplift or hardware claim. |
+| Root | `raised-heel-common-authored-joint-balance-supports.test.mjs`: independently calculated lateral lever-arm difference between right top heel `HE` and bearing `E`, confirmed exact reported nodal and support vectors. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Software equilibrium does not verify bearing, real restraint, load applicability, structural adequacy, plate forces or release.
+
+**Next:** Exercise a separately authored inclined-bearing case or another distinct family with independent reactions and joint-end checks; preserve explicit support and no-release boundaries.
+
 ## Batch 065 — 2026-11-22T12:47:13Z (UTC)
 
 **Reviewed implementation:** [`fa5e4074b51e8e829c0cfe9c59c55300899818f7`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/fa5e4074b51e8e829c0cfe9c59c55300899818f7). Baseline `015dc71`: 770 passing. Full `npm run check`: **776 passed, 0 failed, 0 skipped**. Six independent implementation, testing, documentation and review lanes, plus root integration.
