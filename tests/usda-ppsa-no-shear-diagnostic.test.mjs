@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {solveElasticFrame} from '../dist/analysis/src/elastic-frame-solve.js';
+import {studyElasticFrameRectangularCut} from '../dist/analysis/src/elastic-frame-rectangular-cut-study.js';
 import {elasticFrameMemberPointLoad} from '../dist/analysis/src/elastic-frame-member-point-load.js';
 import {recoverElasticFrameSectionDemand} from '../dist/analysis/src/elastic-frame-section-demand.js';
 
@@ -200,4 +201,32 @@ test('USDA sampled comparison does not bound the exact moment at the applied poi
   const reportedSample=(158.712*44.96-2401.636)/(1.5*3.5**2/6);
   near(reportedSample,1545.81,.01,'reported historical example stress arithmetic only');
   assert.ok(peak.momentLbIn>1.04*(158.712*44.96-2401.636));
+});
+
+
+test('USDA printed end-action witness gives co-located local rectangle stress, not a published design result',()=>{
+  const L=70.25, a=46.25, b=1.5, h=3.5;
+  // Isolated physical-load free-body benchmark from the printed Table VIII
+  // far-end row, not a new replay of the whole historical frame or material.
+  const frame={
+    nodes:[{id:'N1',xIn:0,yIn:0},{id:'N6',xIn:L,yIn:0}],
+    members:[{id:'M6',startNodeId:'N1',endNodeId:'N6',areaIn2:b*h,
+      secondMomentIn4:b*h**3/12,elasticModulusPsi:1_800_000}],
+    supports:[{nodeId:'N1',fixX:true,fixY:true,fixRotation:true}],
+    loads:[{nodeId:'N6',fxLb:316.166,fyLb:391.288,momentLbIn:-4452.126}],
+    memberPointLoads:[{memberId:'M6',stationIn:a,fxLb:0,fyLb:-550}],
+  };
+  const make=side=>studyElasticFrameRectangularCut({frame,selection:{memberId:'M6',
+    cut:{stationIn:a,side},rectangle:{actualWidthIn:b,actualDepthIn:h}}});
+  const left=make('left'),right=make('right');
+  const signed=out=>out.normalStress.peakAxialFiberStresses
+    .filter(row=>row.xIn>0).map(row=>row.combinedNormalPsi);
+  const [bottom,top]=signed(left);
+  // Right piece only: at the load the transverse force has zero lever arm.
+  const M=391.288*(L-a)-4452.126;
+  near(bottom,316.166/(b*h)+M/(b*h*h/6),1e-8,'local lower tension');
+  near(top,316.166/(b*h)-M/(b*h*h/6),1e-8,'local upper compression');
+  signed(right).forEach((v,i)=>near(v,[bottom,top][i],1e-10,'stress continuity across pure transverse force'));
+  near(right.cut.shearLb-left.cut.shearLb,550,1e-9,'signed transverse force jump');
+  assert.equal(left.fabricationAuthorized,false);
 });
