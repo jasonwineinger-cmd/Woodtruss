@@ -189,4 +189,6 @@ The library-only `studyAuthoredRaisedHeelCommonElasticFrameReactions` studies ex
 
 The library-only `studyAuthoredDoubleFinkElasticFrameReactions` uses exact directed inputs and fresh signed load combinations on the generic flat-bottom Double Fink centerline graph. See the [Double Fink study scope](docs/double-fink-authored-elastic-frame-scope.md). The geometry-only CLI reference is unchanged; neither path represents a supplier drawing or authorizes fabrication.
 
+The library-only `studyAuthoredRaisedHeelDoubleFinkElasticFrameReactions` keeps the raised upper heel nodes separate from the actual `L`/`E` bearings and uses explicit directed properties, releases, restraints and signed load combinations. See the [raised-heel Double Fink study scope](docs/raised-heel-double-fink-authored-elastic-frame-scope.md). The separate geometry-only CLI is unchanged; no supplier layout or fabrication approval is inferred.
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
