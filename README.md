@@ -181,4 +181,6 @@ The library-only `reviewJobTrussInspectionIntake` compares one independently spe
 
 The library-only `studyAuthoredMonoElasticFrameReactions` replays signed combinations on the exact four-bay mono centerline graph with explicit member stiffness, end releases and ideal bearings. See the [mono study scope](docs/references/mono-authored-elastic-frame-scope.md). Horizontal-projected and actual-member intensity are independent measures; there is no site loading, design selection or fabrication approval.
 
+The library-only `studyAuthoredMonoElasticFrameDisplacements` takes named joints and ordered member stations from the same authored mono model. Fresh signed weighted solves keep global joint motion separate from private local section rotation and translation. See the [displacement scope](docs/references/mono-authored-displacement-scope.md). Selected samples are not a fit to measurements, a design envelope, or fabrication evidence.
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
