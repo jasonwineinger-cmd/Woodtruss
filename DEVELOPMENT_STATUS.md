@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 058 — 2026-11-22T11:02:42Z (UTC)
+
+**Reviewed implementation:** [`460e822d99d770465d1c47fd046fd7c9671b1756`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/460e822d99d770465d1c47fd046fd7c9671b1756). Baseline `e1b52b0`: 727 passing. Full `npm run check`: **734 passed, 0 failed, 0 skipped**. Six independent section, identity, benchmark, documentation and review lanes plus integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Section arithmetic | `catalog-elastic-section-axis-check.ts`: explicit rectangle axis and named mean/minimum modulus field, exact E, no inferred dimensions or axis. |
+| 2 Boundary cases | `catalog-elastic-member-stiffness.test.mjs`: synthetic A/I/E and malformed, duplicate or stale directed assignments held. |
+| 3 Independent mechanics | `catalog-elastic-section-axis-check.test.mjs`: hand A=8 and directional I=32/3 versus 8/3, square section still explicit, representational noise only. |
+| 4 Scope | README and `catalog-elastic-member-stiffness-boundary.md`: no catalog or grade authentication, net section, shear, fixity, acceptance or release. |
+| 5 Audit | Prior axial-only A/E check unchanged; declaration does not validate physical geometry or licensed source. |
+| 6 Boundary oracle and root | `catalog-elastic-member-stiffness-boundary.test.mjs` and `catalog-elastic-member-stiffness.ts`: same model/revision and ordered endpoints, unique member and assignment records, no sensitive numeric payload in outcomes. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Catalog applicability, section orientation in the actual truss, real strength and release are not established.
+
+**Next:** Investigate a bounded evidence match that joins independently reviewed exact catalog provenance to the selected directed frame without converting it into a source of automatic approval, or address the next optimization verification gap.
+
 ## Batch 057 — 2026-11-22T10:48:06Z (UTC)
 
 **Reviewed implementation:** [`612c93b315d178fa1b4fae9e368ffa5bb7e548ca`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/612c93b315d178fa1b4fae9e368ffa5bb7e548ca). Baseline `1583f22`: 723 passing. Full `npm run check`: **727 passed, 0 failed, 0 skipped**. Six parallel validation, independent source and review lanes plus integration.
