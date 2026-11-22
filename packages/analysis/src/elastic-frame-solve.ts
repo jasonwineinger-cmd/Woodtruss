@@ -8,6 +8,7 @@ import { condenseElasticFrameMemberLoad } from "./elastic-frame-release-load.js"
 import { condenseElasticFrameShearLoad } from "./elastic-frame-shear-release.js";
 import { recoverElasticFrameShearEndActions } from "./elastic-frame-shear-end-actions.js";
 import { localizeElasticFrameSectionForce } from "./elastic-frame-section-load-basis.js";
+import { recoverElasticFrameSectionDisplacement } from "./elastic-frame-section-displacement.js";
 import { recoverElasticFrameSectionDemand } from "./elastic-frame-section-demand.js";
 import { recoverElasticFrameLocalEndActions } from "./elastic-frame-local-end-actions.js";
 import type {ElasticFrameElementProperties} from "./elastic-frame-element.js";
@@ -38,6 +39,8 @@ export interface ElasticFrameInput {
   loads:readonly {nodeId:string;fxLb:number;fyLb:number;momentLbIn:number}[];
   memberLoads?:readonly ElasticFrameUniformAction[];
   memberPointLoads?:readonly ElasticFramePointAction[];
+  /** Requested points in each member's ordered local axis, not a deflection envelope. */
+  memberDisplacementStations?:readonly {memberId:string;stationsIn:readonly number[]}[];
 }
 const finite=(numbers:readonly number[])=>numbers.every(Number.isFinite);
 const validId=(id:string)=>typeof id==="string" && /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$/u.test(id);
@@ -51,14 +54,19 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   const fields=["nodes","members","supports","loads"];
   const hasMemberLoads=!!input&&Object.hasOwn(input,"memberLoads");
   const hasPointLoads=!!input&&Object.hasOwn(input,"memberPointLoads");
+  const hasStations=!!input&&Object.hasOwn(input,"memberDisplacementStations");
   if(hasMemberLoads) fields.push("memberLoads");
   if(hasPointLoads) fields.push("memberPointLoads");
+  if(hasStations) fields.push("memberDisplacementStations");
   if(!exact(input,fields)) throw new Error("Unknown or missing frame input field");
   const {nodes,members,supports,loads}=input;
   if (hasMemberLoads&&!Array.isArray(input.memberLoads)) throw new Error("Invalid frame member loads");
   if (hasPointLoads&&!Array.isArray(input.memberPointLoads)) throw new Error("Invalid frame member point loads");
   const memberLoads=hasMemberLoads?input.memberLoads!:[];
   const pointLoads=hasPointLoads?input.memberPointLoads!:[];
+  const stationRequests=hasStations?input.memberDisplacementStations:undefined;
+  if(hasStations&&(!Array.isArray(stationRequests)||!stationRequests.length||stationRequests.length>100))
+    throw new Error("Invalid frame member displacement station requests");
 
   if(![nodes,members,supports,loads].every(Array.isArray)||nodes.length<2||nodes.length>50||
      !members.length||members.length>100||!supports.length||supports.length>nodes.length||
@@ -115,6 +123,21 @@ export function solveElasticFrame(input:ElasticFrameInput) {
     if(!releaseRightRotation)rotationConnected[b]=true;
     const g=[3*a,3*a+1,3*a+2,3*b,3*b+1,3*b+2];
     for(let i=0;i<6;i++)for(let j=0;j<6;j++) K[g[i]][g[j]]+=matrix[i][j];
+  }
+  const displacementStationsByMember=new Map<string,readonly number[]>();
+  for(const request of Array.from(stationRequests??[])) {
+    if(!exact(request,["memberId","stationsIn"])||!validId(request.memberId)||
+      displacementStationsByMember.has(request.memberId))
+      throw new Error("Invalid or repeated frame member displacement station request");
+    const member=memberEnds.get(request.memberId);
+    if(!member) throw new Error("Unknown frame member displacement station request");
+    if(!Array.isArray(request.stationsIn)||!request.stationsIn.length||request.stationsIn.length>64)
+      throw new Error("Invalid frame member displacement station count");
+    const stations=Array.from(request.stationsIn);
+    if(new Set(stations).size!==stations.length||
+      stations.some(station=>!Number.isFinite(station)||station<0||station>member.properties.lengthIn))
+      throw new Error("Frame member displacement stations must be unique and within the ordered member");
+    displacementStationsByMember.set(request.memberId,stations);
   }
   if(!K.every(finite)) throw new Error("Nonfinite assembled frame stiffness");
   const visited=new Set<number>([0]),frontier=[0];
@@ -316,6 +339,7 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   // private released rotations instead of transferring a shared joint rotation.
   const summedEndActions=Array<number>(count).fill(0), endActionScales=Array<number>(count).fill(0);
   const sectionEntries:(readonly [string,ReturnType<typeof recoverElasticFrameSectionDemand>])[]=[];
+  const displacementEntries:(readonly [string,ReturnType<typeof recoverElasticFrameSectionDisplacement>["samples"]])[]=[];
   const memberEndActions=Object.fromEntries(Array.from(memberEnds,([memberId,record])=>{
     const {a,b,properties,globalToLocal,originalLocalLoad,physicalMemberActions,shear}=record;
     const dofs=memberDofs(a,b);
@@ -342,6 +366,14 @@ export function solveElasticFrame(input:ElasticFrameInput) {
     const section=recoverElasticFrameSectionDemand({lengthIn:properties.lengthIn,
       localEndActions:recovered.localEndActions,uniform:record.sectionUniform,point:record.sectionPoint});
     sectionEntries.push([memberId,section]);
+    const stationsIn=displacementStationsByMember.get(memberId);
+    if(stationsIn) {
+      const {lengthIn,elasticModulusPsi,areaIn2,secondMomentIn4}=properties;
+      const result=recoverElasticFrameSectionDisplacement({lengthIn,elasticModulusPsi,areaIn2,secondMomentIn4,shear:shear??null,
+        localDisplacements:recovered.localDisplacements,localEndActions:recovered.localEndActions,
+        uniform:record.sectionUniform,point:record.sectionPoint,stationsIn});
+      displacementEntries.push([memberId,result.samples]);
+    }
     return [memberId,{startNodeId:nodes[a].id,endNodeId:nodes[b].id,
       ...recovered,shearDeformationModeled:!!shear}] as const;
   }));
@@ -367,8 +399,9 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   if(!finite(errs)||!finite(totals)||errs.some((e,i)=>Math.abs(e)>1e-7*Math.max(1,totals[i])))
     throw new Error("Global frame equilibrium failed");
   const memberSectionDemand=Object.fromEntries(sectionEntries);
-  return {displacements,reactions,memberEndActions,memberSectionDemand,equilibrium:{passes:true as const,
+  const memberSectionDisplacements=Object.fromEntries(displacementEntries);
+  return {displacements,reactions,memberEndActions,memberSectionDemand,memberSectionDisplacements,equilibrium:{passes:true as const,
     forceXLb:errs[0],forceYLb:errs[1],momentLbIn:errs[2],originNodeId:nodes[0].id},
     status:"PRELIMINARY_NOT_ENGINEERED" as const,fabricationAuthorized:false as const,
-    scope:"Linear axial/bending frame with rigid or explicitly released member ends, ideal global or inclined restraints, nodal actions and bounded full uniform or concentric interior point forces. Explicit shear-flexible members use dedicated consistent actions and ideal release condensation/recovery. Between-end section extrema cover only the bounded action shapes; no design or capacity approval."};
+    scope:"Linear axial/bending frame with rigid or explicitly released member ends, ideal global or inclined restraints, nodal actions and bounded full uniform or concentric interior point forces. Explicit shear-flexible members use dedicated consistent actions and ideal release condensation/recovery. Section force extrema cover only the bounded action shapes; local section displacement is sampled only at requested stations and does not establish a deflection envelope or serviceability approval. No design or capacity approval."};
 }
