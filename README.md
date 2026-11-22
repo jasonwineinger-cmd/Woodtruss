@@ -222,3 +222,7 @@ The library-only `studyAuthoredElasticFrameCombinationDisplacements` reports sel
 The library-only `studyAuthoredRaisedHeelDoubleFinkElasticFrameReactions` keeps the raised upper heel nodes separate from the actual `L`/`E` bearings and uses explicit directed properties, releases, restraints and signed load combinations. See the [raised-heel Double Fink study scope](docs/raised-heel-double-fink-authored-elastic-frame-scope.md). The separate geometry-only CLI is unchanged; no supplier layout or fabrication approval is inferred.
 
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
+
+The [preliminary reported length budget](docs/preliminary-reported-length-budget-boundary.md)
+checks exact nominal arithmetic against one reported stock length. It does not
+verify inventory, generate cuts, or authorize shop or machine use.
