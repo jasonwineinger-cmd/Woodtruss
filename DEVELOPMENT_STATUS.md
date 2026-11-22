@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 069 — 2026-11-22T14:04:31Z (UTC)
+
+**Reviewed implementation:** [`5d17c62b18c850fb1c6e000675a4e12d0ee98937`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/5d17c62b18c850fb1c6e000675a4e12d0ee98937). Baseline `6e08a37`: 792 passing. Full `npm run check`: **797 passed, 0 failed, 0 skipped**. Six independent implementation, testing, documentation and review lanes, plus root integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Selected stiffness evidence | `double-fink-catalog-bound-section-review.ts`: replays the exact ordinary frame, derives selected member union from solved cuts, and requires exact directed mean-E provenance for that union. |
+| 2 Independent signed demand oracle | `double-fink-catalog-bound-section-benchmark.test.mjs`: synthetic hand-equilibrated horizontal chord point force and signed left/right section output. |
+| 3 Boundary QA | `double-fink-catalog-bound-section-boundaries.test.mjs`: wrong axis/direction/revision/source/role and partial union all withhold all cases, even if E and Emin match numerically. |
+| 4 Documentation | README and `double-fink-catalog-bound-section-boundary.md`: same solved frame but only selected material receipt scope. |
+| 5 Read-only integration audit | Checked fresh model, complete union and mean-only bindings; success retains exact model and revision, while holds expose no demand or catalog. |
+| 6 Independent scope audit | Unreviewed model properties can still change selected signed forces; no actual stock or whole-frame endorsement. |
+| Root | `double-fink-catalog-bound-section-union.test.mjs`: two bending axes across separate cases, reordered receipts by exact ID and independent signed apex free-body checks. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Modeled geometry and documentary catalog identity do not establish stock provenance, source validity, capacity, physical restraints or release.
+
+**Next:** Independently demonstrate how an unselected member can affect selected cut results on an indeterminate model, or advance a distinct traceable engineering or source gap without inferring a whole-model or release claim.
+
 ## Batch 068 — 2026-11-22T13:34:04Z (UTC)
 
 **Reviewed implementation:** [`2777848d8da8bf89739cf77aa7239ea671efb9fe`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/2777848d8da8bf89739cf77aa7239ea671efb9fe). Baseline `c6add41`: 786 passing. Full `npm run check`: **792 passed, 0 failed, 0 skipped**. Six independent implementation, testing, documentation and review lanes, plus root integration.
