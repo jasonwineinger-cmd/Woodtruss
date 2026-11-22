@@ -1,5 +1,27 @@
 # Woodtruss development status
 
+## Batch 018 — 2026-11-22T01:03:58Z (UTC)
+
+**Reviewed implementation:** [`f02a6b80917f7b748ff9bfbea8c30e69010290e6`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/f02a6b80917f7b748ff9bfbea8c30e69010290e6). Baseline `50e3f78`: 378 passing tests. Integrated `npm run check`: **392 passed, 0 failed, 0 skipped**. Six independent lanes. No change to fabrication release.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/symmetric-beam-deflection-benchmark.ts`: independent named-station Euler–Bernoulli solution for a level, isolated prismatic simple span under a centered point force. Does not add bending stiffness or load transfer to truss results. |
+| 2 Lumber | `packages/lumber/src/{repeated-axial-secants,index}.ts`: measured signed secants and scatter over an explicitly shared specimen, datum, and force window. No modulus design value, calibrated independence or capacity. |
+| 3 Connector plates | `packages/connections/src/plate-load-slip-observation.ts`: exact observation/axis/source binding with measured matching force stations on load/unload and residuals; no inferred reversibility, transferable stiffness or strength. |
+| 4 Geometry | `packages/geometry/src/measurement-stations.ts`: locate authored gages along an explicit bearing axis with signed transverse offset; report shared/bracketing stations without treating them as nodes, interpolating movements, or claiming datum alignment. |
+| 5 Physical reference | `docs/references/usda-fpl492-6m3-evidence.md`: isolate one measured 28-ft timber specimen and distinguish the reported stiffness from assembly columns, raw gage displacements, and its companion report’s different fixture. No drawing bundled or model match asserted. |
+| 6 Testing | `tests/published-ju-pin-jointed-benchmark.test.mjs`: published independent ideal truss calculation reproduced for signed forces, displacements and roller reaction; independently derived pin reactions and a missing-roller mechanism check. |
+| Integration | `README.md`: distinguishes a public numerical regression, a physical test candidate and the separate beam solution from approved structural design. |
+
+**Other changed tests:** `tests/{lumber-repeated-axial-secants,measurement-stations,plate-load-slip-observation,symmetric-beam-deflection-benchmark}.test.mjs`.
+
+**Independent checks:** published ideal truss response, analytic center/quarter/support beam displacements, measured-secant scope rejection, load versus unload residuals, signed bearing-axis geometry and the exact 50-ft maximum. A real truss or an assembly remains unverified by these checks.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Independent matching physical inputs, missing code/licensed data, engineering and manufacturing approval remain open.
+
+**Next batch:** strengthen physical and modeled reference scope matching and exact gage comparison without filling published gaps, and continue independent bench verification. The current axial truss solver does not represent the physical fixture or connection slip.
+
 ## Batch 017 — 2026-11-22T00:48:43Z (UTC)
 
 **Reviewed implementation:** [`b417d502eb39fd8d958651494a4ef2454442430b`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/b417d502eb39fd8d958651494a4ef2454442430b). Baseline `e365cb3`: 366 passing tests. Integrated `npm run check`: **378 passed, 0 failed, 0 skipped**. Six lanes, including one separate read-only scope review. All repository fixtures are synthetic.
