@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 055 — 2026-11-22T10:18:12Z (UTC)
+
+**Reviewed implementation:** [`aaa1c2ff9f4a2d953ba48e69add13d40f75b9353`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/aaa1c2ff9f4a2d953ba48e69add13d40f75b9353). Baseline `42d4b53`: 710 passing. Full `npm run check`: **719 passed, 0 failed, 0 skipped**. Six parallel validation, source-boundary and review lanes plus integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Local byte match | `inspection-private-byte-digest.ts`: bounded exact nonshared byte view, copies only the supplied byte range before hashing. |
+| 2 Scope cases | `job-truss-inspection-record-bytes.test.mjs`: reject changed bytes, wrong revision, document aliases or reported correction closure; detached metadata and byte mutation regression. |
+| 3 Independent hash | `inspection-private-byte-digest.test.mjs`: independent Node digest, subarray sentinel and delayed provider, invalid/shared/detached views and provider failure. |
+| 4 Scope | README and `inspection-private-record-byte-boundary.md`: local agreement only, no caller identifiers, bytes or digest in returned evidence. |
+| 5 Release audit | Existing documentary inputs and physical, signature, repair, shipping and machine holds unchanged; no network, parsing or release integration. |
+| 6 Boundary oracle and root | `job-truss-inspection-record-boundary.test.mjs` and `job-truss-inspection-intake.ts`: independent expected inspection ID and design revision, verified documentary gate first, malformed and unsafe input held. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Synthetic digest agreement is not record authenticity or qualified inspection.
+
+**Next:** Review one bounded design-side QC exchange pattern from the [official SBCA TPSX reference](https://www.sbcacomponents.com/tpsx), separately from observation and record bytes. No source package, schema or claim of compatibility is included here.
+
 ## Batch 054 — 2026-11-22T10:02:37Z (UTC)
 
 **Reviewed implementation:** [`b0133699504cc70408a67c74d5b4073dc5ab8b2c`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/b0133699504cc70408a67c74d5b4073dc5ab8b2c). Baseline `5f9e978`: 705 passing. Full `npm run check`: **710 passed, 0 failed, 0 skipped**. Six independent scoped model, failure, computation, documentation and audit lanes plus integration.
