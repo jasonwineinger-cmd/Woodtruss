@@ -40,3 +40,4 @@ export { studyRectangularLongitudinalStrain, type RectangularLongitudinalStrainI
 export { studyRectangularEccentricAxial, type RectangularEccentricAxialInput } from "./rectangular-eccentric-axial.js";
 export { studyPreliminarySteppedAxialDeformation, type AxialStep,
   type SteppedAxialDeformationInput } from "./stepped-axial-deformation.js";
+export { studyIdealBuiltUpRectangularGeometry, type BuiltUpRectangle } from "./built-up-rectangular-geometry.js";

@@ -7,12 +7,39 @@ import { createPreliminaryTrussPackage } from '../dist/contracts/src/preview.js'
 import { createPreliminaryMaterialsReport } from '../dist/fabrication/src/preliminary-materials.js';
 import { createPreliminaryMaterialsTraceabilityManifest, fingerprintPreliminaryMaterialsSource } from '../dist/fabrication/src/preliminary-materials-traceability.js';
 import { createPreliminarySchematicReview } from '../dist/fabrication/src/preliminary-schematic-review.js';
+import { evaluateAtticClearanceLimits } from '../dist/geometry/src/attic-clearance-limits.js';
 
 const usage = 'Usage: npm start -- [--family common|mono] [--span-ft 30] [--pitch 6] [--format json|svg]\n'
+  + '       npm start -- --attic-clearance --span-ft N --pitch N --room-width-ft N --room-height-ft N\n'
   + 'Use --capabilities by itself to list the supported scope.\n'
   + 'Runs a synthetic example: a 1,000 lb point load at the common ridge or mono quarter-point.';
 
+function atticClearance(args) {
+  const required = new Map([['--span-ft','spanFt'],['--pitch','pitchRisePer12'],
+    ['--room-width-ft','roomWidthFt'],['--room-height-ft','requiredClearHeightFt']]);
+  const input = { family: 'attic' };
+  for (let i=0; i<args.length; i+=2) {
+    const [flag,value] = [args[i],args[i+1]];
+    const key = required.get(flag);
+    if (!key || Object.hasOwn(input,key) || !/^\d+(\.\d+)?$/u.test(value??''))
+      throw new Error('Specify each attic option once with one numeric value.');
+    input[key]=Number(value);
+  }
+  if ([...required.values()].some(key=>!Object.hasOwn(input,key)))
+    throw new Error('All four attic geometry dimensions are required.');
+  const result = evaluateAtticClearanceLimits(input);
+  if (result.fabricationAuthorized !== false || result.structuralAnalysisAvailable !== false)
+    throw new Error('Unexpected attic preview status.');
+  process.stdout.write(JSON.stringify({...result, notice:'NOT FOR FABRICATION',
+    scope:'Ideal centerlines only, no real wall thickness, member size, floor or structural verification.'},null,2)+'\n');
+}
+
 async function run(args) {
+  if (args[0] === '--attic-clearance') {
+    atticClearance(args.slice(1));
+    return;
+  }
+
   if (args.length === 1 && args[0] === '--capabilities') {
     process.stdout.write(JSON.stringify({
       schemaVersion: 'woodtruss.cli-preview-scope.v1',
@@ -21,7 +48,7 @@ async function run(args) {
       spanRangeFt: { minimum: 8, maximum: 50 },
       explicitPointLoadApiVariants: [...EXPLICIT_POINT_LOAD_VARIANTS],
       explicitPointLoadApiScope: 'These variants are for the library dispatcher only, not the CLI or a complete family list.',
-      atticScope: { geometry: 'CENTERLINE_CLEARANCE_ONLY', analysisAvailable: false },
+      atticScope: { geometry: 'CENTERLINE_CLEARANCE_ONLY', analysisAvailable: false, cliOption: '--attic-clearance' },
       notice: 'NOT FOR FABRICATION',
       fabricationAuthorized: false,
     }, null, 2) + '\n');

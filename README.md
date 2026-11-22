@@ -72,4 +72,12 @@ npm start --silent -- --family mono --format svg > woodtruss-preview.svg
 
 Run `npm start --silent -- --capabilities` to see the demo families, formats and span limit. The separately listed library point-load variants are not additional CLI options or a list of complete truss designs.
 
+For an attic **geometry-only** fit check, supply all four values:
+
+```sh
+npm start --silent -- --attic-clearance --span-ft 40 --pitch 8 --room-width-ft 12 --room-height-ft 8
+```
+
+The result compares ideal centerlines with a centered rectangular room under a level, symmetric, zero-heel roof. It does not account for member thickness or finishes, solve the attic structure or floor, or authorize fabrication.
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.

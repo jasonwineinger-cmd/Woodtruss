@@ -55,10 +55,27 @@ test('CLI capabilities separate runnable demos from the limited library dispatch
   assert.deepEqual(scope.spanRangeFt, { minimum:8, maximum:50 });
   assert.deepEqual(scope.explicitPointLoadApiVariants, ['common-level','common-asymmetric','common-raised-heel','mono-level','scissor-level']);
   assert.match(scope.explicitPointLoadApiScope, /not the CLI/);
-  assert.deepEqual(scope.atticScope, { geometry:'CENTERLINE_CLEARANCE_ONLY', analysisAvailable:false });
+  assert.deepEqual(scope.atticScope, { geometry:'CENTERLINE_CLEARANCE_ONLY', analysisAvailable:false, cliOption:'--attic-clearance' });
   assert.equal(scope.fabricationAuthorized,false);
   assert.equal(scope.notice,'NOT FOR FABRICATION');
   assert.equal(run('--capabilities','--family','mono').status,1);
+});
+
+test('CLI attic clearance uses explicit geometry only and rejects unsupported spans or options', () => {
+  const args = ['--attic-clearance','--span-ft','40','--pitch','8','--room-width-ft','12','--room-height-ft','8'];
+  const r = run(...args);
+  assert.equal(r.status,0,r.stderr);
+  const out = JSON.parse(r.stdout);
+  assert.equal(out.notice,'NOT FOR FABRICATION');
+  assert.equal(out.fabricationAuthorized,false);
+  assert.equal(out.structuralAnalysisAvailable,false);
+  assert.equal(out.minimumGeometricSpanIn,432);
+  const over = [...args]; over[2]='51';
+  for (const bad of [over,args.slice(0,-2),[...args,'--format','svg']]) {
+    const invalid = run(...bad);
+    assert.equal(invalid.status,1);
+    assert.equal(invalid.stdout,'');
+  }
 });
 
 test('CLI rejects invalid or unsupported arguments without emitting any package', () => {
