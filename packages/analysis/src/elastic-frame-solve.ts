@@ -2,6 +2,8 @@ import { elasticFrameElementGlobalStiffness } from "./elastic-frame-global-eleme
 import { elasticFrameMemberPointLoad } from "./elastic-frame-member-point-load.js";
 import { createInclinedSupportAxis } from "../../geometry/src/inclined-support-axis.js";
 import { elasticFrameMemberUniformLoad } from "./elastic-frame-member-load.js";
+import { elasticFrameShearMemberPointLoad } from "./elastic-frame-shear-point-load.js";
+import { elasticFrameShearMemberUniformLoad } from "./elastic-frame-shear-uniform-load.js";
 import { condenseElasticFrameMemberLoad } from "./elastic-frame-release-load.js";
 import { recoverElasticFrameLocalEndActions } from "./elastic-frame-local-end-actions.js";
 import type {ElasticFrameElementProperties} from "./elastic-frame-element.js";
@@ -39,7 +41,7 @@ const exact=(row:object,keys:readonly string[])=>!!row && typeof row==="object" 
   Reflect.ownKeys(row).length===keys.length && keys.every(key=>Object.hasOwn(row,key));
 
 /** Separate bounded linear elastic frame study. An explicit shear-flexible
- * member supports rigid ends and nodal only loading; other members use the
+ * member supports rigid ends and bounded explicit member actions; other members use the
  * established Euler–Bernoulli path. No design or capacity checks. */
 export function solveElasticFrame(input:ElasticFrameInput) {
   const fields=["nodes","members","supports","loads"];
@@ -73,7 +75,8 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   const adjacency=Array.from({length:nodes.length},()=>new Set<number>());
   type MemberRecord={
     a:number;b:number;properties:ElasticFrameElementProperties;globalToLocal:number[][];
-    originalLocalLoad:number[];physicalMemberActions:number[][];shearLocalMatrix?:number[][];
+    originalLocalLoad:number[];physicalMemberActions:number[][];
+    shear?:ElasticFrameShear;shearLocalMatrix?:number[][];
   };
   const memberEnds=new Map<string,MemberRecord>();
   const rotationConnected=Array<boolean>(nodes.length).fill(false);
@@ -102,7 +105,7 @@ export function solveElasticFrame(input:ElasticFrameInput) {
     });
     memberEnds.set(m.id,{a,b,properties:{...properties,lengthIn},globalToLocal:globalToLocalTransform,
       originalLocalLoad:Array<number>(6).fill(0),physicalMemberActions:[],
-      ...(hasShear?{shearLocalMatrix:localMatrix}:{})});
+      ...(hasShear?{shearLocalMatrix:localMatrix,shear:m.shear!}:{})});
     adjacency[a].add(b); adjacency[b].add(a);
     if(!releaseLeftRotation)rotationConnected[a]=true;
     if(!releaseRightRotation)rotationConnected[b]=true;
@@ -196,13 +199,14 @@ export function solveElasticFrame(input:ElasticFrameInput) {
       loadedMembers.has(action.memberId)) throw new Error("Invalid or repeated frame member load");
     const ends=memberEnds.get(action.memberId);
     if (!ends) throw new Error("Unknown loaded frame member");
-    if (ends.shearLocalMatrix) throw new Error("Distributed member loads on shear-flexible frame members are unsupported");
     const {a,b}=ends;
     const left={xIn:nodes[a].xIn,yIn:nodes[a].yIn},right={xIn:nodes[b].xIn,yIn:nodes[b].yIn};
-    const {globalEquivalentLoad,localEquivalentLoad,physicalResultant}=elasticFrameMemberUniformLoad({
-      left,right,releaseLeftRotation:false,releaseRightRotation:false,
-      basis:action.basis,qxLbPerIn:action.qxLbPerIn,qyLbPerIn:action.qyLbPerIn,
-    });
+    const input={left,right,releaseLeftRotation:false as const,releaseRightRotation:false as const,
+      basis:action.basis,qxLbPerIn:action.qxLbPerIn,qyLbPerIn:action.qyLbPerIn};
+    const {areaIn2,secondMomentIn4,elasticModulusPsi}=ends.properties;
+    const {globalEquivalentLoad,localEquivalentLoad,physicalResultant}=ends.shear
+      ? elasticFrameShearMemberUniformLoad({...input,areaIn2,secondMomentIn4,elasticModulusPsi,shear:ends.shear})
+      : elasticFrameMemberUniformLoad(input);
     loadedMembers.add(action.memberId);
     assembleMemberAction(ends,globalEquivalentLoad,localEquivalentLoad,physicalResultant);
   }
@@ -212,13 +216,14 @@ export function solveElasticFrame(input:ElasticFrameInput) {
         pointedMembers.has(action.memberId)) throw new Error("Invalid or repeated frame member point load");
     const ends=memberEnds.get(action.memberId);
     if (!ends) throw new Error("Unknown point-loaded frame member");
-    if (ends.shearLocalMatrix) throw new Error("Interior point loads on shear-flexible frame members are unsupported");
     const {a,b}=ends;
     const left={xIn:nodes[a].xIn,yIn:nodes[a].yIn},right={xIn:nodes[b].xIn,yIn:nodes[b].yIn};
-    const {globalEquivalentLoad,localEquivalentLoad,physicalResultant}=elasticFrameMemberPointLoad({
-      left,right,releaseLeftRotation:false,releaseRightRotation:false,
-      stationIn:action.stationIn,fxLb:action.fxLb,fyLb:action.fyLb,
-    });
+    const input={left,right,releaseLeftRotation:false as const,releaseRightRotation:false as const,
+      stationIn:action.stationIn,fxLb:action.fxLb,fyLb:action.fyLb};
+    const {areaIn2,secondMomentIn4,elasticModulusPsi}=ends.properties;
+    const {globalEquivalentLoad,localEquivalentLoad,physicalResultant}=ends.shear
+      ?elasticFrameShearMemberPointLoad({...input,areaIn2,secondMomentIn4,elasticModulusPsi,shear:ends.shear})
+      :elasticFrameMemberPointLoad(input);
     pointedMembers.add(action.memberId);
     assembleMemberAction(ends,globalEquivalentLoad,localEquivalentLoad,physicalResultant);
   }
@@ -304,9 +309,8 @@ export function solveElasticFrame(input:ElasticFrameInput) {
     if(properties.releaseRightRotation)localDisplacements[5]=null;
     let recovered;
     if(shearLocalMatrix) {
-      if(physicalMemberActions.length || originalLocalLoad.some(value=>value!==0))
-        throw new Error("Unsupported shear-flexible member action at recovery");
-      const localEndActions=multiply(shearLocalMatrix,retainedLocalDisplacements);
+      const localEndActions=multiply(shearLocalMatrix,retainedLocalDisplacements)
+        .map((value,i)=>value-originalLocalLoad[i]);
       if(!finite(retainedLocalDisplacements)||!finite(localEndActions))
         throw new Error("Nonfinite shear-flexible local end actions");
       recovered={localDofOrder:["uLeft","vLeft","thetaLeft","uRight","vRight","thetaRight"] as const,
@@ -357,5 +361,5 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   return {displacements,reactions,memberEndActions,equilibrium:{passes:true as const,
     forceXLb:errs[0],forceYLb:errs[1],momentLbIn:errs[2],originNodeId:nodes[0].id},
     status:"PRELIMINARY_NOT_ENGINEERED" as const,fabricationAuthorized:false as const,
-    scope:"Linear axial/bending frame with rigid or explicitly released member ends, ideal global or inclined restraints, nodal actions and bounded uniform or interior member forces only on non-shear elements. Explicit shear-flexible members require rigid ends and nodal actions. No between-end demand envelope or design approval."};
+    scope:"Linear axial/bending frame with rigid or explicitly released member ends, ideal global or inclined restraints, nodal actions and bounded full uniform or concentric interior point forces. Explicit shear-flexible members require rigid ends and dedicated consistent actions. No between-end demand envelope or design approval."};
 }

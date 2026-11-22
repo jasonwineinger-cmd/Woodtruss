@@ -69,3 +69,37 @@ test('USDA no-shear end-action diagnostic uses consistent local signs and physic
   assert.ok(Math.abs(d[2]-displacements.N1.rotationRad)>1e-4);
   assert.equal(released.manufacturingApproved,false);
 });
+
+test('USDA mixed shear diagnostic matches an independent formulation but not legacy outputs',()=>{
+  // Research hypothesis only. The legacy effective-area convention is not a default.
+  // Unloaded, double-released M7 is explicitly modeled as the axial-only limit;
+  // no shear-flexible released or loaded release is exercised by this case.
+  assert.ok(![...model.memberLoads,...model.memberPointLoads].some(row=>row.memberId==='M7'));
+  const members=model.members.map(m=>m.id==='M7'?m:{...m,
+    shear:{shearModulusPsi:m.elasticModulusPsi/16,effectiveShearAreaIn2:m.areaIn2/(6/5)},
+  });
+  const r=solveElasticFrame({...model,members});
+  const {N1:pin,N2:upper,N5:slope}=r.reactions;
+  near(pin.fxLb,892.2915,.0001,'independent shear reference pin x');
+  near(pin.fyLb,1003.6000,.0001,'independent shear reference pin y');
+  near(upper.fxLb,-829.3415,.0001,'independent shear reference upper x');
+  near(slope.fxLb,-62.950,.0001,'independent shear reference inclined x');
+  near(slope.fyLb,377.700,.0001,'independent shear reference inclined y');
+  near(-50.01*upper.fxLb+140.5*slope.fyLb,94542.225,1e-7,'physical reference support moment');
+  const {uxIn,uyIn}=r.displacements.N5;
+  near((-2*uxIn+12*uyIn)/Math.hypot(12,2),0,1e-12,'inclined support normal displacement');
+  near((12*uxIn+2*uyIn)/Math.hypot(12,2),.0037147,1e-7,'independent tangent displacement');
+  const [nL,vL,mL,nR,vR,mR]=r.memberEndActions.M6.localEndActions;
+  near(nL+nR,0,1e-8,'M6 axial balance');
+  near(vL+vR,550,1e-8,'M6 force balance');
+  near(mL+mR+70.25*vR,550*46.25,1e-7,'M6 moment about its authored start');
+  const released=r.memberEndActions.M7;
+  assert.equal(r.memberEndActions.M4.shearDeformationModeled,true);
+  assert.equal(released.shearDeformationModeled,false);
+  assert.deepEqual(released.releasedRotationIndices,[2,5]);
+  near(released.localEndActions[0],1208.054,.001,'M7 independent axial comparison');
+  for(const i of [1,2,4,5]) near(released.localEndActions[i],0,1e-8,'unloaded axial-only M7');
+  assert.ok(Math.abs(pin.fxLb-896.178)>3 && Math.abs(pin.fyLb-1005.070)>1);
+  assert.equal(r.equilibrium.passes,true);
+  assert.equal(r.fabricationAuthorized,false);
+});
