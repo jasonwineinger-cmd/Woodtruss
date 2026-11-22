@@ -1,11 +1,11 @@
 # Woodtruss test status
 
-- Batch: 066
-- Integrated verification: 2026-11-22T13:03:38Z (UTC)
+- Batch: 067
+- Integrated verification: 2026-11-22T13:18:08Z (UTC)
 - Command: `npm run check` (TypeScript check, compilation and complete automated suite)
-- Result: **781 passed, 0 failed, 0 skipped**
-- Latest tested implementation: [`fff6211994686f2a703a493a983f5b2db96ba18a`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/fff6211994686f2a703a493a983f5b2db96ba18a)
-- Baseline: `12da5a8938e6ab0a07cbb67d122041b4b515aefa` (776 passed)
-- Raised-heel common and ordinary Double Fink share the joint-balance engine. Independent synthetic checks distinguish top heel actions, true modeled bearings and signed joint moment transfer. No connector, physical capacity or fabrication is verified.
+- Result: **786 passed, 0 failed, 0 skipped**
+- Latest tested implementation: [`0d5e80140799ec4f908f211ceca7047d74d8a7cf`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/0d5e80140799ec4f908f211ceca7047d74d8a7cf)
+- Baseline: `3e4c2f887da31aedb04ea553eac3c5d05f86fed5` (781 passed)
+- The exact explicit-frame joint audit uses independently tested inclined reactions and signed recovered endpoints. Family restraint rules are unchanged; no physical support, anchor, connector, or release is verified.
 
 This status-only commit records the tested implementation SHA, not its own SHA. The 50-foot maximum and fabrication lock are unchanged. Passing software tests is not structural verification. See [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md) for remaining work.

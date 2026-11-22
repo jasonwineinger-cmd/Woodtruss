@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 067 — 2026-11-22T13:18:08Z (UTC)
+
+**Reviewed implementation:** [`0d5e80140799ec4f908f211ceca7047d74d8a7cf`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/0d5e80140799ec4f908f211ceca7047d74d8a7cf). Baseline `3e4c2f8`: 781 passing. Full `npm run check`: **786 passed, 0 failed, 0 skipped**. Six independent implementation, testing, documentation and review lanes, plus root integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Explicit frame review | `elastic-frame-authored-combination-joint-balance.ts` admits exact explicitly authored Cartesian or inclined restraints and enforces a 600-in modeled horizontal extent. `authored-frame-joint-balance.ts` shares the solver while preserving family adapter limits. |
+| 2 Independent inclined oracle | `authored-frame-joint-balance-inclined-benchmark.test.mjs`: hand-derived global reactions, zero free-tangent reaction, endpoint and unsupported joint closure under signed cases. |
+| 3 Boundary QA | `authored-frame-joint-balance-explicit-boundaries.test.mjs`: translated exact extent, malformed and out-of-scope geometry, exact case/node selection, restrained axis, unused sources and no cached authority. |
+| 4 Documentation | README and `explicit-authored-frame-joint-balance-boundary.md`: exact fields, independent endpoint recovery and a numerical intake bound, not an allowable span. |
+| 5 Read-only compatibility audit | Reviewed working extent and coordinate normalization, source and case exactness and unchanged family schema. |
+| 6 Independent statics audit | Derived signed normal projection and tangential invariance; negative ideal reactions are not proof of physical uplift resistance. |
+| Root | `authored-frame-joint-balance-uniform-reversal.test.mjs`: reverse both directed axes independently in four variants, with a full uniform member action counted once and hand global reactions. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Neither inclined restraint nor mathematical joint equilibrium implies bearing design, plate demand, code compliance, or release.
+
+**Next:** Check offset bearing elevations with hand moment lever arms, or advance a distinct family with an independent test, without altering released family restraints.
+
 ## Batch 066 — 2026-11-22T13:03:38Z (UTC)
 
 **Reviewed implementation:** [`fff6211994686f2a703a493a983f5b2db96ba18a`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/fff6211994686f2a703a493a983f5b2db96ba18a). Baseline `12da5a8`: 776 passing. Full `npm run check`: **781 passed, 0 failed, 0 skipped**. Six independent implementation, testing, documentation and review lanes, plus root integration.
