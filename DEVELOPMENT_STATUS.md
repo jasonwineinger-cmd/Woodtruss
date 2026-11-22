@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 063 — 2026-11-22T12:17:21Z (UTC)
+
+**Reviewed implementation:** [`03a1902703986090165246f2d300aca276b4700f`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/03a1902703986090165246f2d300aca276b4700f). Baseline `1ec4c98`: 760 passing. Full `npm run check`: **765 passed, 0 failed, 0 skipped**. Six independent implementation, benchmark, boundary and review lanes, plus root integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Joint balance | `double-fink-authored-elastic-frame-joint-balance.ts`: freshly solved, separately selected nodes with every incident end, rotation to global axes, and direct nodal and bearing vectors. |
+| 2 Independent numerical oracle | `double-fink-authored-joint-balance-benchmark.test.mjs`: vertical pin-ended web, unequal 120/40 lb transfer, signed case reversal and no equivalent nodal double counting. |
+| 3 Boundary QA | `double-fink-authored-joint-balance-boundaries.test.mjs`: exact bounded joint lists, deterministic case order, unsupported geometry and stale/unused load bindings. |
+| 4 Documentation | README and `double-fink-authored-joint-balance-boundary.md` distinguish ideal centerline point equilibrium from actual connection behavior. |
+| 5 Independent sign audit | Derived rotation and endpoint signs from the inside section convention; checked independent force and moment scales and no extra moment transport. |
+| 6 Plate boundary audit | Confirmed modeled node quantities cannot be divided by plate faces or reused as plate-group demands or capacity. |
+| Root | `double-fink-authored-joint-balance-supports.test.mjs`: nonzero crest couple, both directed directions and hand-checked pin/roller balances; exact source validation order and full integration. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Point-node equilibrium is a software check on the ideal model. It does not establish modeled-joint hardware, plate forces, physical adequacy or release.
+
+**Next:** Rebalance to an independent plate evidence/data identity gap or advance another authored geometry with an independent oracle, preserving the no-capacity and no-release gates.
+
 ## Batch 062 — 2026-11-22T12:03:45Z (UTC)
 
 **Reviewed implementation:** [`7b273e1d50bec62b8b711b87530d18016b21c9d7`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/7b273e1d50bec62b8b711b87530d18016b21c9d7). Baseline `c161597`: 755 passing. Full `npm run check`: **760 passed, 0 failed, 0 skipped**. Six independent implementation, benchmark, boundary and review lanes, plus root integration.
