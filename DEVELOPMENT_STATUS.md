@@ -1,5 +1,27 @@
 # Woodtruss development status
 
+## Batch 017 — 2026-11-22T00:48:43Z (UTC)
+
+**Reviewed implementation:** [`b417d502eb39fd8d958651494a4ef2454442430b`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/b417d502eb39fd8d958651494a4ef2454442430b). Baseline `e365cb3`: 366 passing tests. Integrated `npm run check`: **378 passed, 0 failed, 0 skipped**. Six lanes, including one separate read-only scope review. All repository fixtures are synthetic.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/authored-model-analysis.ts`: strict explicit units, named cases and member incidence, explicit area and modulus per bar, level pin-and-roller bearings spanning 8–50 ft, numerical stability and equilibrium checks. No geometry or load inference. |
+| 2 Lumber | `packages/lumber/src/{member-stiffness-assignment-audit,index}.ts`: exact member/model revision and catalog receipt checks for proposed solver inputs, separate mean/minimum modulus basis and missing or stale records. No material or capacity approval. |
+| 3 Connector plates | `packages/connections/src/plate-schedule-geometry.ts`: separate actual projected-outline witness for each scheduled joint, face and axis, even if a schematic callout repeats. No dimensional inference or approved plate placement. |
+| 4 Geometry | `packages/geometry/src/raised-heel-double-fink-topology.ts`: bounded generic symmetric centerline geometry, level bearings, independent heel nodes, triangulated roof and end bays. No structural solve or manufactured layout. |
+| 5 Review/transfer | Read-only review of reference-data completeness; an output envelope is not a complete graph, coincident load case or connection model. No code or outside documents added in this lane. |
+| 6 Testing | `tests/independent-heterogeneous-three-path-benchmark.test.mjs`: independent force, reaction and displacement calculations for redundant bars with unequal stiffness; removal changes the sign of one axial force while leaving the model stable. |
+| Integration | `scripts/preview.mjs`, `README.md`, `tests/cli-smoke.test.mjs`: `--authored-model` accepts one bounded explicit JSON model through stdin, rejects unsupported input with no result, labels all outputs not for fabrication; sample equilibrium checked independently. |
+
+**Other changed tests:** `tests/{authored-model-analysis,lumber-member-stiffness-assignment-audit,plate-schedule-geometry,raised-heel-double-fink-topology}.test.mjs`.
+
+**Independent checks:** analytic translated triangle with heterogeneous bars, unsupported/singular input, exact cap, stable loss of one redundant stiffness path, planar geometric face coverage, stale stiffness and plate bindings. This is software verification, not project design approval.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Full independent project validation, site/code loads, licensed capacities, professional review and integrated shop validation remain open.
+
+**Next batch:** make independently specified case and reference evidence easier to capture without relaxing the provenance or safety gates. Do not equate the generic raised-heel centerlines with a supplied design or use force envelopes as one simultaneous load case.
+
 ## Batch 016 — 2026-11-22T00:35:01Z (UTC)
 
 **Reviewed implementation:** [`4dbadf810505e58bfc4112ee8f7a615cd52c58e9`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/4dbadf810505e58bfc4112ee8f7a615cd52c58e9). Baseline `2dc41ef`: 348 passing tests. Integrated `npm run check`: **366 passed, 0 failed, 0 skipped**. Six isolated workers. All examples are synthetic and review-only.
