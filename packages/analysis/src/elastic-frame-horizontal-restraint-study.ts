@@ -27,6 +27,18 @@ const id = (value: unknown): value is string =>
 const absoluteToleranceIn = 1e-9;
 const relativeTolerance = 1e-7;
 
+function verticalDisplacements(
+  nodes: Frame["nodes"], solved: ReturnType<typeof solveElasticFrame>["displacements"],
+): Readonly<Record<string, number>> {
+  const entries = nodes.map(({ id }) => {
+    if (!Object.hasOwn(solved, id) || !Number.isFinite(solved[id]?.uyIn)) {
+      throw new Error("The exact authored node did not have a usable vertical displacement");
+    }
+    return [id, solved[id].uyIn] as const;
+  });
+  return Object.freeze(Object.fromEntries(entries));
+}
+
 /** Isolate a single X-restraint hypothesis at an unchanged authored Cartesian
  * roller. The virtual +1 lb case measures flexibility; it is not included in
  * either physical case. The modeled restraint enters the last solve as a
@@ -82,6 +94,10 @@ export function studyElasticFrameHorizontalRestraint(input: unknown) {
   return {
     modelId, modelRevision, caseId, sourceRef, bearingNodeId, originNodeId, restraint: { ...restraint },
     unrestrainedUxIn, flexibilityInPerLb, predictedUxIn, restraintForceLb, restrainedUxIn, injectedRestraintAction,
+    // Global signed Y from the two physical solves only, never the virtual
+    // +1 lb flexibility solve. A comparison caller can select exact node IDs.
+    unrestrainedVerticalDisplacementByNodeIn: verticalDisplacements(frame.nodes, original.displacements),
+    restrainedVerticalDisplacementByNodeIn: verticalDisplacements(frame.nodes, restrained.displacements),
     displacementAgreement: { absoluteToleranceIn, relativeTolerance },
     physicalResultant: buildElasticFramePhysicalResultant(frame, augmentedActions, restrained.reactions, originNodeId),
     status: "PRELIMINARY_NOT_ENGINEERED" as const, fabricationAuthorized: false as const,

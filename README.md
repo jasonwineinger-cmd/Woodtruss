@@ -165,4 +165,6 @@ The library-only `studyElasticFrameHorizontalRestraint` compares an explicitly n
 
 The independent `studyObservedScissorThreeGaugeStiffness` reduces three signed displacement observations and two vertical bearing reactions per recorded step, then fits slope and intercept across an explicitly selected loading window. The [USDA physical benchmark intake](docs/references/usda-fpl-rp-499-scissor-benchmark.md) documents a comparable observable and why the reported specimen has not been reproduced. Synthetic arithmetic checks are not physical validation or lumber/plate evidence.
 
+The separate `studyScissorModeledThreeGaugeRestraint` projects the modeled global vertical displacements at the three explicitly bound scissor nodes before and after one authored horizontal restraint. Each weighted case carries its signed vertical bearing reactions. The [modeled gauge scope](docs/references/scissor-modeled-gauge-restraint-scope.md) keeps those predictions separate from measured observations, slopes, historic test reproduction and design approval.
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
