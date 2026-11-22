@@ -175,4 +175,6 @@ The local-only companion `reviewLumberIntakeWithEditionEvidence` checks caller-s
 
 The library-only `reviewDatedLocalPlateReport` compares an independently expected issuer observation for an explicit day with exact product/report metadata and supplied authorized local bytes. A printed continuous window and a month-only renewal statement are not interchangeable. See the [TPI and ESR-1988 source scope](docs/references/tpi-2022-mitek-esr-1988-plate-source-boundary.md). The check does not contact the issuer, authenticate current status, select a plate or press, or verify capacity or release.
 
+The library-only `reviewScopedPlateReportEvidence` adds separate product-mark and box-reference roles, resistance mechanism, process, section basis, denominator and orientation categories to the dated report check. It does not turn a label index into a product report or a source match into a plate capacity. See the [connector source boundary](docs/references/plate-resistance-mechanism-and-label-boundary.md).
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
