@@ -183,4 +183,6 @@ The library-only `studyAuthoredMonoElasticFrameReactions` replays signed combina
 
 The library-only `studyAuthoredMonoElasticFrameDisplacements` takes named joints and ordered member stations from the same authored mono model. Fresh signed weighted solves keep global joint motion separate from private local section rotation and translation. See the [displacement scope](docs/references/mono-authored-displacement-scope.md). Selected samples are not a fit to measurements, a design envelope, or fabrication evidence.
 
+The library-only `studyAuthoredMonoElasticFrameSectionCuts` reports the signed axial force, shear and bending moment together at named directed stations, with a separate selection for each solved case. The [section-cut scope](docs/references/mono-authored-section-cut-scope.md) distinguishes one-sided point results from unchanged actions at an exactly cancelled point. These are analysis sections, not shop cuts or capacity checks.
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
