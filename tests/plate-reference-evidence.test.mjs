@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {comparePlateReferenceEvidence} from '../dist/connections/src/plate-reference-evidence.js';
+import {comparePlateReferenceEvidence,snapshotPlateReferenceEvidence} from '../dist/connections/src/plate-reference-evidence.js';
 
 const fixture=(family='integral-toothed')=>({
  identity:{manufacturer:'Synthetic plate maker',productCode:'P-1',family,issuer:'Synthetic report issuer',
@@ -56,5 +56,39 @@ test('requires explicit basis and rejects capacity fields, signed URLs and incon
  ]){
   const altered=fixture();mutate(altered);
   assert.throws(()=>comparePlateReferenceEvidence(expected,altered),/plate reference metadata|plate manufacturer|plate use/);
+ }
+});
+
+test('detaches an own-data receipt without reading accessors or accepting hidden identities',()=>{
+ const expected=fixture();
+ const plain=Object.assign(Object.create(null),expected,{
+  identity:Object.assign(Object.create(null),expected.identity),
+  basis:Object.assign(Object.create(null),expected.basis),
+ });
+ const capture=snapshotPlateReferenceEvidence(plain);
+ assert.equal(comparePlateReferenceEvidence(expected,capture).status,'METADATA_MATCH_UNVERIFIED');
+ plain.identity.productCode='AFTER';
+ plain.basis.species='Changed after snapshot';
+ assert.equal(capture.identity.productCode,'P-1');
+ assert.equal(capture.basis.species,'Synthetic wood');
+
+ let getterReads=0;
+ const dynamic=fixture();
+ Object.defineProperty(dynamic.identity,'documentId',{enumerable:true,get(){getterReads++;return 'TEST-123';}});
+ assert.throws(()=>comparePlateReferenceEvidence(expected,dynamic),/plate reference metadata/);
+ assert.equal(getterReads,0);
+ const outer=fixture(), basis=outer.basis;
+ Object.defineProperty(outer,'basis',{enumerable:true,get(){getterReads++;return basis;}});
+ assert.throws(()=>snapshotPlateReferenceEvidence(outer),/plate reference metadata/);
+ assert.equal(getterReads,0);
+
+ for(const malformed of [
+  Object.assign(fixture(),{[Symbol('extra')]:'extra'}),
+  Object.defineProperty(fixture(),'hidden',{value:'extra'}),
+  {...fixture(),identity:Object.assign(Object.create(expected.identity),{productCode:'P-1'})},
+  {...fixture(),identity:{...expected.identity,digestSha256:'0'.repeat(64)}},
+  {...fixture(),basis:Object.defineProperty({...expected.basis},'grade',{enumerable:false})},
+ ]){
+  assert.throws(()=>snapshotPlateReferenceEvidence(malformed));
  }
 });

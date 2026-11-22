@@ -175,6 +175,8 @@ The local-only companion `reviewLumberIntakeWithEditionEvidence` checks caller-s
 
 The library-only `reviewDatedLocalPlateReport` compares an independently expected issuer observation for an explicit day with exact product/report metadata and supplied authorized local bytes. A printed continuous window and a month-only renewal statement are not interchangeable. See the [TPI and ESR-1988 source scope](docs/references/tpi-2022-mitek-esr-1988-plate-source-boundary.md). The check does not contact the issuer, authenticate current status, select a plate or press, or verify capacity or release.
 
+See the [local plate artifact boundary](docs/plate-local-artifact-data-boundary.md) for what the plain-data and local digest checks establish, and what they do not verify.
+
 The library-only `reviewScopedPlateReportEvidence` adds separate product-mark and box-reference roles, resistance mechanism, process, section basis, denominator and orientation categories to the dated report check. It does not turn a label index into a product report or a source match into a plate capacity. See the [connector source boundary](docs/references/plate-resistance-mechanism-and-label-boundary.md).
 
 The library-only `reviewJobTrussInspectionIntake` compares one independently specified job, truss and design revision with separate inspection and signature references and the expected joint faces. A reported correction closure is held without independent reinspection. See the [TPI form scope](docs/references/tpi-in-plant-inspection-evidence-boundary.md). This does not validate a signature, confirm an inspection, approve shipment or change the fabrication lock.

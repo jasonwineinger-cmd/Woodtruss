@@ -46,3 +46,28 @@ test('holds absent authorization, substitutes and stale editions even when local
  const claimed=fixture();claimed.identity.digestSha256=hex(bytes);
  assert.equal((await verifyLocalPlateSourceArtifact(claimed,authorized,{reference:claimed,bytes})).hold,'REFERENCE_METADATA_MISMATCH');
 });
+
+test('authorization and supplied reference must be exact plain own-data envelopes',async()=>{
+ const makeSupplied=()=>({reference:fixture(),bytes:original});
+ let reads=0;
+ const dynamicAuth={...authorized};
+ Object.defineProperty(dynamicAuth,'sha256',{enumerable:true,get(){reads++;return authorized.sha256;}});
+ for(const invalid of [
+  dynamicAuth, {...authorized,sha256:'0'.repeat(64)},
+  Object.assign(Object.create(authorized),{purpose:authorized.purpose}),
+  Object.assign({...authorized},{[Symbol('not part of authorization')]:true}),
+ ]) {
+  const report=await verifyLocalPlateSourceArtifact(fixture(),invalid,makeSupplied());
+  assert.equal(report.hold,'MISSING_OR_INVALID_LOCAL_AUTHORIZATION');
+  assert.equal(report.machineReleaseAuthorized,false);
+ }
+ for(const invalid of [
+  null, {...makeSupplied(),allowableLoadLb:100},
+  Object.create(makeSupplied()), Object.defineProperty(makeSupplied(),'hidden',{value:true}),
+ ]) {
+  const report=await verifyLocalPlateSourceArtifact(fixture(),authorized,invalid);
+  assert.equal(report.hold,'INVALID_REFERENCE_METADATA');
+  assert.equal(report.capacityVerified,false);
+ }
+ assert.equal(reads,0);
+});
