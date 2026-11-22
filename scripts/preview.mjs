@@ -8,10 +8,12 @@ import { createPreliminaryMaterialsReport } from '../dist/fabrication/src/prelim
 import { createPreliminaryMaterialsTraceabilityManifest, fingerprintPreliminaryMaterialsSource } from '../dist/fabrication/src/preliminary-materials-traceability.js';
 import { createPreliminarySchematicReview } from '../dist/fabrication/src/preliminary-schematic-review.js';
 import { evaluateAtticClearanceLimits } from '../dist/geometry/src/attic-clearance-limits.js';
+import { generateDoubleFinkTopology } from '../dist/geometry/src/double-fink-topology.js';
 
 const usage = 'Usage: npm start -- [--family common|mono] [--span-ft 30] [--pitch 6] [--format json|svg]\n'
   + '       npm start -- --attic-clearance --span-ft N --pitch N --room-width-ft N --room-height-ft N\n'
   + '       npm start --silent -- --explicit-point-load < authored-case.json\n'
+  + '       npm start --silent -- --double-fink-reference --span-ft N --pitch N\n'
   + 'Use --capabilities by itself to list the supported scope.\n'
   + 'Runs a synthetic example: a 1,000 lb point load at the common ridge or mono quarter-point.';
 
@@ -33,6 +35,19 @@ function atticClearance(args) {
     throw new Error('Unexpected attic preview status.');
   process.stdout.write(JSON.stringify({...result, notice:'NOT FOR FABRICATION',
     scope:'Ideal centerlines only, no real wall thickness, member size, floor or structural verification.'},null,2)+'\n');
+}
+
+function doubleFinkReference(args) {
+  const inputs = new Map();
+  for (let i=0; i<args.length; i+=2) {
+    const [key,value] = [args[i],args[i+1]];
+    if (!['--span-ft','--pitch'].includes(key) || inputs.has(key) || !/^\d+(\.\d+)?$/u.test(value??''))
+      throw new Error('Specify one numeric span and pitch for the schematic double-Fink reference.');
+    inputs.set(key,Number(value));
+  }
+  if (inputs.size !== 2) throw new Error('Both schematic span and pitch are required.');
+  const result = generateDoubleFinkTopology({family:'common',spanFt:inputs.get('--span-ft'),pitchRisePer12:inputs.get('--pitch')});
+  process.stdout.write(JSON.stringify({...result,notice:'NOT FOR FABRICATION',units:{length:'in'}},null,2)+'\n');
 }
 
 async function explicitPointLoad() {
@@ -95,6 +110,10 @@ async function run(args) {
     atticClearance(args.slice(1));
     return;
   }
+  if (args[0] === '--double-fink-reference') {
+    doubleFinkReference(args.slice(1));
+    return;
+  }
 
   if (args.length === 1 && args[0] === '--capabilities') {
     process.stdout.write(JSON.stringify({
@@ -106,6 +125,7 @@ async function run(args) {
       explicitPointLoadApiScope: 'These variants are available through the library dispatcher and the authored JSON CLI, not the built-in demo options or a complete family list.',
       explicitPointLoadCli: { option:'--explicit-point-load', input:'stdin', schemaVersion:'woodtruss.authored-point-load-input.v1' },
       atticScope: { geometry: 'CENTERLINE_CLEARANCE_ONLY', analysisAvailable: false, cliOption: '--attic-clearance' },
+      doubleFinkScope: { geometry:'GENERIC_CENTERLINES_ONLY',analysisAvailable:false,cliOption:'--double-fink-reference' },
       notice: 'NOT FOR FABRICATION',
       fabricationAuthorized: false,
     }, null, 2) + '\n');

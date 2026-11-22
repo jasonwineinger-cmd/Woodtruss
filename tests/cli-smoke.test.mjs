@@ -123,6 +123,23 @@ test('CLI attic clearance uses explicit geometry only and rejects unsupported sp
   }
 });
 
+test('CLI exposes an explicitly scoped generic double-Fink geometry reference only', () => {
+  const args=['--double-fink-reference','--span-ft','32','--pitch','5'];
+  const r=run(...args);
+  assert.equal(r.status,0,r.stderr);
+  const preview=JSON.parse(r.stdout);
+  assert.equal(preview.notice,'NOT FOR FABRICATION');
+  assert.equal(preview.pinJointAnalysisAvailable,false);
+  assert.equal(preview.fabricationAuthorized,false);
+  assert.equal(preview.joints.find(j=>j.id==='E').position.x,384);
+  assert.equal(preview.members.length,29);
+  assert.equal(Object.hasOwn(preview,'result'),false);
+  assert.equal(JSON.parse(run('--capabilities').stdout).doubleFinkScope.analysisAvailable,false);
+  for(const invalid of [args.slice(0,-2),[...args,'--format','svg'],['--double-fink-reference','--span-ft','51','--pitch','5']]){
+    const bad=run(...invalid); assert.equal(bad.status,1); assert.equal(bad.stdout,'');
+  }
+});
+
 test('CLI rejects invalid or unsupported arguments without emitting any package', () => {
   for (const args of [['--span-ft', '51'], ['--pitch', '0'], ['--fabrication'], ['--format', 'dxf'], ['--format'], ['--family', 'hip'], ['--family'], ['--family', 'mono', '--span-ft', '51'], ['--span-ft'], ['--pitch', '6', '--pitch', '7']]) {
     const r = run(...args);

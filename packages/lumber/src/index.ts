@@ -42,3 +42,4 @@ export { studyPreliminarySteppedAxialDeformation, type AxialStep,
   type SteppedAxialDeformationInput } from "./stepped-axial-deformation.js";
 export { studyIdealBuiltUpRectangularGeometry, type BuiltUpRectangle } from "./built-up-rectangular-geometry.js";
 export { studyRectangularNetSection, type RectangularSectionVoid, type RectangularNetSectionInput } from "./rectangular-net-section.js";
+export { comparePreliminaryAxialBarObservations, type AxialBarObservationInput } from "./axial-observation-reconciliation.js";

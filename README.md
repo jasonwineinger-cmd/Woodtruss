@@ -103,4 +103,12 @@ npm start --silent -- --attic-clearance --span-ft 40 --pitch 8 --room-width-ft 1
 
 The result compares ideal centerlines with a centered rectangular room under a level, symmetric, zero-heel roof. It does not account for member thickness or finishes, solve the attic structure or floor, or authorize fabrication.
 
+A separate **generic double-Fink-style centerline reference** is available for a symmetric, flat-bottom gable without overhangs or heel offsets:
+
+```sh
+npm start --silent -- --double-fink-reference --span-ft 32 --pitch 5
+```
+
+This is an eight-panel geometry reference, not a reproduction of any manufacturer's layout. It does not analyze a truss, place plates, or validate installed geometry.
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
