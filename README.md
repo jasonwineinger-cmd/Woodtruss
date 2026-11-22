@@ -185,4 +185,6 @@ The library-only `studyAuthoredMonoElasticFrameDisplacements` takes named joints
 
 The library-only `studyAuthoredMonoElasticFrameSectionCuts` reports the signed axial force, shear and bending moment together at named directed stations, with a separate selection for each solved case. The [section-cut scope](docs/references/mono-authored-section-cut-scope.md) distinguishes one-sided point results from unchanged actions at an exactly cancelled point. These are analysis sections, not shop cuts or capacity checks.
 
+The library-only `studyAuthoredRaisedHeelCommonElasticFrameReactions` studies explicitly weighted actions on the level-bearing, flat-bottom common centerline family with a 1–48 in raised heel and no overhang. See the [raised-heel common study scope](docs/raised-heel-common-authored-elastic-frame-scope.md) for exact directed member inputs and the distinction between `L`/`E` bearings and `HL`/`HE` upper heel nodes. It is separate from the uniform pin-joint study and does not authorize fabrication.
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
