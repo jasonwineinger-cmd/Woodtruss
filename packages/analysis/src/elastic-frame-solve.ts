@@ -8,6 +8,7 @@ import { condenseElasticFrameMemberLoad } from "./elastic-frame-release-load.js"
 import { condenseElasticFrameShearLoad } from "./elastic-frame-shear-release.js";
 import { recoverElasticFrameShearEndActions } from "./elastic-frame-shear-end-actions.js";
 import { localizeElasticFrameSectionForce } from "./elastic-frame-section-load-basis.js";
+import { recoverElasticFrameRectangularStressExtrema } from "./elastic-frame-rectangular-stress-extrema.js";
 import { recoverElasticFrameDeflectionExtrema } from "./elastic-frame-deflection-extrema.js";
 import { recoverElasticFrameSectionDisplacement } from "./elastic-frame-section-displacement.js";
 import { recoverElasticFrameSectionDemand, type ElasticFrameSectionDemandCut } from "./elastic-frame-section-demand.js";
@@ -46,6 +47,9 @@ export interface ElasticFrameInput {
   memberDisplacementStations?:readonly {memberId:string;stationsIn:readonly number[]}[];
   /** Opt into numerical transverse extrema for exact members, without a design limit. */
   memberDeflectionExtrema?:readonly {memberId:string}[];
+  /** Opt into signed gross normal-stress extrema for one solved state, not capacity. */
+  memberRectangularStressExtrema?:readonly {memberId:string;
+    rectangle:{actualWidthIn:number;actualDepthIn:number}}[];
 }
 const finite=(numbers:readonly number[])=>numbers.every(Number.isFinite);
 const validId=(id:string)=>typeof id==="string" && /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$/u.test(id);
@@ -62,6 +66,8 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   const hasStations=!!input&&Object.hasOwn(input,"memberDisplacementStations");
   const hasExtrema=!!input&&Object.hasOwn(input,"memberDeflectionExtrema");
   const hasCuts=!!input&&Object.hasOwn(input,"memberSectionCuts");
+  const hasStressExtrema=!!input&&Object.hasOwn(input,"memberRectangularStressExtrema");
+  if(hasStressExtrema) fields.push("memberRectangularStressExtrema");
   if(hasCuts) fields.push("memberSectionCuts");
   if(hasExtrema) fields.push("memberDeflectionExtrema");
   if(hasMemberLoads) fields.push("memberLoads");
@@ -76,6 +82,10 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   const stationRequests=hasStations?input.memberDisplacementStations:undefined;
   const extremaRequests=hasExtrema?input.memberDeflectionExtrema:undefined;
   const cutRequests=hasCuts?input.memberSectionCuts:undefined;
+  const stressRequests=hasStressExtrema?input.memberRectangularStressExtrema:undefined;
+  if(hasStressExtrema&&(!Array.isArray(stressRequests)||!stressRequests.length||stressRequests.length>100||
+    Reflect.ownKeys(stressRequests).length!==stressRequests.length+1))
+    throw new Error("Invalid rectangular stress-extrema requests");
   if(hasCuts&&(!Array.isArray(cutRequests)||!cutRequests.length||cutRequests.length>100||
     Reflect.ownKeys(cutRequests).length!==cutRequests.length+1))
     throw new Error("Invalid frame member section cut requests");
@@ -170,6 +180,14 @@ export function solveElasticFrame(input:ElasticFrameInput) {
     if(!Array.isArray(request.cuts)||!request.cuts.length||request.cuts.length>64)
       throw new Error("Invalid frame member section cut count");
     sectionCutsByMember.set(request.memberId,request.cuts);
+  }
+  const rectanglesByMember=new Map<string,{actualWidthIn:number;actualDepthIn:number}>();
+  for(const request of Array.from(stressRequests??[])) {
+    if(!exact(request,["memberId","rectangle"])||!validId(request.memberId)||
+       rectanglesByMember.has(request.memberId)||!memberEnds.has(request.memberId)||
+       !exact(request.rectangle,["actualWidthIn","actualDepthIn"]))
+      throw new Error("Invalid, unknown or repeated rectangular stress-extrema request");
+    rectanglesByMember.set(request.memberId,request.rectangle);
   }
   if(!K.every(finite)) throw new Error("Nonfinite assembled frame stiffness");
   const visited=new Set<number>([0]),frontier=[0];
@@ -373,6 +391,7 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   const sectionEntries:(readonly [string,ReturnType<typeof recoverElasticFrameSectionDemand>])[]=[];
   const displacementEntries:(readonly [string,ReturnType<typeof recoverElasticFrameSectionDisplacement>["samples"]])[]=[];
   const extremaEntries:(readonly [string,ReturnType<typeof recoverElasticFrameDeflectionExtrema>])[]=[];
+  const stressEntries:(readonly [string,ReturnType<typeof recoverElasticFrameRectangularStressExtrema>])[]=[];
   const memberEndActions=Object.fromEntries(Array.from(memberEnds,([memberId,record])=>{
     const {a,b,properties,globalToLocal,originalLocalLoad,physicalMemberActions,shear}=record;
     const dofs=memberDofs(a,b);
@@ -400,6 +419,12 @@ export function solveElasticFrame(input:ElasticFrameInput) {
       localEndActions:recovered.localEndActions,uniform:record.sectionUniform,point:record.sectionPoint},
       sectionCutsByMember.get(memberId));
     sectionEntries.push([memberId,section]);
+    const rectangle=rectanglesByMember.get(memberId);
+    if(rectangle) stressEntries.push([memberId,recoverElasticFrameRectangularStressExtrema({
+      lengthIn:properties.lengthIn,localEndActions:recovered.localEndActions,
+      uniform:record.sectionUniform,point:record.sectionPoint,rectangle,
+      modeledAreaIn2:properties.areaIn2,modeledSecondMomentIn4:properties.secondMomentIn4,
+    })]);
     const stationsIn=displacementStationsByMember.get(memberId);
     const wantsExtrema=extremaMembers.has(memberId);
     if(stationsIn || wantsExtrema) {
@@ -438,8 +463,10 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   const memberSectionDemand=Object.fromEntries(sectionEntries);
   const memberSectionDisplacements=Object.fromEntries(displacementEntries);
   const memberDeflectionExtrema=Object.fromEntries(extremaEntries);
-  return {displacements,reactions,memberEndActions,memberSectionDemand,memberSectionDisplacements,memberDeflectionExtrema,equilibrium:{passes:true as const,
+  const memberRectangularStressExtrema=Object.fromEntries(stressEntries);
+  return {displacements,reactions,memberEndActions,memberSectionDemand,memberSectionDisplacements,
+    memberDeflectionExtrema,memberRectangularStressExtrema,equilibrium:{passes:true as const,
     forceXLb:errs[0],forceYLb:errs[1],momentLbIn:errs[2],originNodeId:nodes[0].id},
     status:"PRELIMINARY_NOT_ENGINEERED" as const,fabricationAuthorized:false as const,
-    scope:"Linear axial/bending frame with rigid or explicitly released member ends, ideal global or inclined restraints, nodal actions and bounded full uniform or concentric interior point forces. Explicit shear-flexible members use dedicated consistent actions and ideal release condensation/recovery. Section force extrema and requested co-located cuts cover only the bounded action shapes for this solved state; Local section samples and optional local transverse extrema concern only the modeled member and action state, not a governing case envelope or serviceability approval. No design or capacity approval."};
+    scope:"Linear axial/bending frame with rigid or explicitly released member ends, ideal global or inclined restraints, nodal actions and bounded full uniform or concentric interior point forces. Explicit shear-flexible members use dedicated consistent actions and ideal release condensation/recovery. Section force extrema and requested co-located cuts cover only the bounded action shapes for this solved state; Local section samples and optional local transverse extrema concern only the modeled member and action state, not a governing case envelope or serviceability approval. Optional gross rectangle normal-stress extrema are single-state ideal elastic diagnostics. No design or capacity approval."};
 }
