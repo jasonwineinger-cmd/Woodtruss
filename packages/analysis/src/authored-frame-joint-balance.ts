@@ -12,17 +12,13 @@ const zero = () => ({ fxLb: 0, fyLb: 0, momentLbIn: 0 });
 type Vector = ReturnType<typeof zero>;
 const components = ["fxLb", "fyLb", "momentLbIn"] as const;
 const clean = (value: number) => value === 0 ? 0 : value;
-/** Preliminary 2D joint audit from actual section endpoints, not from the
- * solver's assembled member-end ledger. All moments are about the selected
- * node; no member eccentricity, connector model or release authority. */
-export function studyAuthoredFrameJointBalance<
-  Frame extends Pick<ElasticFrameInput, "nodes" | "members" | "supports">,
-  Subtype extends string,
-  AdditionalWarnings extends readonly string[],
->(
-  input: unknown,
-  build: (input: unknown) => Frame,
-  scope: { readonly subtype: Subtype; readonly label: string; readonly additionalWarnings: AdditionalWarnings },
+type FrameInputs = Pick<ElasticFrameInput, "nodes" | "members" | "supports">;
+
+/** Shared joint ledger; callers snapshot and validate their exact authored
+ * envelope, including any topology-specific binding, before entering. */
+export function runAuthoredFrameJointBalance<Frame extends FrameInputs, AdditionalWarnings extends readonly string[]>(
+  frame: Frame, input: AuthoredElasticFrameLoadCombinationsInput & { caseJoints: unknown },
+  scope: { readonly label: string; readonly additionalWarnings: AdditionalWarnings },
 ) {
   const fail = (description: string) => new Error(`${scope.label} joint balance: ${description}`);
   const finite = (value: number) => {
@@ -55,10 +51,7 @@ export function studyAuthoredFrameJointBalance<
     return out;
   }
 
-  const data = snapshotElasticFrameReviewData(input);
-  if (!exact(data, fields)) throw fail("exact authored frame, combinations and ordered case joints are required");
-  const { modelId, modelRevision, roof, memberAssignments, supports, sources, combinations, caseJoints } = data as Scope;
-  const frame = build({ roof, memberAssignments, supports });
+  const { modelId, modelRevision, sources, combinations, caseJoints } = input;
   const authored = buildAuthoredElasticFrameLoadCombinations({ modelId, modelRevision, sources, combinations });
   assertElasticFrameAuthoredSourceTargets(frame, sources);
   const nodes = new Map(frame.nodes.map(node => [node.id, node]));
@@ -125,12 +118,31 @@ export function studyAuthoredFrameJointBalance<
     });
     return {caseId,joints};
   });
-  return {family:"common" as const,subtype:scope.subtype,
-    modelId,modelRevision,frame,combinationProvenance:authored.provenance,cases,
+  return {modelId,modelRevision,frame,combinationProvenance:authored.provenance,cases,
     status:"PRELIMINARY_NOT_ENGINEERED" as const,fabricationAuthorized:false as const,
     warnings:[
       "Member-on-node forces are global X/Y and moments are positive counterclockwise. Physical member loads are already in the section-end results, not reapplied at the joint.",
       "Joint balance is not connector design, structural approval, or fabrication evidence.",
       ...scope.additionalWarnings,
     ] as const};
+}
+
+/** Preliminary 2D joint audit from actual section endpoints, not from the
+ * solver's assembled member-end ledger. All moments are about the selected
+ * node; no member eccentricity, connector model or release authority. */
+export function studyAuthoredFrameJointBalance<
+  Frame extends Pick<ElasticFrameInput, "nodes" | "members" | "supports">,
+  Subtype extends string,
+  AdditionalWarnings extends readonly string[],
+>(
+  input: unknown,
+  build: (input: unknown) => Frame,
+  scope: { readonly subtype: Subtype; readonly label: string; readonly additionalWarnings: AdditionalWarnings },
+) {
+  const data = snapshotElasticFrameReviewData(input);
+  if (!exact(data, fields)) throw new Error(`${scope.label} joint balance: exact authored frame, combinations and ordered case joints are required`);
+  const { modelId, modelRevision, roof, memberAssignments, supports, sources, combinations, caseJoints } = data as Scope;
+  const frame = build({ roof, memberAssignments, supports });
+  return {family:"common" as const,subtype:scope.subtype,
+    ...runAuthoredFrameJointBalance(frame, {modelId, modelRevision, sources, combinations, caseJoints}, scope)};
 }

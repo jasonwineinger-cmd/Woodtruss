@@ -213,6 +213,8 @@ The library-only `studyAuthoredDoubleFinkElasticFrameSectionCuts` reports signed
 
 The library-only `studyAuthoredDoubleFinkElasticFrameJointBalance` checks signed equilibrium at selected ordinary Double Fink nodes using incident inside section actions, physical nodal loads and modeled reactions. See the [joint-balance boundary](docs/double-fink-authored-joint-balance-boundary.md). It does not establish connector demands or release authority.
 
+The library-only `studyAuthoredElasticFrameCombinationJointBalance` checks modeled joint equilibrium for caller-supplied nodes, directed members and restraints. See the [explicit frame boundary](docs/explicit-authored-frame-joint-balance-boundary.md). Its 50-ft coordinate guard does not establish an allowable structural span.
+
 The library-only `studyAuthoredRaisedHeelDoubleFinkElasticFrameReactions` keeps the raised upper heel nodes separate from the actual `L`/`E` bearings and uses explicit directed properties, releases, restraints and signed load combinations. See the [raised-heel Double Fink study scope](docs/raised-heel-double-fink-authored-elastic-frame-scope.md). The separate geometry-only CLI is unchanged; no supplier layout or fabrication approval is inferred.
 
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
