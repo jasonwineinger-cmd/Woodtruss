@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 024 — 2026-11-22T02:34:02Z (UTC)
+
+**Reviewed implementation:** [`594608f67cfd9497d28cef9bc94f4cf7b72b0a47`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/594608f67cfd9497d28cef9bc94f4cf7b72b0a47). Baseline `6f2b8e4`: 453 passing. Full `npm run check`: **462 passed, 0 failed, 0 skipped**. Six independent lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/elastic-frame-local-end-actions.ts`, `tests/elastic-frame-local-end-actions.test.mjs`: recover released section rotations from full equilibrium and correctly signed local node-on-member end vectors. |
+| 2 Lumber | Independent end/section equilibrium audit and scoped shear-deformation oracle. End moments do not bound interior peaks; no structural design values or capacity assigned. |
+| 3 Connector/source | `docs/references/usda-ppsa-frame-output-scope.md` and `tests/usda-ppsa-no-shear-diagnostic.test.mjs`: signed member 6 and 7 comparison, independent physical resultants, explicit no-shear versus legacy discrepancy. No physical connector demand or approval. |
+| 4 Geometry | `tests/elastic-frame-recovered-topology.test.mjs`: mixed inclined shared joint, private rotations and exact ordered axes, joint balance and reversals. |
+| 5 Manufacturing | `tests/elastic-frame-end-action-evidence-boundary.test.mjs`: same-member frame records cannot replace the separate connector evidence contract. No released manufacturing path. |
+| 6 Testing | `tests/elastic-frame-recovered-end-benchmark.test.mjs`: analytic propped beam and interior-point cantilever local actions/rotations. |
+| Integration | `packages/analysis/src/elastic-frame-solve.ts`, `README.md`: uncondensed local RHS retained for member recovery; independently check each physical member balance and all joint components before returning preliminary results. |
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. This is linear member-end verification only, not between-end demand, structural adequacy or capacity.
+
+**Next:** Add an independently verified shear-flexible prismatic element using explicit shear modulus and effective shear area. Verify the nodal-load cantilever and local transform first; keep release/within-member shear load shapes held until separately supported. Original USDA result match remains held. Preserve 50-ft cap and fail-closed fabrication.
+
 ## Batch 023 — 2026-11-22T02:21:06Z (UTC)
 
 **Reviewed implementation:** [`5622cef3dd393289145024c14c5c9bae3560ba25`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/5622cef3dd393289145024c14c5c9bae3560ba25). Baseline `977b09a`: 442 passing. Full `npm run check`: **453 passed, 0 failed, 0 skipped**. Six isolated lanes and an independent numerical diagnostic.
