@@ -205,6 +205,8 @@ The library-only `studyAuthoredMonoElasticFrameSectionCuts` reports the signed a
 
 The library-only `studyAuthoredRaisedHeelCommonElasticFrameReactions` studies explicitly weighted actions on the level-bearing, flat-bottom common centerline family with a 1–48 in raised heel and no overhang. See the [raised-heel common study scope](docs/raised-heel-common-authored-elastic-frame-scope.md) for exact directed member inputs and the distinction between `L`/`E` bearings and `HL`/`HE` upper heel nodes. It is separate from the uniform pin-joint study and does not authorize fabrication.
 
+The library-only `studyAuthoredRaisedHeelCommonElasticFrameJointBalance` checks signed equilibrium at exact modeled nodes while keeping upper heel loads distinct from lower bearing reactions. See the [raised-heel joint-balance boundary](docs/raised-heel-common-authored-joint-balance-boundary.md). It does not establish plate demands or release authority.
+
 The library-only `studyAuthoredDoubleFinkElasticFrameReactions` uses exact directed inputs and fresh signed load combinations on the generic flat-bottom Double Fink centerline graph. See the [Double Fink study scope](docs/double-fink-authored-elastic-frame-scope.md). The geometry-only CLI reference is unchanged; neither path represents a supplier drawing or authorizes fabrication.
 
 The library-only `studyAuthoredDoubleFinkElasticFrameSectionCuts` reports signed axial, shear and moment together for selected directed stations on freshly solved ordinary Double Fink cases. See the [section-cut boundary](docs/double-fink-authored-section-cut-boundary.md). The results are not connector demands, shop cuts or capacity checks.
