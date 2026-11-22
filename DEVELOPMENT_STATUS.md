@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 040 — 2026-11-22T06:34:03Z (UTC)
+
+**Reviewed implementation:** [`76754a6f6aed8583aa4c8fa16657c118c90f0c97`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/76754a6f6aed8583aa4c8fa16657c118c90f0c97). Baseline `d2fd160`: 619 passing. Full `npm run check`: **623 passed, 0 failed, 0 skipped**. Six isolated numeric, research and verification lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural/test intake | `observed-scissor-three-gauge-study.ts`: exact specimen/test/channel IDs; three signed displacements and two signed bearing reactions per step; explicit loading-window endpoints and selected observations only. |
+| 2 Numerical | `observed-scissor-stiffness-fit.ts`: intercept-bearing centered, scaled, compensated least squares with representable data bounds, strictly increasing reactions and positive identified slope. |
+| 3 Measured data evidence | `usda-fpl-rp-499-scissor-benchmark.md`: independently inventoried eight reported historical individual slopes and exclusive three-gauge observable; a missing TS1 web modulus remains unresolved. |
+| 4 Geometry evidence | `usda-fpl-rp-499-scissor-geometry-hold.md`: primary source caption verifies family and span; visual drawing/actual centerlines not retrieved and not replaced by generic coordinates. |
+| 5 Setup evidence | `usda-fpl-rp-499-scissor-protocol-hold.md`: distinguish individual and assembly conditions, documented load-point spacing and held absolute positions, gauges and restraint. |
+| 6 and root | Synthetic three-gauge noisy OLS benchmark (5,000 lb/in slope, 40 lb intercept), negative input and large-coordinate stability checks, exact integration and README. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. No historic test has been reproduced, and no fit grants design or fabrication authority.
+
+**Next:** Advance a separate explicitly authored finite horizontal restraint diagnostic, with hand-tested free/finite/rigid boundary behavior. Do not assign a value to the historic rig or use its measured stiffness to fit any missing parameters. Keep pursuing exact specimen evidence only from verified sources.
+
 ## Batch 039 — 2026-11-22T06:18:01Z (UTC)
 
 **Reviewed implementation:** [`f3e4729f0a1c13ea6623f9ac91a52bbea32180b4`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/f3e4729f0a1c13ea6623f9ac91a52bbea32180b4). Baseline `1c20005`: 610 passing. Full `npm run check`: **619 passed, 0 failed, 0 skipped**. Six isolated lanes.
