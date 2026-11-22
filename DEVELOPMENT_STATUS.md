@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 051 — 2026-11-22T09:18:43Z (UTC)
+
+**Reviewed implementation:** [`539b62219d58aaa408225272ea176081951cfbef`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/539b62219d58aaa408225272ea176081951cfbef). Baseline `f0e3b78`: 689 passing. Full `npm run check`: **693 passed, 0 failed, 0 skipped**. Six parallel selection, validation, quantitative and review lanes plus integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Selection | `mono-authored-section-cut-selection.ts`: exact ordered per-case directed member, bounded station and side selections. |
+| 2 Boundaries | `mono-authored-section-cut-boundaries.test.mjs`: unique exact rows, point-side and bounds checks, unsupported inputs held. |
+| 3 Independent benchmark | `mono-authored-section-cut-benchmark.test.mjs`: synthetic axial point jump, sign reversal and exact cancellation without a jump. |
+| 4 Scope | `mono-authored-section-cut-scope.md` and README: inside-member end limits and distinction between model sections and shop cuts. |
+| 5 Solver audit | Exact cancellation with other loading retains its authored point station and left/right labels without changing the net action. No CLI or release wiring. |
+| 6 Independent mechanics and root | `mono-authored-elastic-frame-section-cuts.ts`: co-located freshly solved vector; checked the transverse point benchmark including surrounding-frame axial force and independent shear/moment. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. No inferred support, site load, actual material/capacity, shop cut or authority.
+
+**Next:** Rebalance to another explicitly bounded topology or independent engineering verification gap. Check raised-heel and Double Fink support choices before adding any new geometry; compare with a hand or primary example where licensed and source-complete.
+
 ## Batch 050 — 2026-11-22T09:03:53Z (UTC)
 
 **Reviewed implementation:** [`7f50587dabb9600a5b4f3d364378cb8a2cc17584`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/7f50587dabb9600a5b4f3d364378cb8a2cc17584). Baseline `e13c0c3`: 685 passing. Full `npm run check`: **689 passed, 0 failed, 0 skipped**. Six parallel model, review, evidence and validation lanes plus integration.
