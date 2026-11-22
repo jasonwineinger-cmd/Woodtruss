@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 030 — 2026-11-22T04:04:06Z (UTC)
+
+**Reviewed implementation:** [`9b33d8e73f302c2445af5ad0a7f25e7fa286a6bf`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/9b33d8e73f302c2445af5ad0a7f25e7fa286a6bf). Baseline `68038e7`: 518 passing. Full `npm run check`: **532 passed, 0 failed, 0 skipped**. Six isolated engineering, evidence and test lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `elastic-frame-branch-roots.ts`, corresponding regression: exact dyadic Sturm signs for the represented slope polynomial, independent bracket/rounding, repeated and near-edge roots, flat branches and resolution holds. |
+| 2 Lumber | `elastic-frame-displacement-boundary.test.mjs`: authored named-joint replay cannot substitute a same-position sampled section or use it as a case receipt. Audited signed extrema against separate serviceability contracts. |
+| 3 Connector plates | Independent shear cusp and ordered-axis sign audit; section motion does not establish plate grip, stiffness or capacity. |
+| 4 Geometry | `elastic-frame-deflection-branches.ts`, corresponding regression: normalized one-sided local slope shapes with consistent shear and ordered physical stations. |
+| 5 Manufacturing/source | `docs/references/usda-ppsa-frame-output-scope.md`: sampled historical deflections remain distinct from modern local extrema and the displaced-end reference; no manufacturing release. |
+| 6 Testing | `elastic-frame-deflection-extrema-benchmark.test.mjs`: independent tip-loaded and simply supported Euler benchmarks, shear cusp, ordered-axis reversal and opt-in scope checks. |
+| Integration | `elastic-frame-deflection-extrema.ts`, `elastic-frame-deflection-extrema.test.mjs`, `elastic-frame-solve.ts`, `README.md`: distinguish absolute local and straight displaced-chord minima/maxima, include the interior point-load station in the piecewise field and verify affine-motion invariance. |
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. The diagnostics do not establish a design limit or a governing load case, and licensed and qualified engineering evidence remain required. Preserve the 50-ft cap.
+
+**Next:** Return co-located signed section demand for exact authored cuts and explicit point-force sides. Keep one complete force vector per solved load state and do not synthesize design interactions from independent extrema.
+
 ## Batch 029 — 2026-11-22T03:47:54Z (UTC)
 
 **Reviewed implementation:** [`5657dd031460a5ea212fcd6f9c5c9ac33aa2e20f`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/5657dd031460a5ea212fcd6f9c5c9ac33aa2e20f). Baseline `955df32`: 507 passing. Full `npm run check`: **518 passed, 0 failed, 0 skipped**. Six isolated engineering, evidence and test lanes.
