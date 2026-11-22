@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 065 — 2026-11-22T12:47:13Z (UTC)
+
+**Reviewed implementation:** [`fa5e4074b51e8e829c0cfe9c59c55300899818f7`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/fa5e4074b51e8e829c0cfe9c59c55300899818f7). Baseline `015dc71`: 770 passing. Full `npm run check`: **776 passed, 0 failed, 0 skipped**. Six independent implementation, testing, documentation and review lanes, plus root integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Paired artifact receipt | `job-truss-inspection-paired-artifacts.ts`: exact expected design ID plus independent intake revision and digests for separate design and inspection artifacts. |
+| 2 Independent byte oracle | `job-truss-inspection-paired-artifacts-benchmark.test.mjs`: independent known digest vectors, offset views, immediate mutation and complete paired holds. |
+| 3 Boundary QA | `job-truss-inspection-paired-artifacts-boundaries.test.mjs`: swapped, stale, shared, aliased and accessor-backed inputs plus unsupported correction closure. |
+| 4 Documentation | README and `job-truss-paired-local-artifact-boundary.md` distinguish matching local bytes from signing, inspection and release. |
+| 5 Independent async audit | Verified both private local snapshots are started before the first await, with a separate size limit and no raw output. |
+| 6 Independent documentary audit | No signature, plant, correction/reinspection, capacity, workmanship or shipping claim follows. |
+| Root | Extended `job-truss-inspection-record-bytes.test.mjs` to prove that the legacy single-record check still works but cannot establish a stale or substituted paired design. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. A pair match establishes only identity of the two caller-supplied local byte views against their independent expectations.
+
+**Next:** Advance an independent raised-heel analysis benchmark with a signed nodal moment bound to an exact modeled heel distinct from the bearing. Keep joint balance separate from connector demand and physical approval.
+
 ## Batch 064 — 2026-11-22T12:32:43Z (UTC)
 
 **Reviewed implementation:** [`cbf604a541bc531c612c68a48aaa982fee895db7`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/cbf604a541bc531c612c68a48aaa982fee895db7). Baseline `6eba12b`: 765 passing. Full `npm run check`: **770 passed, 0 failed, 0 skipped**. Six independent artifact, metadata, testing, documentation and review lanes, plus root integration.
