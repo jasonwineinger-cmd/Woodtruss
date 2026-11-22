@@ -2,6 +2,7 @@
 import { analyzePreliminaryCommonTruss } from '../dist/analysis/src/common.js';
 import { analyzePreliminaryMonoTruss } from '../dist/analysis/src/mono-analysis.js';
 import { analyzeExplicitFamily, EXPLICIT_POINT_LOAD_VARIANTS } from '../dist/analysis/src/explicit-family-dispatch.js';
+import { analyzeAuthoredModel } from '../dist/analysis/src/authored-model-analysis.js';
 import { envelopePreliminaryCases } from '../dist/analysis/src/envelope.js';
 import { createPreliminaryTrussPackage } from '../dist/contracts/src/preview.js';
 import { createPreliminaryMaterialsReport } from '../dist/fabrication/src/preliminary-materials.js';
@@ -13,6 +14,7 @@ import { generateDoubleFinkTopology } from '../dist/geometry/src/double-fink-top
 const usage = 'Usage: npm start -- [--family common|mono] [--span-ft 30] [--pitch 6] [--format json|svg]\n'
   + '       npm start -- --attic-clearance --span-ft N --pitch N --room-width-ft N --room-height-ft N\n'
   + '       npm start --silent -- --explicit-point-load < authored-case.json\n'
+  + '       npm start --silent -- --authored-model < authored-model.json\n'
   + '       npm start --silent -- --double-fink-reference --span-ft N --pitch N\n'
   + 'Use --capabilities by itself to list the supported scope.\n'
   + 'Runs a synthetic example: a 1,000 lb point load at the common ridge or mono quarter-point.';
@@ -50,17 +52,27 @@ function doubleFinkReference(args) {
   process.stdout.write(JSON.stringify({...result,notice:'NOT FOR FABRICATION',units:{length:'in'}},null,2)+'\n');
 }
 
-async function explicitPointLoad() {
+async function readStdinJson(maxBytes, label) {
   const chunks = [];
   let bytes = 0;
   for await (const chunk of process.stdin) {
     bytes += chunk.length;
-    if (bytes > 16_384) throw new Error('Authored case exceeds the 16 KiB input limit.');
+    if (bytes > maxBytes) throw new Error(`${label} exceeds the ${maxBytes / 1024} KiB input limit.`);
     chunks.push(chunk);
   }
-  let input;
-  try { input = JSON.parse(new TextDecoder('utf-8', { fatal:true }).decode(Buffer.concat(chunks))); }
-  catch { throw new Error('Provide one UTF-8 JSON authored case on standard input.'); }
+  try { return JSON.parse(new TextDecoder('utf-8', { fatal:true }).decode(Buffer.concat(chunks))); }
+  catch { throw new Error(`Provide one UTF-8 JSON ${label.toLowerCase()} on standard input.`); }
+}
+
+function writeFiniteJson(result) {
+  process.stdout.write(JSON.stringify(result, (_key, value) => {
+    if (typeof value === 'number' && !Number.isFinite(value)) throw new Error('Nonfinite analysis output.');
+    return value;
+  }, 2)+'\n');
+}
+
+async function explicitPointLoad() {
+  const input = await readStdinJson(16_384, 'Authored case');
   const only = (obj, keys) => obj !== null && typeof obj === 'object' && !Array.isArray(obj) &&
     Object.keys(obj).every(key => keys.includes(key));
   const nonempty = (v, max) => typeof v === 'string' && v.length <= max && v.trim().length > 0;
@@ -95,13 +107,17 @@ async function explicitPointLoad() {
     scope:'Illustrative pin-jointed response to the supplied point loads only. No site loads, code checks, member or connector capacity, or fabrication.',
     status:solved.status, fabricationAuthorized:false,
   };
-  process.stdout.write(JSON.stringify(output, (_key, value) => {
-    if (typeof value === 'number' && !Number.isFinite(value)) throw new Error('Nonfinite point-load output.');
-    return value;
-  }, 2)+'\n');
+  writeFiniteJson(output);
 }
 
 async function run(args) {
+  if (args.length === 1 && args[0] === '--authored-model') {
+    const solved = analyzeAuthoredModel(await readStdinJson(65_536, 'Authored model'));
+    if (solved.status !== 'PRELIMINARY_NOT_ENGINEERED' || solved.fabricationAuthorized !== false)
+      throw new Error('Unexpected authored model release status.');
+    writeFiniteJson({...solved,notice:'NOT FOR FABRICATION'});
+    return;
+  }
   if (args.length === 1 && args[0] === '--explicit-point-load') {
     await explicitPointLoad();
     return;
@@ -124,6 +140,7 @@ async function run(args) {
       explicitPointLoadApiVariants: [...EXPLICIT_POINT_LOAD_VARIANTS],
       explicitPointLoadApiScope: 'These variants are available through the library dispatcher and the authored JSON CLI, not the built-in demo options or a complete family list.',
       explicitPointLoadCli: { option:'--explicit-point-load', input:'stdin', schemaVersion:'woodtruss.authored-point-load-input.v1' },
+      authoredModelCli: { option:'--authored-model', input:'stdin', schema:'woodtruss-authored-model/v1', spanFt:{minimum:8,maximum:50} },
       atticScope: { geometry: 'CENTERLINE_CLEARANCE_ONLY', analysisAvailable: false, cliOption: '--attic-clearance' },
       doubleFinkScope: { geometry:'GENERIC_CENTERLINES_ONLY',analysisAvailable:false,cliOption:'--double-fink-reference' },
       notice: 'NOT FOR FABRICATION',

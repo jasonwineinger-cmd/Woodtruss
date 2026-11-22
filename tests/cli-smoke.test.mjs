@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const script = fileURLToPath(new URL('../scripts/preview.mjs', import.meta.url));
 const run = (...args) => spawnSync(process.execPath, [script, ...args], { encoding: 'utf8' });
 const runCase = input => spawnSync(process.execPath, [script,'--explicit-point-load'], { encoding:'utf8', input });
+const runModel = input => spawnSync(process.execPath, [script,'--authored-model'], { encoding:'utf8', input });
 const authored = () => ({ schemaVersion:'woodtruss.authored-point-load-input.v1', variant:'agricultural-tied-gable',
   roof:{family:'agricultural',spanFt:40,pitchRisePer12:4}, areaIn2:5.25, elasticModulusPsi:1_000_000,
   loadCase:{id:'illustration-1',description:'Synthetic signed quarter-point case',
@@ -146,5 +147,39 @@ test('CLI rejects invalid or unsupported arguments without emitting any package'
     assert.equal(r.status, 1);
     assert.equal(r.stdout, '');
     assert.match(r.stderr, /Woodtruss preview:/);
+  }
+});
+
+test('CLI analyzes a bounded explicitly authored graph without choosing its geometry or stiffness', () => {
+  const v={schema:'woodtruss-authored-model/v1',units:{length:'in',force:'lb',area:'in^2',elasticModulus:'psi'},
+    modelId:'synthetic-triangle',modelRevision:'class-example',provenance:'Hand-authored synthetic geometry',
+    bearings:{leftNodeId:'L',rightNodeId:'R'},
+    model:{nodes:[{id:'L',x:0,y:0},{id:'R',x:120,y:0},{id:'T',x:60,y:30}],bars:[
+      {id:'tie',a:'L',b:'R',areaIn2:2,elasticModulusPsi:250000},
+      {id:'left',a:'L',b:'T',areaIn2:3,elasticModulusPsi:300000},
+      {id:'right',a:'T',b:'R',areaIn2:4,elasticModulusPsi:350000},
+    ]},loadCase:{id:'demo',description:'One named point load',provenance:'Hand-authored synthetic load',jointLoads:[{nodeId:'T',fyLb:-360}]}};
+  const r=runModel(JSON.stringify(v));
+  assert.equal(r.status,0,r.stderr);
+  const p=JSON.parse(r.stdout);
+  assert.equal(p.status,'PRELIMINARY_NOT_ENGINEERED');
+  assert.equal(p.fabricationAuthorized,false);
+  assert.equal(p.notice,'NOT FOR FABRICATION');
+  assert.ok(Math.abs(p.result.reactionLb.L.y-180)<1e-7);
+  assert.ok(Math.abs(p.result.reactionLb.R.y-180)<1e-7);
+  assert.equal(JSON.parse(run('--capabilities').stdout).authoredModelCli.schema,v.schema);
+  for (const mutate of [
+    x=>{x.model.nodes[1].x=600.1}, x=>{x.model.nodes[1].x=95.9}, x=>{x.model.bars.pop()},
+    x=>{x.model.nodes[2].x=-1}, x=>{x.release=true}, x=>{x.loadCase.jointLoads[0].nodeId='not-a-node'},
+  ]) {
+    const bad=structuredClone(v); mutate(bad);
+    const failed=runModel(JSON.stringify(bad));
+    assert.equal(failed.status,1,failed.stderr);
+    assert.equal(failed.stdout,'');
+  }
+  for (const bad of ['{bad json}', ' '.repeat(65_537)]) {
+    const failed=runModel(bad);
+    assert.equal(failed.status,1);
+    assert.equal(failed.stdout,'');
   }
 });

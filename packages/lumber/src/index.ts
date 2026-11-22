@@ -43,3 +43,4 @@ export { studyPreliminarySteppedAxialDeformation, type AxialStep,
 export { studyIdealBuiltUpRectangularGeometry, type BuiltUpRectangle } from "./built-up-rectangular-geometry.js";
 export { studyRectangularNetSection, type RectangularSectionVoid, type RectangularNetSectionInput } from "./rectangular-net-section.js";
 export { comparePreliminaryAxialBarObservations, type AxialBarObservationInput } from "./axial-observation-reconciliation.js";
+export { auditPreliminaryMemberStiffnessAssignments, type MemberCatalogStiffnessAssignment } from "./member-stiffness-assignment-audit.js";

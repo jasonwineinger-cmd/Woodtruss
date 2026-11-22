@@ -111,4 +111,39 @@ npm start --silent -- --double-fink-reference --span-ft 32 --pitch 5
 
 This is an eight-panel geometry reference, not a reproduction of any manufacturer's layout. It does not analyze a truss, place plates, or validate installed geometry.
 
+### Analyze an independently specified member graph
+
+`--authored-model` is for a manually supplied, ideal pin-jointed graph, not a PDF importer. It accepts one case and does not fill in missing coordinates, stiffnesses, loads, brackets, bearings, or connections. Save a complete input such as this synthetic example and pass it on standard input:
+
+```json
+{
+  "schema": "woodtruss-authored-model/v1",
+  "units": { "length": "in", "force": "lb", "area": "in^2", "elasticModulus": "psi" },
+  "modelId": "synthetic-triangle",
+  "modelRevision": "class-example",
+  "provenance": "Hand-authored synthetic graph",
+  "bearings": { "leftNodeId": "L", "rightNodeId": "R" },
+  "model": {
+    "nodes": [{ "id": "L", "x": 0, "y": 0 }, { "id": "R", "x": 120, "y": 0 }, { "id": "T", "x": 60, "y": 30 }],
+    "bars": [
+      { "id": "tie", "a": "L", "b": "R", "areaIn2": 2, "elasticModulusPsi": 250000 },
+      { "id": "left", "a": "L", "b": "T", "areaIn2": 3, "elasticModulusPsi": 300000 },
+      { "id": "right", "a": "T", "b": "R", "areaIn2": 4, "elasticModulusPsi": 350000 }
+    ]
+  },
+  "loadCase": {
+    "id": "demo",
+    "description": "One named point load",
+    "provenance": "Hand-authored synthetic load",
+    "jointLoads": [{ "nodeId": "T", "fyLb": -360 }]
+  }
+}
+```
+
+```sh
+npm start --silent -- --authored-model < authored-model.json
+```
+
+The modeled left bearing is a pin and the right bearing a vertical roller at the same elevation, 8–50 ft apart. Joints outside that span and malformed or unstable input are rejected. Each bar keeps its own supplied area and elastic modulus; none is a material recommendation. Results include preliminary displacements, reactions and axial forces and are not a substitute for the independent reference or a design approval. Keep private source drawings and their transcribed inputs out of version control.
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
