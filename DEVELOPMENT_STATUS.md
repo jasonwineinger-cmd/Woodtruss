@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 034 — 2026-11-22T05:02:30Z (UTC)
+
+**Reviewed implementation:** [`a4263ac9fa5b1db7c2cd88f825ebb4f3fd3d53ed`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/a4263ac9fa5b1db7c2cd88f825ebb4f3fd3d53ed). Baseline `e7f4afd`: 560 passing. Full `npm run check`: **570 passed, 0 failed, 0 skipped**. Six isolated engineering, evidence and test lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `elastic-frame-authored-stress-cases.ts`: replay each unique authored action set on the same frame, supports and selected actual rectangles; reject the whole comparison on any failed case. |
+| 2 Lumber | `elastic-frame-authored-stress-cases-boundary.test.mjs`: hold stale-shaped inputs, substituted loads/geometry/results, forged capacity fields, rejected late cases and equal-area wrong section axes. |
+| 3 Connector plates | Independent tie and point-side audit. Preserving a solved stress row does not establish plate transfer or capacity. |
+| 4 Geometry | `elastic-frame-stress-case-selection.ts`, corresponding tests: exact named member coverage, signed selection, complete governing cut transfer, conflict/metadata rejection and deterministic ties. |
+| 5 Manufacturing/source | USDA note distinguishes historical examples from authored comparisons, site case definitions and code rules. |
+| 6 Testing | `elastic-frame-authored-stress-cases-benchmark.test.mjs`: independent gravity/uplift/axial fixtures, exact case ties and axial point discontinuity. |
+| Integration | `README.md`: explicit library scope, no synthesized load factors, provenance or fabrication rights; unchanged preliminary and 50-ft gates. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Only explicitly supplied cases were solved, not all required cases or design combinations.
+
+**Next:** Add narrowly verified authored load-term provenance suited to the frame solver, with exact replay identity for the model and each state. Hold unsupported action basis, geometry changes and numerical collisions. Do not assign code factors/site loads or promote preview data into capacity or release.
+
 ## Batch 033 — 2026-11-22T04:47:44Z (UTC)
 
 **Reviewed implementation:** [`77de05055e16235226bd8a9dbf57d705c0bb5ad2`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/77de05055e16235226bd8a9dbf57d705c0bb5ad2). Baseline `2bb439e`: 550 passing. Full `npm run check`: **560 passed, 0 failed, 0 skipped**. Six isolated engineering, evidence and test lanes.
