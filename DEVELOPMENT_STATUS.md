@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 037 — 2026-11-22T05:48:58Z (UTC)
+
+**Reviewed implementation:** [`e225935f614226a16f1e722d42fba43d70ffb932`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/e225935f614226a16f1e722d42fba43d70ffb932). Baseline `f19206e`: 592 passing. Full `npm run check`: **601 passed, 0 failed, 0 skipped**. Six isolated engineering, analysis evidence and test lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `elastic-frame-authored-combination-reactions.ts`: solve each explicitly weighted case on one detached frame, preserving source references and outputting no cached actions. |
+| 2 Lumber/inputs | `elastic-frame-authored-source-targets.ts` and combination stress wrapper reconcile unused source target and directed-station checks across stress and reaction views. |
+| 3 Connector plates/evidence | USDA reference note separates modeled ideal restraints and physical force/moment arithmetic from actual bearing, connections, slip or release. |
+| 4 Geometry | `elastic-frame-physical-resultant.ts` and tests: separate global forces and direct couples, true loaded measure, directed interior stations and support reactions about a named node; numerical and tangent checks. |
+| 5 Numerical verification | `elastic-frame-authored-combination-reactions-benchmark.test.mjs`: inclined cantilever at two origins and independent pin/roller force and lever arms. |
+| 6 QA | `elastic-frame-authored-combination-reactions-boundaries.test.mjs`: exact frame, origin, source target, untrusted payload and no release claims. |
+| Root | Integrated, added representable large-coordinate translation and inclined-restraint benchmark `elastic-frame-combination-reactions-oriented-benchmark.test.mjs`, updated README, confirmed unchanged safety gates. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Modeled reaction balance is not qualified engineering or proof of real support behavior.
+
+**Next:** Audit one whole supported truss family from exact roof geometry to explicit applied loads and solved support demand. Prefer scissor geometry as a distinct validation target, and use independent force/moment checks without inferring site loads, capacity, member selection or shop readiness.
+
 ## Batch 036 — 2026-11-22T05:33:17Z (UTC)
 
 **Reviewed implementation:** [`7725acafde766c751308fe05d9d8d265058df715`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/7725acafde766c751308fe05d9d8d265058df715). Baseline `8923593`: 582 passing. Full `npm run check`: **592 passed, 0 failed, 0 skipped**. Six isolated engineering, quality and evidence lanes.
