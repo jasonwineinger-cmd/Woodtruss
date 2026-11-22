@@ -167,4 +167,6 @@ The independent `studyObservedScissorThreeGaugeStiffness` reduces three signed d
 
 The separate `studyScissorModeledThreeGaugeRestraint` projects the modeled global vertical displacements at the three explicitly bound scissor nodes before and after one authored horizontal restraint. Each weighted case carries its signed vertical bearing reactions. The [modeled gauge scope](docs/references/scissor-modeled-gauge-restraint-scope.md) keeps those predictions separate from measured observations, slopes, historic test reproduction and design approval.
 
+The review-only `compareScissorModeledAndObservedResponse` requires explicit ordered step, gauge and bearing bindings for one identified specimen, test and exact model revision before it reports signed residuals. The caller declares a diagnostic reaction tolerance, which checks each bearing and the total, not design adequacy. See [correspondence scope](docs/references/scissor-model-observation-correspondence-scope.md); nothing authenticates references, calibrates the model, enrolls the historic specimen or permits fabrication.
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
