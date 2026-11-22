@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 028 — 2026-11-22T03:35:40Z (UTC)
+
+**Reviewed implementation:** [`ae9f686b99a76aafbb6d54292eb7a708e686166c`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/ae9f686b99a76aafbb6d54292eb7a708e686166c). Baseline `5b8ee8d`: 495 passing. Full `npm run check`: **507 passed, 0 failed, 0 skipped**. Six independent lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/elastic-frame-section-demand.ts`, `tests/elastic-frame-section-demand.test.mjs`: signed local section cuts with extrema at endpoints, both point-load limits and strict interior zero-shear roots; separate force/moment closure at the right end. |
+| 2 Lumber | Independent mixed-load section, sign, jump and co-location audit. Component extrema may occur at different stations; no sizing/stress/capacity inferred. |
+| 3 Connector/source | `docs/references/usda-ppsa-frame-output-scope.md`, `tests/usda-ppsa-no-shear-diagnostic.test.mjs`: checked printed sample station versus exact bending peak for illustrated member 6. No legacy stress/interaction implementation or connector approval. |
+| 4 Geometry | `packages/analysis/src/elastic-frame-section-load-basis.ts`, `tests/elastic-frame-section-load-basis.test.mjs`: signed local physical forces from exact directed member axes; endpoint reversal and finite-range checks. |
+| 5 Manufacturing | `tests/elastic-frame-section-stock-evidence-boundary.test.mjs`: a real section record or moment mislabeled as axial does not satisfy exact pin-jointed stock screening. |
+| 6 Testing | `tests/elastic-frame-section-demand-benchmark.test.mjs`: independent loaded released beam moment peak and both point-force limits, plus physical projected force basis on an inclined member. |
+| Integration | `packages/analysis/src/elastic-frame-solve.ts`, `README.md`: use original physical applied loads and recovered end actions to return a bounded section envelope without an inferred material property or fabrication path. |
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Tested demands are not structural capacities, approval, or a physical benchmark.
+
+**Next:** Verify between-end displacement/deflection against independent loaded-beam results and establish safe same-station demand provenance before design checks. Scope case combinations to authored rules and verified data; no cross-station shortcut. Preserve 50-ft maximum and fabrication locks.
+
 ## Batch 027 — 2026-11-22T03:20:35Z (UTC)
 
 **Reviewed implementation:** [`e8cc6b33956d32a03475b1acb4c2b7b1b12a5e9e`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/e8cc6b33956d32a03475b1acb4c2b7b1b12a5e9e). Baseline `0199607`: 482 passing. Full `npm run check`: **495 passed, 0 failed, 0 skipped**. Six independent lanes and a versioned source comparison.
