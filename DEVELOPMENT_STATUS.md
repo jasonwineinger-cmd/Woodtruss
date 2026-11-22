@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 025 — 2026-11-22T02:48:21Z (UTC)
+
+**Reviewed implementation:** [`8230d1789b236ef4e859626ee8072da2362f71db`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/8230d1789b236ef4e859626ee8072da2362f71db). Baseline `a81bbc3`: 462 passing. Full `npm run check`: **472 passed, 0 failed, 0 skipped**. Six independent lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/elastic-frame-shear-element.ts`, `tests/elastic-frame-shear-element.test.mjs`: independently grounded planar prismatic Timoshenko coefficients, explicit G and effective shear area, positive and limiting response cases. |
+| 2 Lumber | Independent strain-energy, unit and constitutive-model audit. No implicit shear modulus, design value, capacity or lumber sizing. |
+| 3 Connector/source | `docs/references/usda-ppsa-frame-output-scope.md`: distinguish fictitious-member shear flag, historical assumptions, model conventions and held source replay. No legacy coefficients adopted. |
+| 4 Geometry | `packages/analysis/src/elastic-frame-global-element.ts`, `tests/elastic-frame-shear-global-element.test.mjs`: local/global orientation, potential energy equivalence and reversals. |
+| 5 Manufacturing | `tests/elastic-frame-shear-scope.test.mjs`: fail closed on direct uniform or point loads, releases and added capacity claims on a shear-flexible member. |
+| 6 Testing | `tests/elastic-frame-shear-benchmark.test.mjs`: independent inclined cantilever translations, rotations, reactions and local end actions; bounded mixed-load-path hand check. |
+| Integration | `packages/analysis/src/elastic-frame-solve.ts`, `README.md`: explicitly selected rigid shear-flexible members retain per-member and nodal physical balance checks; no-shear member behavior stays available. |
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. This capability measures deflection under defined linear model assumptions, not actual wood properties or qualification.
+
+**Next:** Develop and independently benchmark shear-consistent member action vectors and the corresponding recovery before separately enabling matched local end releases. The original USDA example is still held; maintain 50-ft span and fabrication locks.
+
 ## Batch 024 — 2026-11-22T02:34:02Z (UTC)
 
 **Reviewed implementation:** [`594608f67cfd9497d28cef9bc94f4cf7b72b0a47`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/594608f67cfd9497d28cef9bc94f4cf7b72b0a47). Baseline `6f2b8e4`: 453 passing. Full `npm run check`: **462 passed, 0 failed, 0 skipped**. Six independent lanes.
