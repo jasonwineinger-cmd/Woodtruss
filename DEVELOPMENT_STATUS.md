@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 035 — 2026-11-22T05:19:09Z (UTC)
+
+**Reviewed implementation:** [`b4b806e975ce1ddd20b1507046d76e2f7cea485d`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/b4b806e975ce1ddd20b1507046d76e2f7cea485d). Baseline `82a18a6`: 570 passing. Full `npm run check`: **582 passed, 0 failed, 0 skipped**. Six isolated engineering, evidence and test lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `elastic-frame-authored-load-combinations.ts`: bounded explicit source and term IDs, signed nonzero factors only, original order and source references, no implicit load or all-zero result. |
+| 2 Lumber | `elastic-frame-authored-load-combinations-boundary.test.mjs`: strict source/term integrity including unused input, no capacities or cached results, reject absent factors and geometry-basis/station collisions. |
+| 3 Connector plates | Independent global inclined mixed-action force/moment and cancellation audit. Correct moments do not establish plate or contact behavior. |
+| 4 Geometry | `elastic-frame-combine-authored-actions.ts` and tests: preserve directed member identity, exact uniform basis and point station; compensated addition preserves small signed residuals, with numeric holds. |
+| 5 Manufacturing/source | USDA note distinguishes explicitly weighted inputs and declared provenance from code weather combinations, restraint or approval. |
+| 6 Testing | `elastic-frame-authored-combination-stress-benchmark.test.mjs`, `elastic-frame-combination-inclined-reference.test.mjs`: independent weighted gravity/uplift, point sides, and inclined physical measure and moment, with no omitted-case leakage. |
+| Integration | `elastic-frame-authored-combination-stress.ts`, `README.md`: independently solve weighted actions, never earlier stress peaks; role-binding of all source targets and no claimed fabrication or sizing. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Authored arithmetic is not code/site coverage, capacity or qualified engineering approval. The 50-ft cap is unchanged.
+
+**Next:** Preserve exact reproducible case and model identities in a deliberately separate review record so signed loads can be replayed without stale geometry or a replaced reference. Continue licensed material/connector research only with authoritative sources; no default factors or fabricated approval.
+
 ## Batch 034 — 2026-11-22T05:02:30Z (UTC)
 
 **Reviewed implementation:** [`a4263ac9fa5b1db7c2cd88f825ebb4f3fd3d53ed`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/a4263ac9fa5b1db7c2cd88f825ebb4f3fd3d53ed). Baseline `e7f4afd`: 560 passing. Full `npm run check`: **570 passed, 0 failed, 0 skipped**. Six isolated engineering, evidence and test lanes.
