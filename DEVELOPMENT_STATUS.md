@@ -1,5 +1,27 @@
 # Woodtruss development status
 
+## Batch 014 — 2026-11-22T00:03:11Z (UTC)
+
+**Reviewed implementation:** [`672da18388fa56fbd466224ea5e5df19948dd173`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/672da18388fa56fbd466224ea5e5df19948dd173). Baseline `718a120`: 315 passing tests. Integrated `npm run check`: **331 passed, 0 failed, 0 skipped**. Six isolated workers; outputs remain preliminary.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/serviceability-revision-comparison.ts`: independently mapped authored cases and exact replay across revisions, with signed delta only for matching geometry, datums and restraints. Different geometry shows separate measurements without physical continuity or code criteria. |
+| 2 Lumber | `packages/lumber/src/{built-up-rectangular-geometry,index}.ts`: separate centroidal inertias versus ideally combined homogeneous geometry for explicit nonoverlapping rectangles. No installed composite action, member capacity or ranking. |
+| 3 Connector plates | `packages/connections/src/plate-face-mirror-review.ts`: independent same-joint front/back faces compared only under an explicitly supplied reflection transform. No inferred placement, installed registration, usable grip or capacity. |
+| 4 Geometry | `packages/geometry/src/attic-clearance-study.ts`: compares explicit span/pitch choices against fixed room and ridge limits, retaining failures and nondominated geometry-only options. No framing stability or floor design. |
+| 5 Manufacturing | `packages/fabrication/src/preliminary-member-review-handback.ts`: exact two-revision trace with pending and acknowledged checklist state, rejects substituted data; no physical continuity, fabrication or approval. |
+| 6 Testing | `tests/independent-dimensional-scaling-benchmark.test.mjs`: forces/reactions invariant and displacement scales with length at fixed EA; loss of horizontal restraint is rejected at every test scale. |
+| Integration | `scripts/preview.mjs`, `README.md`, `tests/cli-smoke.test.mjs`: `--attic-clearance` requires four explicit geometry inputs, emits a labeled not-for-fabrication clearance report and rejects analysis or SVG requests for this mode. |
+
+**Other changed tests:** `tests/{attic-clearance-study,independent-dimensional-scaling-benchmark,lumber-built-up-rectangular-geometry,plate-face-mirror-review,preliminary-member-review-handback,serviceability-revision-comparison}.test.mjs`.
+
+**Independent checks:** ideal attic section options and 50-ft guard; hand check of a 36-ft geometric minimum in the CLI example, signed displacement under stiffness change, geometric inertias, explicitly reflected asymmetric outline, and analytic dimensional scaling. None is engineering approval.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. No verified site loads, licensed design tables, installed structure, manufacturing integration or approval.
+
+**Next batch:** continue bounded geometry and authored-case verification, distinguish unresolved attic structural stability/floor design from clearance, and keep all review and fabrication outputs fail-closed. Source-approved material, connector, code and professional approval gates remain open.
+
 ## Batch 013 — 2026-11-21T23:48:30Z (UTC)
 
 **Reviewed implementation:** [`c3172d34da3d9e0d7bbb734d8a235c91319a27ee`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/c3172d34da3d9e0d7bbb734d8a235c91319a27ee). Baseline `6263544`: 301 passing tests. Integrated `npm run check`: **315 passed, 0 failed, 0 skipped**. Six isolated workers; all engineering outputs preliminary.
