@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 052 — 2026-11-22T09:33:06Z (UTC)
+
+**Reviewed implementation:** [`46b17a79bcf77ab0dae97539926b71089cf61375`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/46b17a79bcf77ab0dae97539926b71089cf61375). Baseline `98c1c6e`: 693 passing. Full `npm run check`: **700 passed, 0 failed, 0 skipped**. Six independent geometry, boundary, computation, documentation and audit lanes plus integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Directed model | `raised-heel-common-authored-elastic-frame-model.ts`: 10-node, 17-member frame with explicit direction, properties and end releases; HL/HE are distinct from L/E bearings. |
+| 2 Boundaries | `raised-heel-common-authored-boundaries.test.mjs`: 50-ft span, 1–48 in heel, input ownership, unused source targets and unstable ideal restraints. |
+| 3 Global benchmark | `raised-heel-common-authored-benchmark.test.mjs`: direct weighted force and moment oracles show that moving an action from HL to L removes its lever arm; four synthetic combinations. |
+| 4 Scope | `raised-heel-common-authored-elastic-frame-scope.md` and README distinguish the authored elastic and older illustrative pin models. |
+| 5 Release audit | Existing family dispatch, preview and fabrication boundaries remain untouched; no new CLI or authorization path. |
+| 6 Independent local oracle and root | `raised-heel-common-authored-axial.test.mjs` independently checks four signed heel-region member forces and cross-checks all 17 in the all-release limit. `raised-heel-common-authored-elastic-frame-study.ts` binds new exact combinations and fresh reaction receipts. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. The reported negative ideal support reaction does not verify uplift resistance, actual material, plates, bearing, stability, site loads, or authority.
+
+**Next:** Compare another bounded topology (ordinary or raised-heel Double Fink) against a synthetic independent load path, or extend exact raised-heel selections without inferring field behavior. Licensed design and plate values and physical engineering verification remain held.
+
 ## Batch 051 — 2026-11-22T09:18:43Z (UTC)
 
 **Reviewed implementation:** [`539b62219d58aaa408225272ea176081951cfbef`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/539b62219d58aaa408225272ea176081951cfbef). Baseline `f0e3b78`: 689 passing. Full `npm run check`: **693 passed, 0 failed, 0 skipped**. Six parallel selection, validation, quantitative and review lanes plus integration.
