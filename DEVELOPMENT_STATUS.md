@@ -1,5 +1,27 @@
 # Woodtruss development status
 
+## Batch 019 — 2026-11-22T01:19:34Z (UTC)
+
+**Reviewed implementation:** [`15927fba16d3b9fe41e6d0de99e317d194c028a9`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/15927fba16d3b9fe41e6d0de99e317d194c028a9). Baseline `888c57c`: 392 passing tests. Integrated `npm run check`: **405 passed, 0 failed, 0 skipped**. Six independent lanes. No change to fabrication release.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/elastic-frame-element.ts`: independent local axial and Euler–Bernoulli bending stiffness, with explicit zero-moment end releases. No shear deformation, global frame assembly or solved structural response. |
+| 2 Lumber | `packages/lumber/src/{rectangular-planar-elastic-properties,index}.ts`: separates gross geometry, perpendicular bending axis and explicitly supplied effective shear area/modulus. No default shear factor or approved material values. |
+| 3 Connector plates | `packages/connections/src/plate-member-end-release.ts`: bind two directed member-end rotational declarations to independently expected source locations; unknown stays held. No physical fixity or transferable connector stiffness inferred. |
+| 4 Geometry | `packages/geometry/src/inclined-support-axis.ts`: explicitly authored signed free and constrained direction mapped between local and global coordinates. No restraint or bearing approval. |
+| 5 Physical/reference | `docs/references/usda-ppsa-example-scope.md`: independent primary source review of coordinate, load and reaction tables and local member sign check. This is a historical worked frame calculation, not a physical load test. |
+| 6 Testing | Independently reread the printed tables and Figure 5. The published case is consistent with horizontal projection, but the input format does not name the basis; no universal rule was inferred. |
+| Integration | `packages/analysis/src/planar-load-resultant.ts` and `tests/published-usda-ppsa-statics.test.mjs`: compare explicit length bases while preserving points and applied couples. The example closes global force/moment and does not solve USDA's member actions, movements or support compatibility. |
+
+**Other changed tests:** `tests/{elastic-frame-element,inclined-support-axis,lumber-rectangular-planar-elastic-properties,plate-member-end-release}.test.mjs`.
+
+**Independent checks:** published USDA load/resultant and reported reaction balance; endpoint reversal and reference-origin effects; synthetic axial/bending cantilever stiffness, released ends, orthogonal section properties and signed inclined geometry. Real lumber, connectors and fabrication remain unverified.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Missing site/code input verification, licensed capacities, engineering signoff and manufacturing checks remain open.
+
+**Next batch:** coordinate transforms, consistent member-to-node force vectors and independently checked global frame assembly are separate next steps. Preserve distinction between Euler–Bernoulli element and USDA frame with shear deformation. No structural result is fabrication authority.
+
 ## Batch 018 — 2026-11-22T01:03:58Z (UTC)
 
 **Reviewed implementation:** [`f02a6b80917f7b748ff9bfbea8c30e69010290e6`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/f02a6b80917f7b748ff9bfbea8c30e69010290e6). Baseline `50e3f78`: 378 passing tests. Integrated `npm run check`: **392 passed, 0 failed, 0 skipped**. Six independent lanes. No change to fabrication release.
