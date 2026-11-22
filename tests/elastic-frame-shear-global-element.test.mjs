@@ -31,7 +31,7 @@ test('rotated shear element has analytical transverse energy, axial invariant an
   reverse.matrix.forEach((row,i)=>row.forEach((value,j)=>near(value,model.matrix[indices[i]][indices[j]])));
 });
 
-test('omitted shear preserves Euler–Bernoulli; invalid keys, numbers and release combinations reject',()=>{
+test('omitted shear preserves Euler–Bernoulli; invalid keys, numbers and nonboolean releases reject',()=>{
   const without=elasticFrameElementGlobalStiffness(base);
   assert.equal(without.shearDeformationModeled,false);
   assert.equal(without.localMatrix[4][4],240);
@@ -40,6 +40,30 @@ test('omitted shear preserves Euler–Bernoulli; invalid keys, numbers and relea
   for(const bad of [undefined,null,[],{}, {...shear,shearFactor:1}, {...shear,effectiveShearAreaIn2:0},
     {...shear,shearModulusPsi:Infinity}])
     assert.throws(()=>elasticFrameElementGlobalStiffness({...base,shear:bad}));
-  for(const ends of [{releaseLeftRotation:true},{releaseRightRotation:true},{releaseLeftRotation:undefined}])
-    assert.throws(()=>elasticFrameElementGlobalStiffness({...base,shear,...ends}),/releases explicitly false/);
+  for(const ends of [{releaseLeftRotation:undefined},{releaseRightRotation:"true"}])
+    assert.throws(()=>elasticFrameElementGlobalStiffness({...base,shear,...ends}),/explicit boolean/);
+});
+
+test('inclined shear release follows the physical end on reversal; two releases are axial only',()=>{
+  const L=100,E=section.elasticModulusPsi,I=section.secondMomentIn4;
+  const fixedPin=elasticFrameElementGlobalStiffness({...base,shear,releaseRightRotation:true});
+  assert.deepEqual(fixedPin.releasedRotationIndices,[5]);
+  assert.deepEqual(fixedPin.matrix[5],Array(6).fill(0));
+  assert.deepEqual(fixedPin.localMatrix[5],Array(6).fill(0));
+  // Unit transverse movement with released tip rotation: inverse of the sum of
+  // classical tip bending and shear compliances, no extra rotational restraint.
+  const transverse=1/(L**3/(3*E*I)+L/(shear.shearModulusPsi*shear.effectiveShearAreaIn2));
+  const tipNormal=[0,0,0,-.8,-.6,0];
+  near(energy(fixedPin.matrix,tipNormal),transverse/2);
+
+  const pinFixed=elasticFrameElementGlobalStiffness({...base,left:right,right:left,shear,releaseLeftRotation:true});
+  assert.deepEqual(pinFixed.releasedRotationIndices,[2]);
+  assert.deepEqual(pinFixed.matrix[2],Array(6).fill(0));
+  const permutation=[3,4,5,0,1,2];
+  pinFixed.matrix.forEach((row,i)=>row.forEach((value,j)=>near(value,fixedPin.matrix[permutation[i]][permutation[j]])));
+
+  const pinPin=elasticFrameElementGlobalStiffness({...base,shear,releaseLeftRotation:true,releaseRightRotation:true});
+  assert.deepEqual(pinPin.releasedRotationIndices,[2,5]);
+  near(energy(pinPin.matrix,tipNormal),0);
+  near(energy(pinPin.matrix,[0,0,0,-.6,.8,0]),E*section.areaIn2/(2*L));
 });

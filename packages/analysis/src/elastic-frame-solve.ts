@@ -5,6 +5,8 @@ import { elasticFrameMemberUniformLoad } from "./elastic-frame-member-load.js";
 import { elasticFrameShearMemberPointLoad } from "./elastic-frame-shear-point-load.js";
 import { elasticFrameShearMemberUniformLoad } from "./elastic-frame-shear-uniform-load.js";
 import { condenseElasticFrameMemberLoad } from "./elastic-frame-release-load.js";
+import { condenseElasticFrameShearLoad } from "./elastic-frame-shear-release.js";
+import { recoverElasticFrameShearEndActions } from "./elastic-frame-shear-end-actions.js";
 import { recoverElasticFrameLocalEndActions } from "./elastic-frame-local-end-actions.js";
 import type {ElasticFrameElementProperties} from "./elastic-frame-element.js";
 
@@ -41,7 +43,7 @@ const exact=(row:object,keys:readonly string[])=>!!row && typeof row==="object" 
   Reflect.ownKeys(row).length===keys.length && keys.every(key=>Object.hasOwn(row,key));
 
 /** Separate bounded linear elastic frame study. An explicit shear-flexible
- * member supports rigid ends and bounded explicit member actions; other members use the
+ * member supports rigid or ideally released ends and bounded member actions; other members use the
  * established Euler–Bernoulli path. No design or capacity checks. */
 export function solveElasticFrame(input:ElasticFrameInput) {
   const fields=["nodes","members","supports","loads"];
@@ -76,7 +78,7 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   type MemberRecord={
     a:number;b:number;properties:ElasticFrameElementProperties;globalToLocal:number[][];
     originalLocalLoad:number[];physicalMemberActions:number[][];
-    shear?:ElasticFrameShear;shearLocalMatrix?:number[][];
+    shear?:ElasticFrameShear;
   };
   const memberEnds=new Map<string,MemberRecord>();
   const rotationConnected=Array<boolean>(nodes.length).fill(false);
@@ -95,17 +97,15 @@ export function solveElasticFrame(input:ElasticFrameInput) {
     const releaseRightRotation=explicit&&m.releaseEndRotation===true;
     if((!hasShear&&m.shear!==undefined)||(hasShear&&(!m.shear||!exact(m.shear,["shearModulusPsi","effectiveShearAreaIn2"]))))
       throw new Error("Explicit shear modulus and effective shear area required");
-    if(hasShear&&(releaseLeftRotation||releaseRightRotation))
-      throw new Error("Shear-flexible frame member end releases are unsupported");
     const properties={areaIn2:m.areaIn2,secondMomentIn4:m.secondMomentIn4,
       elasticModulusPsi:m.elasticModulusPsi,releaseLeftRotation,releaseRightRotation};
-    const {matrix,localMatrix,globalToLocalTransform,lengthIn}=elasticFrameElementGlobalStiffness({
+    const {matrix,globalToLocalTransform,lengthIn}=elasticFrameElementGlobalStiffness({
       left:{xIn:nodes[a].xIn,yIn:nodes[a].yIn},right:{xIn:nodes[b].xIn,yIn:nodes[b].yIn},...properties,
       ...(hasShear?{shear:m.shear!}:{}),
     });
     memberEnds.set(m.id,{a,b,properties:{...properties,lengthIn},globalToLocal:globalToLocalTransform,
       originalLocalLoad:Array<number>(6).fill(0),physicalMemberActions:[],
-      ...(hasShear?{shearLocalMatrix:localMatrix,shear:m.shear!}:{})});
+      ...(hasShear?{shear:m.shear!}:{})});
     adjacency[a].add(b); adjacency[b].add(a);
     if(!releaseLeftRotation)rotationConnected[a]=true;
     if(!releaseRightRotation)rotationConnected[b]=true;
@@ -180,7 +180,9 @@ export function solveElasticFrame(input:ElasticFrameInput) {
     const {a,b,properties,globalToLocal}=member;
     let applied=globalEquivalentLoad;
     if(properties.releaseLeftRotation||properties.releaseRightRotation) {
-      const condensed=condenseElasticFrameMemberLoad({...properties,localEquivalentLoad});
+      const condensed=member.shear
+        ?condenseElasticFrameShearLoad({...properties,...member.shear,localEquivalentLoad})
+        :condenseElasticFrameMemberLoad({...properties,localEquivalentLoad});
       applied=transposeMultiply(globalToLocal,condensed);
     }
     memberDofs(a,b).forEach((dof,j)=>{
@@ -301,25 +303,14 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   // private released rotations instead of transferring a shared joint rotation.
   const summedEndActions=Array<number>(count).fill(0), endActionScales=Array<number>(count).fill(0);
   const memberEndActions=Object.fromEntries(Array.from(memberEnds,([memberId,record])=>{
-    const {a,b,properties,globalToLocal,originalLocalLoad,physicalMemberActions,shearLocalMatrix}=record;
+    const {a,b,properties,globalToLocal,originalLocalLoad,physicalMemberActions,shear}=record;
     const dofs=memberDofs(a,b);
-    const retainedLocalDisplacements=multiply(globalToLocal,dofs.map(i=>globalQ[i]));
-    const localDisplacements:(number|null)[]=[...retainedLocalDisplacements];
+    const localDisplacements:(number|null)[]=multiply(globalToLocal,dofs.map(i=>globalQ[i]));
     if(properties.releaseLeftRotation)localDisplacements[2]=null;
     if(properties.releaseRightRotation)localDisplacements[5]=null;
-    let recovered;
-    if(shearLocalMatrix) {
-      const localEndActions=multiply(shearLocalMatrix,retainedLocalDisplacements)
-        .map((value,i)=>value-originalLocalLoad[i]);
-      if(!finite(retainedLocalDisplacements)||!finite(localEndActions))
-        throw new Error("Nonfinite shear-flexible local end actions");
-      recovered={localDofOrder:["uLeft","vLeft","thetaLeft","uRight","vRight","thetaRight"] as const,
-        localDisplacements:retainedLocalDisplacements,localEndActions,releasedRotationIndices:[],
-        releasedMomentResiduals:[],signConvention:"Node-on-member external actions in local axes; positive moments counterclockwise." as const,
-        status:"PRELIMINARY_NOT_ENGINEERED" as const,manufacturingApproved:false as const};
-    } else {
-      recovered=recoverElasticFrameLocalEndActions({...properties,localDisplacements,localEquivalentLoad:originalLocalLoad});
-    }
+    const recovery={...properties,localDisplacements,localEquivalentLoad:originalLocalLoad};
+    const recovered=shear?recoverElasticFrameShearEndActions({...recovery,...shear})
+      :recoverElasticFrameLocalEndActions(recovery);
     const end=transposeMultiply(globalToLocal,recovered.localEndActions);
     const dx=nodes[b].xIn-nodes[a].xIn,dy=nodes[b].yIn-nodes[a].yIn;
     const memberTerms=[[end[0],end[1],end[2]],[end[3],end[4],end[5]],
@@ -335,7 +326,7 @@ export function solveElasticFrame(input:ElasticFrameInput) {
       endActionScales[dof]+=Math.abs(end[j]);
     });
     return [memberId,{startNodeId:nodes[a].id,endNodeId:nodes[b].id,
-      shearDeformationModeled:!!shearLocalMatrix,...recovered}] as const;
+      ...recovered,shearDeformationModeled:!!shear}] as const;
   }));
   // On a joint, the opposite (member-on-node) actions balance direct
   // nodal loads and actual supports. Member loads are already in recovery.
@@ -361,5 +352,5 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   return {displacements,reactions,memberEndActions,equilibrium:{passes:true as const,
     forceXLb:errs[0],forceYLb:errs[1],momentLbIn:errs[2],originNodeId:nodes[0].id},
     status:"PRELIMINARY_NOT_ENGINEERED" as const,fabricationAuthorized:false as const,
-    scope:"Linear axial/bending frame with rigid or explicitly released member ends, ideal global or inclined restraints, nodal actions and bounded full uniform or concentric interior point forces. Explicit shear-flexible members require rigid ends and dedicated consistent actions. No between-end demand envelope or design approval."};
+    scope:"Linear axial/bending frame with rigid or explicitly released member ends, ideal global or inclined restraints, nodal actions and bounded full uniform or concentric interior point forces. Explicit shear-flexible members use dedicated consistent actions and ideal release condensation/recovery. No between-end demand envelope or design approval."};
 }

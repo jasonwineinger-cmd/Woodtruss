@@ -55,9 +55,34 @@ test('full uniform and strictly interior concentric loads preserve equilibrium a
  }
 });
 
-test('shear scope still rejects released ends, unsupported load shapes and timber capacity fields',()=>{
+test('declared ideal releases under bounded member loads recover no released moment or manufacturing authority',()=>{
+ const released={...member,shear,releaseStartRotation:true,releaseEndRotation:true};
+ const supports=[{nodeId:'A',fixX:true,fixY:true,fixRotation:false},
+  {nodeId:'B',fixX:false,fixY:true,fixRotation:false}];
+ const loads={supports,loads:[],memberLoads:[uniformRow],memberPointLoads:[pointRow]};
+ const result=withMember(released,loads);
+ const left=3*span/2+75*(span-pointRow.stationIn)/span;
+ const right=3*span/2+75*pointRow.stationIn/span;
+ near(result.reactions.A.fyLb,left);
+ near(result.reactions.B.fyLb,right);
+ const actions=result.memberEndActions.AB;
+ assert.deepEqual(actions.releasedRotationIndices,[2,5]);
+ near(actions.localEndActions[2],0);
+ near(actions.localEndActions[5],0);
+ assert.equal(result.equilibrium.passes,true);
+ assert.equal(result.status,'PRELIMINARY_NOT_ENGINEERED');
+ assert.equal(result.fabricationAuthorized,false);
+ assert.equal(actions.manufacturingApproved,false);
+ // A joint moment is not silently assigned to any released section end.
+ assert.throws(()=>withMember(released,{...loads,loads:[{nodeId:'B',fxLb:0,fyLb:0,momentLbIn:150}]}),/rotation|moment/iu);
+});
+
+test('shear scope still rejects malformed ideal releases, unsupported load shapes and approval fields',()=>{
  const flexible={...member,shear};
- assert.throws(()=>withMember({...flexible,releaseStartRotation:false,releaseEndRotation:true}),/shear|end release/iu);
+ for(const altered of [
+  {...flexible,releaseStartRotation:true},
+  {...flexible,releaseStartRotation:'true',releaseEndRotation:true},
+ ]) assert.throws(()=>withMember(altered),/member|end release/iu);
  for(const row of [{...uniformRow,fromStationIn:2,toStationIn:18},{...uniformRow,basis:'discontinuous'}]){
   assert.throws(()=>withMember(flexible,{memberLoads:[row]}),/member load|line-load basis/iu);
  }
@@ -68,4 +93,6 @@ test('shear scope still rejects released ends, unsupported load shapes and timbe
   assert.throws(()=>withMember(flexible,{memberPointLoads:[row]}),/point|interior/iu);
  }
  assert.throws(()=>withMember({...member,shear:{...shear,timberShearCapacityPsi:123}}),/shear|field/iu);
+ assert.throws(()=>withMember({...flexible,ratedPlateMomentLbIn:123}),/member|field/iu);
+ assert.throws(()=>withMember(flexible,{machineReleaseApproved:true}),/frame input field/iu);
 });

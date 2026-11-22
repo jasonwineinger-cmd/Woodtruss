@@ -1,6 +1,6 @@
 import {elasticFrameElementLocalStiffness, type ElasticFrameElementProperties} from "./elastic-frame-element.js";
 
-import {elasticFrameShearElementLocalStiffness} from "./elastic-frame-shear-element.js";
+import {elasticFrameShearReleasedLocalStiffness} from "./elastic-frame-shear-release.js";
 
 export interface ElasticFrameGlobalElementProperties extends Omit<ElasticFrameElementProperties,"lengthIn"> {
   left:{xIn:number;yIn:number};
@@ -14,6 +14,8 @@ export interface ElasticFrameGlobalElementProperties extends Omit<ElasticFrameEl
  * both rotations are counterclockwise and unchanged by the basis rotation.
  * Global DOFs are translations in inches and rotations in radians. This does
  * not assemble a frame or validate supports, loads, stability or connections.
+ * Optional shear stiffness is statically condensed for the explicit end
+ * releases before the basis rotation; released CCW slots keep their indices.
  */
 export function elasticFrameElementGlobalStiffness(properties:ElasticFrameGlobalElementProperties) {
   const {left,right}=properties;
@@ -72,11 +74,12 @@ function localStiffness(lengthIn:number,properties:ElasticFrameGlobalElementProp
      Reflect.ownKeys(shear).length!==2||
      !["shearModulusPsi","effectiveShearAreaIn2"].every(key=>Object.prototype.propertyIsEnumerable.call(shear,key)))
     throw new Error("Elastic frame shear requires exactly shearModulusPsi and effectiveShearAreaIn2");
-  if(releaseLeftRotation!==false||releaseRightRotation!==false)
-    throw new Error("Elastic frame shear requires both end rotation releases explicitly false");
-  const {matrix,shearFlexibility}=elasticFrameShearElementLocalStiffness({...prismatic,
-    shearModulusPsi:shear.shearModulusPsi,effectiveShearAreaIn2:shear.effectiveShearAreaIn2});
-  return {matrix,shearFlexibility,releasedRotationIndices:[] as number[],
+  if(typeof releaseLeftRotation!=="boolean"||typeof releaseRightRotation!=="boolean")
+    throw new Error("Elastic frame shear requires explicit boolean end rotation releases");
+  const {matrix,shearFlexibility,releasedRotationIndices}=elasticFrameShearReleasedLocalStiffness({...prismatic,
+    shearModulusPsi:shear.shearModulusPsi,effectiveShearAreaIn2:shear.effectiveShearAreaIn2,
+    releaseLeftRotation,releaseRightRotation});
+  return {matrix,shearFlexibility,releasedRotationIndices,
     status:"PRELIMINARY_NOT_ENGINEERED" as const,shearDeformationModeled:true as const,
     globalAssemblyVerified:false as const,manufacturingApproved:false as const};
 }

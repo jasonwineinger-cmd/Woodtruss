@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {solveElasticFrame} from '../dist/analysis/src/elastic-frame-solve.js';
+import {elasticFrameMemberPointLoad} from '../dist/analysis/src/elastic-frame-member-point-load.js';
 
 // FPL-GTR-40 Figure 5 and Tables I–VI. These independently transcribed public
 // inputs define an Euler–Bernoulli comparison, NOT a replay of legacy shear.
@@ -102,4 +103,70 @@ test('USDA mixed shear diagnostic matches an independent formulation but not leg
   assert.ok(Math.abs(pin.fxLb-896.178)>3 && Math.abs(pin.fyLb-1005.070)>1);
   assert.equal(r.equilibrium.passes,true);
   assert.equal(r.fabricationAuthorized,false);
+});
+
+function historicalOutputDiagnostic(rectangularCompliance) {
+  // Only this test uses the 1972 printed bending-only equivalent point loads
+  // with separately shear-flexible stiffness. This is not an API mode.
+  const {globalEquivalentLoad: f,localEquivalentLoad,physicalResultant}=elasticFrameMemberPointLoad({
+    left:{xIn:0,yIn:0},right:{xIn:70.25,yIn:0},stationIn:46.25,fxLb:0,fyLb:-550,
+    releaseLeftRotation:false,releaseRightRotation:false,
+  });
+  near(f[1]+f[4],physicalResultant.fyLb,1e-9,'old point resultant force');
+  near(f[2]+f[5]+70.25*f[4],physicalResultant.momentAboutLeftLbIn,1e-8,'old point resultant moment');
+  const result=solveElasticFrame({...model,
+    members:model.members.map(m=>({...m,shear:{
+      shearModulusPsi:m.elasticModulusPsi/20,effectiveShearAreaIn2:m.areaIn2/rectangularCompliance,
+    }})),
+    memberPointLoads:[],
+    loads:[...model.loads,
+      {nodeId:'N1',fxLb:f[0],fyLb:f[1],momentLbIn:f[2]},
+      {nodeId:'N6',fxLb:f[3],fyLb:f[4],momentLbIn:f[5]},
+    ],
+  });
+  // Undo the diagnostic substitution only in M6 reporting: its two nodal
+  // equivalents represent an actual applied load inside this member.
+  const correctedActions=model.members.map(({id})=>result.memberEndActions[id].localEndActions
+    .map((action,i)=>id==='M6'?action-localEquivalentLoad[i]:action));
+  const [,vL,mL,,vR,mR]=correctedActions[5];
+  near(vL+vR,550,1e-8,'corrected M6 physical force');
+  near(mL+mR+70.25*vR,25437.5,1e-7,'corrected M6 physical moment');
+  assert.equal(result.equilibrium.passes,true);
+  assert.equal(result.fabricationAuthorized,false);
+  return {result,correctedActions};
+}
+
+test('1972 published predecessor closes with its printed E/20 and bending-only fixed-end load convention',()=>{
+  const {result:r,correctedActions:a}=historicalOutputDiagnostic(1);
+  const {N1:pin,N2:upper,N5:slope}=r.reactions;
+  near(pin.fxLb,893.493,.001,'FPL168 pin x');
+  near(pin.fyLb,1004.055,.001,'FPL168 pin y');
+  near(upper.fxLb,-830.619,.001,'FPL168 upper x');
+  near(slope.fxLb,-62.874,.001,'FPL168 slope x');
+  near(slope.fyLb,377.245,.001,'FPL168 slope y');
+  near(a[6][0],1210.303,.001,'FPL168 M7 compression');
+});
+
+test('1984 hypothesis reproduces all 48 Table VIII entries within a last printed unit, not its documented settings',()=>{
+  const {result:r,correctedActions:a}=historicalOutputDiagnostic(6/5);
+  const reported=[
+    [418.043,-81.173,-2401.636,-418.043,81.173,-1657.831],
+    [-845.877,158.765,1657.831,734.830,174.470,-2239.288],
+    [196.611,150.992,1506.153,-307.700,182.228,-2662.691],
+    [398.990,234.272,-260.005,-398.990,-234.272,1004.991],
+    [-171.567,22.761,1338.925,171.567,-22.761,260.005],
+    [-316.166,158.712,2401.636,316.166,391.288,-4452.126],
+    [1209.546,0,0,-1209.546,0,0],
+    [-414.049,144.599,3113.201,414.049,-144.599,733.136],
+  ];
+  a.forEach((row,i)=>row.forEach((value,j)=>near(value,reported[i][j],.001,`PPSA II M${i+1} end slot ${j}`)));
+  const {N1:pin,N2:upper,N5:slope}=r.reactions;
+  near(pin.fxLb,896.178,.001,'PPSA II pin x');
+  near(pin.fyLb,1005.070,.001,'PPSA II pin y');
+  near(upper.fxLb,-833.472,.001,'PPSA II upper x');
+  near(slope.fxLb,-62.705,.001,'PPSA II slope x');
+  near(slope.fyLb,376.230,.001,'PPSA II slope y');
+  near(-50.01*upper.fxLb+140.5*slope.fyLb,94542.225,1e-7,'physical support moment');
+  assert.equal(r.memberEndActions.M7.shearDeformationModeled,true);
+  assert.deepEqual(r.memberEndActions.M7.releasedRotationIndices,[2,5]);
 });
