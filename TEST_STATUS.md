@@ -1,11 +1,11 @@
 # Woodtruss test status
 
-- Batch: 043
-- Integrated verification: 2026-11-22T07:18:21Z (UTC)
+- Batch: 044
+- Integrated verification: 2026-11-22T07:33:43Z (UTC)
 - Command: `npm run check` (TypeScript check, compilation and complete automated suite)
-- Result: **651 passed, 0 failed, 0 skipped**
-- Latest tested implementation: [`1a882d98814f14ee73aca0325299805a3c3e7677`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/1a882d98814f14ee73aca0325299805a3c3e7677)
-- Baseline: `5a70e7659286d9855aae0fba12d30146dce614cb` (641 passed)
-- Signed scissor residuals require independently declared model/test identity and exact gauge, bearing and step pairing. Tests use synthetic observations; there is no USDA replay, model calibration, capacity or fabrication authority.
+- Result: **658 passed, 0 failed, 0 skipped**
+- Latest tested implementation: [`ea75b87c90760093e181f0db40121b4174b3da36`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/ea75b87c90760093e181f0db40121b4174b3da36)
+- Baseline: `08a6454a71bd1311d3726fd1dd3486c273f1b0d5` (651 passed)
+- Lumber document intake rejects mixed-edition, stale or swapped NDS rules and Supplement roles. No publisher authenticity, licensing, stock design values, structural validation or fabrication authority was established.
 
 This status-only commit records the tested implementation SHA, not its own SHA. The 50-foot maximum and fabrication lock are unchanged. Passing software tests is not structural verification. See [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md) for remaining work.

@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 044 — 2026-11-22T07:33:43Z (UTC)
+
+**Reviewed implementation:** [`ea75b87c90760093e181f0db40121b4174b3da36`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/ea75b87c90760093e181f0db40121b4174b3da36). Baseline `08a6454`: 651 passing. Full `npm run check`: **658 passed, 0 failed, 0 skipped**. Six parallel source, implementation and verification lanes, plus root integration.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Source-role audit | Identified that the old design-input gate required one digest for both rule and stock roles. |
+| 2 Scope and documentation | `awc-2024-lumber-publication-boundary.md`: official rules, Supplement and their separately published updates; no local edition adoption or licensing assumption. |
+| 3 Source binding | `edition-publication-pair.ts`: compare independently declared exact editions, publisher and separate document and update identities; reject duplicates and malformed scope, report no values. |
+| 4 Tests | `lumber-edition-publication-pair.test.mjs`: exact match, role/edition swaps, missing or excess updates, reuse and placeholders. |
+| 5 Independent sources | Crosschecked AWC edition pages, rule errata, distinct Supplement updates and public view vs reuse boundaries. No design values copied. |
+| 6 Call-site audit and root | `design-readiness.ts`, its tests, package index and README: optional same-signature callers hold unless complete paired scope is supplied; independent hash-role binding rejects older shared-digest receipts. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. No published material rows enrolled, no calibrated design methods, no fabrication authorization.
+
+**Next:** Bind exact scoped private bytes and authorized per-quantity Supplement documentation to this pair without treating digest equality as authenticity; document the separately applicable rules correction set. Do not add licensed values, project code choices or engineering acceptance without their own independent evidence.
+
 ## Batch 043 — 2026-11-22T07:18:21Z (UTC)
 
 **Reviewed implementation:** [`1a882d98814f14ee73aca0325299805a3c3e7677`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/1a882d98814f14ee73aca0325299805a3c3e7677). Baseline `5a70e76`: 641 passing. Full `npm run check`: **651 passed, 0 failed, 0 skipped**. Six isolated analysis, input and evidence lanes.
