@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 043 — 2026-11-22T07:18:21Z (UTC)
+
+**Reviewed implementation:** [`1a882d98814f14ee73aca0325299805a3c3e7677`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/1a882d98814f14ee73aca0325299805a3c3e7677). Baseline `5a70e76`: 641 passing. Full `npm run check`: **651 passed, 0 failed, 0 skipped**. Six isolated analysis, input and evidence lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `scissor-model-observed-comparison.ts` freshly replays both ordered source inputs; reports signed paired readings and residuals only when the entire comparison is valid. |
+| 2 Evidence identities | `scissor-measurement-correspondence.ts`: exact restrained model revision, specimen/test/source, protocol references, gauge and bearing IDs and complete ordered steps. Authored references are not authenticated. |
+| 3 Numerical | `scissor-paired-observable-residual.ts` and tests: signed modeled-minus-observed, stable small mean, and individual and total bearing limits that cannot mask one another. |
+| 4 Engineering scope | `scissor-model-observation-correspondence-scope.md` and README distinguish caller diagnostic tolerance, observed data reduction, model calibration and actual authority. |
+| 5 Verification | `scissor-model-observed-comparison-benchmark.test.mjs`: separate synthetic readings with known gauge and bearing residuals, exact source inputs unchanged, no measured-test implication. |
+| 6 QA and root | Exact scoped input swaps, malformed correspondence, late disqualifying rows, count and reported signed residual checks. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. No historic specimen is enrolled; a comparison does not fit or verify the physical model or release fabrication.
+
+**Next:** Advance a separate authoritative lumber-input lane. Find a current official edition and narrow source-backed example suitable for traceable verification, distinguishing scope and licensing from published test modulus. Keep unsupported design or plate data held while seeking physically comparable test inputs.
+
 ## Batch 042 — 2026-11-22T07:05:16Z (UTC)
 
 **Reviewed implementation:** [`cbb3b320b7dee9ead36989e8a1924066cc018e9f`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/cbb3b320b7dee9ead36989e8a1924066cc018e9f). Baseline `f59574b`: 633 passing. Full `npm run check`: **641 passed, 0 failed, 0 skipped**. Six isolated analysis, evidence and test lanes.
