@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 026 — 2026-11-22T03:03:56Z (UTC)
+
+**Reviewed implementation:** [`d4776f780134165e1d933f6bc8697e5a0eb4de05`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/d4776f780134165e1d933f6bc8697e5a0eb4de05). Baseline `22d35da`: 472 passing. Full `npm run check`: **482 passed, 0 failed, 0 skipped**. Six independent lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/elastic-frame-shear-point-load.ts`, `tests/elastic-frame-shear-point-load.test.mjs`: exact signed homogeneous Timoshenko transverse interpolation, concentric interior force, physical force/moment, virtual work and direction reversal. |
+| 2 Lumber | Independent virtual-work formulas, quarter-span oracle and displacement integrations. No constitutive defaults, capacities or sizing. |
+| 3 Connector/source | `docs/references/usda-ppsa-frame-output-scope.md` and `tests/usda-ppsa-no-shear-diagnostic.test.mjs`: mixed formulation independently benchmarked with explicit assumptions and separate legacy comparison. No physical connector calibration. |
+| 4 Geometry | `packages/analysis/src/elastic-frame-shear-uniform-load.ts`, `tests/elastic-frame-shear-uniform-load.test.mjs`: two explicit full-length uniform bases; independent quadrature shows equality of the uniform load vector to the Euler–Bernoulli integral for this bounded case only. |
+| 5 Manufacturing | `tests/elastic-frame-shear-scope.test.mjs`: reject unsupported release, partial/eccentric/endpoint action and capacity input; preliminary/fabrication flags unchanged. |
+| 6 Testing | `tests/elastic-frame-shear-member-action-benchmark.test.mjs`: independent cantilever rotations, deflections, reactions and end actions for interior force and uniform load. |
+| Integration | `packages/analysis/src/elastic-frame-solve.ts`, `README.md`: physically check signed assembly and subtract the same local action RHS when recovering shear-flexible end actions. |
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Exact legacy USDA interpretation, structural design and fabrication remain held.
+
+**Next:** Add explicit per-member released shear stiffness and RHS condensation with separately recovered private end rotations and independent propped-beam checks. Then decide whether any original deck/equation can explain the published discrepancy without tuning. Keep the 50-ft cap and fabrication locks.
+
 ## Batch 025 — 2026-11-22T02:48:21Z (UTC)
 
 **Reviewed implementation:** [`8230d1789b236ef4e859626ee8072da2362f71db`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/8230d1789b236ef4e859626ee8072da2362f71db). Baseline `a81bbc3`: 462 passing. Full `npm run check`: **472 passed, 0 failed, 0 skipped**. Six independent lanes.
