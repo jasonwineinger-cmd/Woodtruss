@@ -161,4 +161,6 @@ The library-only `studyAuthoredScissorElasticFrameReactions` connects the level-
 
 The companion `compareAuthoredScissorElasticFrameReleases` independently solves two to six explicit configurations against the same bounded authored cases and selected member IDs. Only directed end-release flags may differ; each response preserves the case, variant source, signed member end actions, both local deflection references, and the physical resultant from the same solve. A failed state holds the whole comparison. Indistinguishable support reactions do not establish actual joint fixity or acceptable deflection.
 
+The independent `studyObservedScissorThreeGaugeStiffness` reduces three signed displacement observations and two vertical bearing reactions per recorded step, then fits slope and intercept across an explicitly selected loading window. The [USDA physical benchmark intake](docs/references/usda-fpl-rp-499-scissor-benchmark.md) documents a comparable observable and why the reported specimen has not been reproduced. Synthetic arithmetic checks are not physical validation or lumber/plate evidence.
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.

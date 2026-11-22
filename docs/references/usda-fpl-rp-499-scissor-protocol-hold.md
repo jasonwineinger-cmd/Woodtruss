@@ -1,0 +1,21 @@
+# USDA FPL-RP-499 scissors tests: protocol evidence, replay held
+
+Primary sources: Wolfe and LaBissoniere, [FPL-RP-499 (1991)](https://www.fpl.fs.usda.gov/documnts/fplrp/fplrp499.pdf), Figure 1, printed pp. 4–9 and Appendix B; Wolfe and McCarthy, [FPL-RP-492 (1989)](https://research.fs.usda.gov/download/treesearch/25690.pdf), pp. 4–6, Figures 3 and 7 (the prior loading setup explicitly referenced by Part II).
+
+## What the reports establish
+
+| Check | Source-backed reading |
+|---|---|
+| Specimen | Figure 1(c): 28-ft scissors, upper 6:12 and lower 3:12. The physical plated assembly is not the current schematic topology. |
+| Individual rig | Both scissors bearings measured vertical **and** horizontal force. Plywood/blocking, guided load rods, and load blocks provided lateral top-chord restraint; the bracing changed during the failure series. Do not infer a frictionless pin/roller pair or equivalent spring. |
+| Load hardware and stations | Eight downward top-chord stations, 20-in. spreading blocks, four 10-in.-stroke/10,000-lb rams; a two-ram valve group could load one half-span. RP-492 specifies 41.125-in. station spacing and shows four stations per half in Figure 7. See offset hold below. |
+| Test sequence | Outside assembly: 8 stiffness and 4 failure specimens per configuration; stiffness steps 0.25 × DSN, held one minute. In the assembly: individual-member loading, section loading, then eight trusses directly loaded for full stiffness; the full failure test directly loaded seven interior trusses. Gable not directly loaded in the stiffness run. |
+| Assembly boundary | Sheathing and longitudinal LVL bearing plates transfer actions. Plate ends pinned over an 18-ft length; vertical cells under each truss, lateral measurement concentrated at the fifth truss and separation cables. This is not the individual rig. |
+| Vertical gauges | Overhead-yoke potentiometers, ±0.002 in. resolution; top-chord centroid over bearings, web nodes and peak, plus north peak-adjacent and south heel-adjacent panel middles. Sheathing-slip gauges and joint deformation gauges are separate channels. |
+
+## Stations, directions and holds
+
+- **Absolute station assumption:** the prior loading sketch is symmetric as drawn. If centered between bearings 336 in. apart, eight centers spaced 41.125 in. imply offsets **24.0625, 65.1875, 106.3125, 147.4375, 188.5625, 229.6875, 270.8125, 311.9375 in.** They are derived from centering, not eight separately dimensioned Part II coordinates. Retain only the confirmed spacing absent the exact fixture datum. Block locations are not necessarily nodes; hardware ratings are not applied force magnitudes. Do not treat a spreader footprint as a point or convert to a line load without documenting an equivalence hypothesis.
+- **Sign and gauge matching:** define any future comparison with vertical +up and signed movement measured relative to the rig reference; downward movement then maps to negative. Do not assume the chart or raw acquisition polarity matches that convention. Appendix B describes negative bearing movement as inward, so do not treat both gauges as having the same global +X. Gauge rotation is a relative connection reading, not the absolute rotation of one ideal frame node. Figure 5 distinguishes the scissors bottom-peak joint sketch (individual tests) from the top-peak joint sketch (full assembly); do not replace this figure-level distinction with a single universal rotation channel from the nearby prose.
+- **Physical replay blockers:** require one named individual specimen and load step, exact member/heel eccentricity geometry and member properties, applied force history by station including equipment/tare and dead-load reference, rig translation/rotation restraint law and bracing configuration, and signed channel ID/zero/calibration with corresponding numerical readings. Keep a whole-assembly study separate; load sharing, sheathing, clips and support-wall movement cannot be transferred to a single isolated truss.
+- Published failure loads, average stiffness slopes, and approximate graph reads are context only. No numerical acceptance tolerance or capacity, plate, bracing, installation or fabrication conclusion follows from this note.
