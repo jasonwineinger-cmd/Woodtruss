@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 049 — 2026-11-22T08:48:53Z (UTC)
+
+**Reviewed implementation:** [`a44dcdc14a6215b92980a8dc2cc3b4fd1e05f4f6`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/a44dcdc14a6215b92980a8dc2cc3b4fd1e05f4f6). Baseline `00bd7c8`: 679 passing. Full `npm run check`: **685 passed, 0 failed, 0 skipped**. Six isolated geometry, model, test, documentation and audit lanes plus integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Directed model | `mono-authored-elastic-frame-model.ts`: strict mono roof input, exact directed centerline mapping and no property or support defaults. |
+| 2 Boundaries | `mono-authored-elastic-frame-boundaries.test.mjs`: independent directed topology at the 50-ft cap, missing or stale assignments/supports/actions held. |
+| 3 Benchmarks | `mono-authored-elastic-frame-benchmark.test.mjs`: weighted reactions and moments about B2 and an all-release ideal pin-joint reaction comparison. |
+| 4 Scope | `mono-authored-elastic-frame-scope.md` and README document differences from the axial-only preview and what is not verified. |
+| 5 Call-site review | Kept the existing preview and release logic unchanged; no inferred bearings, materials, loads or plate fixity. |
+| 6 Independent oracle and root | `directed-authored-frame-binding.ts`, scissor reuse and `mono-authored-elastic-frame-study.ts`: same explicit input validation. Hand-checked projected vs actual member loading, plus vertical projection rejection. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Results apply only to authored synthetic assumptions, with no site, member design or fabrication authority.
+
+**Next:** Add an independently derived signed mono displacement or exact section-action comparison for explicit cases and directed stations, separately from support reaction balance. Leave actual bracing, raised heels, field bearings and product sizing held.
+
 ## Batch 048 — 2026-11-22T08:33:10Z (UTC)
 
 **Reviewed implementation:** [`b52d6ccedfcffeee18ef273c4e7685f96cf1651e`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/b52d6ccedfcffeee18ef273c4e7685f96cf1651e). Baseline `35a6069`: 674 passing. Full `npm run check`: **679 passed, 0 failed, 0 skipped**. Six independent documentation, validation, source and test lanes plus integration.
