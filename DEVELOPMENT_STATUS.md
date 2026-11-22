@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 046 — 2026-11-22T08:02:50Z (UTC)
+
+**Reviewed implementation:** [`56abd3319a06b90111862db4a493baf79080a43f`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/56abd3319a06b90111862db4a493baf79080a43f). Baseline `a194c1d`: 663 passing. Full `npm run check`: **668 passed, 0 failed, 0 skipped**. Six parallel review, source, implementation and test lanes plus integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Evidence audit | Existing reference metadata binds product/family/report/digest/basis, but not date or lifecycle. Exact source review did not bind an independent issuer observation. |
+| 2 Approval-boundary audit | Library-only; exact bytes are not authenticity, validity, suitability or release. A printed renewal month is not an expiry timestamp. |
+| 3 Observation code | `plate-report-observation-window.ts` compares explicitly dated, exact observations; calendar, stale observation, withdrawal, and ambiguous renewal-month cases hold. |
+| 4 Boundary tests | `plate-report-observation-window.test.mjs` verifies a leap month, month-end versus renewal-only, date/identity/status negatives and no disclosure. |
+| 5 Primary publication note | `tpi-2022-mitek-esr-1988-plate-source-boundary.md`: TPI edition and corrections; current ESR vs fire listing/older mirror; distinct tooth, steel and hinge scopes. No values copied. |
+| 6 Independent sources and root | `plate-dated-local-report-review.ts`, its test and README bind the exact product/revision observation to separately authorized bytes; kept private inputs and approvals outside outputs. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. No product or press selected. A documentation match cannot approve embedment, engineering, fabrication or machine release.
+
+**Next:** Separate independently declared plate resistance mechanism, embedment route, gross/net basis, directional denominator and per-face/pair identity. Bind the same exact source locator rather than accepting a steel row for teeth or treating a hinge as a toothed plate. Do not import capacity values or qualify actual equipment.
+
 ## Batch 045 — 2026-11-22T07:48:26Z (UTC)
 
 **Reviewed implementation:** [`cf8f5c86ef8bb842274de05a8d46ff3a8af38118`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/cf8f5c86ef8bb842274de05a8d46ff3a8af38118). Baseline `1ce108d`: 658 passing. Full `npm run check`: **663 passed, 0 failed, 0 skipped**. Six parallel audit, implementation, source and test lanes, plus root integration.
