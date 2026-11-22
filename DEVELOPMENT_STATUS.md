@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 060 — 2026-11-22T11:33:08Z (UTC)
+
+**Reviewed implementation:** [`f7276010cf7d80166f40f0c14e9b632f4650f010`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/f7276010cf7d80166f40f0c14e9b632f4650f010). Baseline `e0b6206`: 741 passing. Full `npm run check`: **747 passed, 0 failed, 0 skipped**. Six independent computation, integration, benchmark, documentation and review lanes.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Sweep | `stock-pareto-sweep.ts`: sorts eligible objectives by area and unused stock length, keeps exact ties and returns original candidate order. |
+| 2 Integration | `lumber-stock-pareto-frontier-integration.test.mjs`: removing both undocumented dominators restores two tied alternatives, but no short or unavailable candidate. |
+| 3 Independent oracle | `stock-pareto-sweep-benchmark.test.mjs`: 400 seeded pairwise-reference datasets and a 20,017-row exact nondominated dataset; no timing threshold. |
+| 4 Scope | README and `stock-pareto-sweep-boundary.md`: O(n log n) dominance stage, not inventory, structural selection, or a runtime guarantee. |
+| 5 Review | Independently derived exact ties/strict dominance proof and checked evidence eligibility before each sweep; no release changes. |
+| 6 Boundary tests and root | `stock-pareto-sweep-boundary.test.mjs`, `stock-frontier.ts` and `stock-evidence-frontier.ts`: preserve input ownership, reject invalid objective rows and route both paths through one exact sweep. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. This is per-member schematic screening only, not a whole-truss inventory allocation or approved choice.
+
+**Next:** Independently audit a whole-truss reported-stock contention scenario or another explicit optimization objective boundary; do not reserve or recommend stock or imply capacity.
+
 ## Batch 059 — 2026-11-22T11:20:07Z (UTC)
 
 **Reviewed implementation:** [`f0215b94cd6b2eed63ac0813a9d44f623edc4fb2`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/f0215b94cd6b2eed63ac0813a9d44f623edc4fb2). Baseline `7b691ad`: 734 passing. Full `npm run check`: **741 passed, 0 failed, 0 skipped**. Six independent identity, benchmark, documentation and review lanes plus integration.

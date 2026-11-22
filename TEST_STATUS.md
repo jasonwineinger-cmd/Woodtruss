@@ -1,11 +1,11 @@
 # Woodtruss test status
 
-- Batch: 059
-- Integrated verification: 2026-11-22T11:20:07Z (UTC)
+- Batch: 060
+- Integrated verification: 2026-11-22T11:33:08Z (UTC)
 - Command: `npm run check` (TypeScript check, compilation and complete automated suite)
-- Result: **741 passed, 0 failed, 0 skipped**
-- Latest tested implementation: [`f0215b94cd6b2eed63ac0813a9d44f623edc4fb2`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/f0215b94cd6b2eed63ac0813a9d44f623edc4fb2)
-- Baseline: `7b691add612719900e8370a5217005fc7abcce59` (734 passed)
-- Directed E/Emin evidence binds declared reviewed source identity and member axis. Matching numbers alone do not establish source role, credibility or engineering suitability.
+- Result: **747 passed, 0 failed, 0 skipped**
+- Latest tested implementation: [`f7276010cf7d80166f40f0c14e9b632f4650f010`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/f7276010cf7d80166f40f0c14e9b632f4650f010)
+- Baseline: `e0b6206a6dee9e24c741181b4abb0004b63abdd6` (741 passed)
+- Both stock frontiers use the same grouped two-objective sweep, preserving exact output and evidence holds. No stock allocated or engineering/release decision made.
 
 This status-only commit records the tested implementation SHA, not its own SHA. The 50-foot maximum and fabrication lock are unchanged. Passing software tests is not structural verification. See [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md) for remaining work.
