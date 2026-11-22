@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 056 — 2026-11-22T10:34:41Z (UTC)
+
+**Reviewed implementation:** [`44638ef2d2e89f23d6b60f3544a83270906b5125`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/44638ef2d2e89f23d6b60f3544a83270906b5125). Baseline `b71ca16`: 719 passing. Full `npm run check`: **723 passed, 0 failed, 0 skipped**. Six parallel link, boundary, source and review lanes plus integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Joint references | `tpsx-design-qc-joint-links.ts`: exact bounded placement, contact and member QC coverage. |
+| 2 Boundary cases | `tpsx-design-qc-links.test.mjs`: identity and quantities, duplicate/dangling members or placements, unknown faces, absent coverage. |
+| 3 Independent local replay | Two privately projected roof examples from independently reproduced single and grouped archive records both give 18 joints, 53 member references and 21 MemberQC rows. No publisher data included in the repository. |
+| 4 Boundary documentation | README and `tpsx-design-qc-link-boundary.md`: design document links are not observations or approvals. |
+| 5 Source audit | Checked all seven sample manifest occurrences against their selected documents. Where declared, TopBottom remains distinct from FrontBack; neither proves that a face was inspected. |
+| 6 Boundary oracle and root | `tpsx-design-qc-link-boundary.test.mjs` and `tpsx-design-qc-links.ts`: review bounded v0.9.4 projection only; reject package bytes, unsafe shapes, extra paths or approval fields. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Still no full TPSX import, authenticity, observed QC, certified compatibility, real capacity or release.
+
+**Next:** Verify the exact design-side requirements and separate observed records before linking a plate role or an inspection target. Do not infer member face observations, actual values, or tolerance meaning from identity agreement alone.
+
 ## Batch 055 — 2026-11-22T10:18:12Z (UTC)
 
 **Reviewed implementation:** [`aaa1c2ff9f4a2d953ba48e69add13d40f75b9353`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/aaa1c2ff9f4a2d953ba48e69add13d40f75b9353). Baseline `42d4b53`: 710 passing. Full `npm run check`: **719 passed, 0 failed, 0 skipped**. Six parallel validation, source-boundary and review lanes plus integration.
