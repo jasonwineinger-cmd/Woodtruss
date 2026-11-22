@@ -211,7 +211,7 @@ The library-only `studyAuthoredDoubleFinkElasticFrameReactions` uses exact direc
 
 The library-only `studyAuthoredDoubleFinkElasticFrameSectionCuts` reports signed axial, shear and moment together for selected directed stations on freshly solved ordinary Double Fink cases. See the [section-cut boundary](docs/double-fink-authored-section-cut-boundary.md). The results are not connector demands, shop cuts or capacity checks.
 
-The library-only `reviewDoubleFinkCatalogBoundSectionDemands` freshly solves authored Double Fink section cuts and reconciles declared stiffness and modulus evidence for the selected members only. See the [catalog-bound section boundary](docs/double-fink-catalog-bound-section-boundary.md). It is not source-byte verification or a capacity check.
+The library-only `reviewDoubleFinkCatalogBoundSectionDemands` freshly solves authored Double Fink section cuts and reconciles declared stiffness and modulus evidence for the selected members only. See the [catalog-bound section boundary](docs/double-fink-catalog-bound-section-boundary.md). It is not source-byte verification or a capacity check. The paired, library-only `reviewDoubleFinkCatalogBoundSectionSensitivity` reports same-cut signed changes caused by authored stiffness changes outside the selected catalog evidence; see the [sensitivity boundary](docs/double-fink-unselected-stiffness-sensitivity-boundary.md).
 
 The library-only `studyAuthoredDoubleFinkElasticFrameJointBalance` checks signed equilibrium at selected ordinary Double Fink nodes using incident inside section actions, physical nodal loads and modeled reactions. See the [joint-balance boundary](docs/double-fink-authored-joint-balance-boundary.md). It does not establish connector demands or release authority.
 
