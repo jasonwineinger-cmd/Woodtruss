@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 042 — 2026-11-22T07:05:16Z (UTC)
+
+**Reviewed implementation:** [`cbb3b320b7dee9ead36989e8a1924066cc018e9f`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/cbb3b320b7dee9ead36989e8a1924066cc018e9f). Baseline `f59574b`: 633 passing. Full `npm run check`: **641 passed, 0 failed, 0 skipped**. Six isolated analysis, evidence and test lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `scissor-modeled-three-gauge-restraint-study.ts`: same exact scissor frame and prescribed restraint across bounded weighted cases; individual signed vertical bearings and comparison-only modeled response. |
+| 2 Derived results | `elastic-frame-horizontal-restraint-study.ts`: original and restrained global vertical maps read from the exact existing physical solves, excluding the virtual unit load. |
+| 3 Model binding | `scissor-modeled-three-gauge-projection.ts` plus tests: exact labeled Q1/R/Q3, downward sign and stable equal mean; unknown or missing readings held. |
+| 4 Evidence | `scissor-modeled-gauge-restraint-scope.md` and README keep model predictions distinct from observations, project code checks and fabrication. |
+| 5 Analytical | `scissor-modeled-three-gauge-restraint-benchmark.test.mjs`: both authored directions, individual bearing equilibrium and separate physical solve check. |
+| 6 QA and root | Reject old/unknown targets, observed or fitted input and unsupported geometry; verify 50-ft edge, signed reversal in spring case and exact restraint/origin metadata. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Modeled synthetic gauge comparisons do not reproduce the USDA specimen, determine actual fixity or approve fabrication.
+
+**Next:** Add an evidence-binding gate for a future model-to-observation comparison. Require explicit independent specimen/model, protocol, gauge and load-level correspondence before reporting residuals, with no automatic fitting or default crosswalk. Continue exact physical source recovery separately.
+
 ## Batch 041 — 2026-11-22T06:49:15Z (UTC)
 
 **Reviewed implementation:** [`9a484a01d87a0101798e42d528a404766a201864`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/9a484a01d87a0101798e42d528a404766a201864). Baseline `7c2bb15`: 623 passing. Full `npm run check`: **633 passed, 0 failed, 0 skipped**. Six isolated structural, numerical, boundary and evidence lanes.
