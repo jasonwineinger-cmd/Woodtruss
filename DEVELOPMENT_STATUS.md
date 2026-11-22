@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 070 — 2026-11-22T14:18:24Z (UTC)
+
+**Reviewed implementation:** [`0c5654c3245c0c37e242de1df5e8d184d6c1c09a`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/0c5654c3245c0c37e242de1df5e8d184d6c1c09a). Baseline `1d5c6af`: 797 passing. Full `npm run check`: **803 passed, 0 failed, 0 skipped**. Six independent implementation, testing and review lanes, plus root integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Paired selected-cut replay | `double-fink-catalog-bound-section-sensitivity.ts`, positive test and fixture: independently replay both exact revisions; allow only unselected A/I/E changes and return matched signed baseline, alternative and delta vectors. |
+| 2 Generic indeterminate fixture | `authored-pin-bar-rectangle-stiffness-benchmark.test.mjs`: same reactions, different selected forces and C movement, independently calculated. |
+| 3 Exact Double Fink statics | Hand-released horizontal restraint and restored compatibility. Selected cut shifts from -12.5 lb to -100/15 lb, with zero shear and moment. |
+| 4 Defensive boundaries | Verified need for detached exact replay, no stale/cached results, matching stations/directions and finite all-or-nothing deltas. |
+| 5 Release and CI scope | Reviewed no new production paths or approval flags and separate exact-head CI verification. |
+| 6 Independent oracle | Independently recomputed the generic geometry via complementary energy and displacement from work. |
+| Root | Sensitivity boundary tests, README and boundary note. Same-revision, changed actions, support/release/selection differences, stale evidence, changed selected stiffness, unsupported span and inaccessible data all hold without partial vectors. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Selected source-document equality does not validate other members, installed stock, physical restraints, structural design or release.
+
+**Next:** Select a distinct unresolved numerical or manufacturing gap with a traceable reference. No actual lumber sizing, plate selection or fabrication authorization without qualified, verified inputs.
+
 ## Batch 069 — 2026-11-22T14:04:31Z (UTC)
 
 **Reviewed implementation:** [`5d17c62b18c850fb1c6e000675a4e12d0ee98937`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/5d17c62b18c850fb1c6e000675a4e12d0ee98937). Baseline `6e08a37`: 792 passing. Full `npm run check`: **797 passed, 0 failed, 0 skipped**. Six independent implementation, testing, documentation and review lanes, plus root integration.
