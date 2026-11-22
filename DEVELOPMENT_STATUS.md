@@ -1,5 +1,27 @@
 # Woodtruss development status
 
+## Batch 015 — 2026-11-22T00:19:03Z (UTC)
+
+**Reviewed implementation:** [`a31d9814d3311b6e414bdd683e46207487cce5a5`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/a31d9814d3311b6e414bdd683e46207487cce5a5). Baseline `92f3b55`: 331 passing tests. Integrated `npm run check`: **348 passed, 0 failed, 0 skipped**. Six isolated workers; no release changes.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/member-chain-line-load.ts`: explicit connected modeled bars and partial cumulative chain interval, linear signed global intensity, exact equivalent node forces. No implied transverse behavior or physical load application. |
+| 2 Lumber | `packages/lumber/src/{rectangular-net-section,index}.ts`: subtract explicit disjoint rectangles and return net area, centroid, and inertias, including signed product. No stress concentration, actual continuity, NDS values or capacity. |
+| 3 Connector plates | `packages/connections/src/plate-outline-conflict.ts`: distinguish disjoint outlines, boundary contact, and overlap within the same verified local face. No spacing rule, plate sizing, acceptable placement, or strength. |
+| 4 Geometry | `packages/analysis/src/explicit-family-dispatch.ts`: adds the limited agricultural tied-gable point-load route. It requires the agricultural family and rejects raised heel, overhang and unsupported purlin options. |
+| 5 Manufacturing | `packages/fabrication/src/preliminary-review-wire.ts`: canonical standalone UTF-8 handoff carrying only review identity and verification digests; replays trusted independent scope; rejects malformed or stale inputs. Its 600-in cap is a schematic extent, not bearing span. |
+| 6 Testing | `tests/independent-shallow-compliance-benchmark.test.mjs`: closed-form compression, reactions and displacement for a shallow V, including transposed coordinates and rejection of a numerically unreliable near-mechanism. |
+| Integration | `scripts/preview.mjs`, `README.md`, `tests/cli-smoke.test.mjs`: new versioned JSON input on standard input, explicitly signed point loads, reported movements/reactions/axial forces and audited equilibrium; no fabricated or default project inputs. |
+
+**Other changed tests:** `tests/{explicit-family-dispatch,lumber-rectangular-net-section,member-chain-line-load,plate-outline-conflict,preliminary-review-wire}.test.mjs`.
+
+**Independent checks:** hand force and moment for partial member-chain loading, rectangular net section properties, polygon separating cases, signed agricultural case reactions and exact 50-ft boundary, shallow closed-form compliance, and canonical-byte negative fixtures. These are software/numerical checks, not an independent engineering approval.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Verified site load ownership/conditions, adopted code checks, licensed design values, integrated manufacturing workflow and qualified approval are not complete.
+
+**Next batch:** improve authored study usability and exact source provenance, extend only supported geometry with independent validation, and keep material, connector, optimization and fabrication gates closed until their missing inputs and independent verification are supplied. Attic remains geometry-only; hip remains a roof geometry reference, not an analyzed hip truss.
+
 ## Batch 014 — 2026-11-22T00:03:11Z (UTC)
 
 **Reviewed implementation:** [`672da18388fa56fbd466224ea5e5df19948dd173`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/672da18388fa56fbd466224ea5e5df19948dd173). Baseline `718a120`: 315 passing tests. Integrated `npm run check`: **331 passed, 0 failed, 0 skipped**. Six isolated workers; outputs remain preliminary.
