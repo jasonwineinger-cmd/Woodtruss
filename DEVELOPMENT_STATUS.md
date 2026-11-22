@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 036 — 2026-11-22T05:33:17Z (UTC)
+
+**Reviewed implementation:** [`7725acafde766c751308fe05d9d8d265058df715`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/7725acafde766c751308fe05d9d8d265058df715). Baseline `8923593`: 582 passing. Full `npm run check`: **592 passed, 0 failed, 0 skipped**. Six isolated engineering, quality and evidence lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `elastic-frame-authored-combination-receipt.ts`: input-only versioned receipt from a freshly solved detached snapshot; no output cache. |
+| 2 Lumber | `elastic-frame-authored-combination-replay.ts`: compare the entire envelope to independently supplied expected inputs, then perform one fresh solve. No changed input or result read from the submitted receipt. |
+| 3 Connector plates/evidence | USDA reference note now separates canonical reproducibility from source trust, capacities, code and release. |
+| 4 Geometry/data | `elastic-frame-reviewed-plain-data.ts` and tests maintain authored array order, finite values and exact directed frame/action data; sort record keys; detached deep freeze with explicit numeric zero normalization. |
+| 5 Verification | `elastic-frame-authored-combination-review-benchmark.test.mjs`: independent weighted beam stress and same-cut actions after a JSON round trip, plus rejection of a changed directed point lever arm. |
+| 6 Integration | `elastic-frame-authored-combination-review-boundaries.test.mjs`: forged metadata, stale or reordered inputs, getter, nonfinite and sparse data rejection and immutability. |
+| Root | Review, exact tree integration, aggregate text limit and README; 50-foot cap and fabrication lock unchanged. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. A matching receipt is not an authenticated source, signed engineering, or proof of code compliance.
+
+**Next:** Add a scoped reproducible load-resultant/reaction statement with independent analytical checks and retain it as a solved diagnostic only. Continue code, lumber and connector data research from authoritative sources; do not fill the gaps with inferred defaults.
+
 ## Batch 035 — 2026-11-22T05:19:09Z (UTC)
 
 **Reviewed implementation:** [`b4b806e975ce1ddd20b1507046d76e2f7cea485d`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/b4b806e975ce1ddd20b1507046d76e2f7cea485d). Baseline `82a18a6`: 570 passing. Full `npm run check`: **582 passed, 0 failed, 0 skipped**. Six isolated engineering, evidence and test lanes.
