@@ -1,5 +1,27 @@
 # Woodtruss development status
 
+## Batch 020 — 2026-11-22T01:34:47Z (UTC)
+
+**Reviewed implementation:** [`88da003cd7e40265b3485697d2097130cd830b6c`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/88da003cd7e40265b3485697d2097130cd830b6c). Baseline `6523956`: 405 passing tests. Integrated `npm run check`: **421 passed, 0 failed, 0 skipped**. Six independent lanes; no change to fabrication release.
+
+| Worker | Completed scope and changed code |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/elastic-frame-global-element.ts`: rotates the directed prismatic local stiffness into global coordinates; retains rotational release flags at the element boundary. Checks inclined and vertical members and strain-energy invariance. |
+| 2 Lumber | `packages/lumber/src/{centroidal-inertia-rotation,index}.ts`: rotates an independently supplied positive centroidal inertia tensor with signed cross term; no section inference, stiffness value assignment or adequacy. |
+| 3 Connector plates | `packages/connections/src/plate-moment-rotation-witness.ts`: signed two-observation secant bound to the source and explicit end, axis and branch. No extrapolation, transferable design stiffness or capacity. |
+| 4 Geometry | `packages/geometry/src/member-station.ts`: signed local member-axis station and offset, without snapping, clamping or inferring joint incidence. |
+| 5 Physical/reference | `docs/references/usda-ppsa-frame-output-scope.md`: original Table VIII member-end coordinate/sign conversion and Table XII displacement display distinctions; holds the conflicting vertical-roller display semantics and shear/fixture differences. No USDA full-frame match. |
+| 6 Testing | `tests/independent-bent-elastic-frame-benchmark.test.mjs`: independent Castigliano displacement/rotation, reactions and support-loss mechanism; additional scope and exact cap tests. |
+| Integration | `packages/analysis/src/elastic-frame-solve.ts` and `README.md`: separate library-only prismatic rigid-ended frame solver for explicit nodal forces/couples and global component restraints. Diagonal-scaled solve, residual and global equilibrium checks, and 50-ft horizontal extent guard. |
+
+**Other changed tests:** `tests/{elastic-frame-global-element,lumber-centroidal-inertia-rotation,member-station,plate-moment-rotation-witness}.test.mjs`.
+
+**Independent checks:** mixed-orientation bent cantilever with heterogeneous axial/bending properties, exact cap and rejection of unsupported fields, numerical mechanism despite nominal restraint count, coordinate/energy invariance, and USDA printed reference sign/rounding documentation. The USDA case still requires assembled releases, inclined restraint and shear effects; no physical model or engineering authorization.
+
+**Estimates, unchanged:** lumber **20%**, connector plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Full independent model verification, licensed design values, site/code checks, and qualified review are still open.
+
+**Next batch:** support consistent member load forces/couples, explicit frame boundary directions and/or released-end assembly separately, with analytic tests. Hold unsupported USDA scenarios and all manufacturing approval.
+
 ## Batch 019 — 2026-11-22T01:19:34Z (UTC)
 
 **Reviewed implementation:** [`15927fba16d3b9fe41e6d0de99e317d194c028a9`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/15927fba16d3b9fe41e6d0de99e317d194c028a9). Baseline `888c57c`: 392 passing tests. Integrated `npm run check`: **405 passed, 0 failed, 0 skipped**. Six independent lanes. No change to fabrication release.
