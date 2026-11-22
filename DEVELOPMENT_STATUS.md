@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 064 — 2026-11-22T12:32:43Z (UTC)
+
+**Reviewed implementation:** [`cbf604a541bc531c612c68a48aaa982fee895db7`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/cbf604a541bc531c612c68a48aaa982fee895db7). Baseline `6eba12b`: 765 passing. Full `npm run check`: **770 passed, 0 failed, 0 skipped**. Six independent artifact, metadata, testing, documentation and review lanes, plus root integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Artifact byte boundary | `plate-source-artifact.ts`: validates explicit plain envelopes, native private Uint8Array view and bounds, then copies only selected bytes before digest. |
+| 2 Reference metadata | `plate-reference-evidence.ts`: exact plain own-data descriptor snapshots, detached and frozen, with no getter reads and no all-zero digest. |
+| 3 Independent exact-byte QA | `plate-artifact-snapshot-benchmark.test.mjs`: standard SHA-256 known answer, subview and caller mutation, native cross-realm identity, and shared, detached and impostor negatives. |
+| 4 Documentation | README and `plate-local-artifact-data-boundary.md`: local identity only, with explicit no-Proxy-sandbox and no release claims. |
+| 5 Independent implementation audit | Traced native array branding, bounds, shared backing distinction, async ownership and category safety. |
+| 6 Documentary boundary audit | Distinguished local artifact identity from signatures, credential authenticity, correction/reinspection, and capacity or release. |
+| Root | `plate-reference-evidence.test.mjs` and `plate-source-artifact.test.mjs`: exact malformed and accessor envelope holds, stable categories and end-to-end integration. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Caller-supplied local digest identity does not establish manufacturer authenticity, document applicability, connector strength or permission to fabricate.
+
+**Next:** Separately bind expected design and inspection artifact identities and replay synthetic swapped/stale-byte holds, or advance the next independent plate evidence gap without asserting signature or release.
+
 ## Batch 063 — 2026-11-22T12:17:21Z (UTC)
 
 **Reviewed implementation:** [`03a1902703986090165246f2d300aca276b4700f`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/03a1902703986090165246f2d300aca276b4700f). Baseline `1ec4c98`: 760 passing. Full `npm run check`: **765 passed, 0 failed, 0 skipped**. Six independent implementation, benchmark, boundary and review lanes, plus root integration.
