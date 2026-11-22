@@ -71,7 +71,7 @@ test('a redundant restraint count cannot make a mechanism stable', () => {
 test('bounded frame mode never silently ignores shear, member releases or an overspan',()=>{
   const unsupported = structuredClone(model);
   unsupported.members[0].releaseLeftRotation=true;
-  assert.throws(()=>solveElasticFrame(unsupported),/rigid frame member/i);
+  assert.throws(()=>solveElasticFrame(unsupported),/frame member or end release/i);
   assert.throws(()=>solveElasticFrame({...model,shearDeformation:true}),/unknown or missing/i);
   const over=structuredClone(model); over.nodes[2].xIn=600.01;
   assert.throws(()=>solveElasticFrame(over),/50-ft/i);

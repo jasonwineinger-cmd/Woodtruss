@@ -33,3 +33,14 @@ The assembled study accepts a signed free tangent with zero normal displacement 
 Figure 5, Tables II/III and VI-A locate member 6's downward 550-lb load 46.25 in from its ordered node 1 (24.00 in from node 6). About source node 1 its moment is -25,437.5 lb-in. Table VIII's printed shears sum to +550 lb and its printed end actions close the moment to -0.008 lb-in after rounding. Figure 5's node 4 nodal action already includes the overhang contribution, so do not add it a second time.
 
 Member 7's released rotations, member-specific end/section-demand recovery, shear deformation (including group 3's fictitious member flag) and precision details remain unimplemented or unverified. The earlier Table XII node-2 display ambiguity still holds. These capabilities do not reproduce the full historical calculation or validate a physical truss.
+
+
+## Assembled member release increment
+
+The solver now applies verified zero-moment releases to individual members, condensing the consistent applied member loads with the stiffness. This does not mean an entire joint is hinged. In the USDA example member 7 is released at both ends, but members 1 and 6 retain joint rotation at node 1, and members 2, 3 and 8 retain it at node 3. Table XII prints nonzero rotations at those joints. Table VIII gives member 7 equal and opposite axial actions, zero shear, and zero bending moment at both ends; that member has no transverse member load in the fixture.
+
+Independent propped-beam and two-ended release checks exercise software mechanics, not connector stiffness, capacity or a real truss. No shear or local member action recovery is asserted. A physical end may not be treated as released just because a product table does not report a stiffness. Full USDA comparison remains held.
+
+## No-shear diagnostic against an independent calculation
+
+A separate strain-energy implementation (with a conventional matrix cross-check) evaluated the full six-node/eight-member inputs with shear off and projected roof forces. The assembled Woodtruss Euler–Bernoulli result agrees with its independently computed pin reaction (878.3392, 998.3205) lb to rounding, and the other support reactions close the independent 94,542.225 lb-in global moment. The legacy Table VII pin is (896.178, 1005.070) lb and is intentionally not an acceptance target for this no-shear test. Integration does not yet check the legacy local end-action table, recover shear deformation, or settle node 2's displacement convention. The separately evaluated shear interpretation narrows, but does not eliminate, the published difference; no coefficient is calibrated to match.

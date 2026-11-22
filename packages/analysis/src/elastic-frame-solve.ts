@@ -2,6 +2,8 @@ import { elasticFrameElementGlobalStiffness } from "./elastic-frame-global-eleme
 import { elasticFrameMemberPointLoad } from "./elastic-frame-member-point-load.js";
 import { createInclinedSupportAxis } from "../../geometry/src/inclined-support-axis.js";
 import { elasticFrameMemberUniformLoad } from "./elastic-frame-member-load.js";
+import { condenseElasticFrameMemberLoad } from "./elastic-frame-release-load.js";
+import type {ElasticFrameElementProperties} from "./elastic-frame-element.js";
 
 interface ElasticFrameUniformAction {
   memberId:string;
@@ -15,9 +17,14 @@ type ElasticFrameSupport =
   | {nodeId:string;fixX:boolean;fixY:boolean;fixRotation:boolean}
   | {nodeId:string;freeDx:number;freeDy:number;fixRotation:boolean};
 
+type ElasticFrameMember = {
+  id:string;startNodeId:string;endNodeId:string;areaIn2:number;secondMomentIn4:number;elasticModulusPsi:number;
+} & ({releaseStartRotation?:never;releaseEndRotation?:never} |
+     {releaseStartRotation:boolean;releaseEndRotation:boolean});
+
 export interface ElasticFrameInput {
   nodes:readonly {id:string;xIn:number;yIn:number}[];
-  members:readonly {id:string;startNodeId:string;endNodeId:string;areaIn2:number;secondMomentIn4:number;elasticModulusPsi:number}[];
+  members:readonly ElasticFrameMember[];
   supports:readonly ElasticFrameSupport[];
   loads:readonly {nodeId:string;fxLb:number;fyLb:number;momentLbIn:number}[];
   memberLoads?:readonly ElasticFrameUniformAction[];
@@ -25,11 +32,11 @@ export interface ElasticFrameInput {
 }
 const finite=(numbers:readonly number[])=>numbers.every(Number.isFinite);
 const validId=(id:string)=>typeof id==="string" && /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$/u.test(id);
-const exact=(row:object,keys:readonly string[])=>!!row && typeof row==="object" &&
-  Object.keys(row).length===keys.length && keys.every(key=>Object.hasOwn(row,key));
+const exact=(row:object,keys:readonly string[])=>!!row && typeof row==="object" && !Array.isArray(row) &&
+  Reflect.ownKeys(row).length===keys.length && keys.every(key=>Object.hasOwn(row,key));
 
-/** Separate bounded, linear Euler–Bernoulli frame study, rigid member ends only.
- * Ideal restraints and explicit actions only; no releases, shear deformation or design checks. */
+/** Separate bounded linear Euler–Bernoulli frame study. Ideal per-member end releases
+ * and restraints only; no shear deformation or design checks. */
 export function solveElasticFrame(input:ElasticFrameInput) {
   const fields=["nodes","members","supports","loads"];
   const hasMemberLoads=!!input&&Object.hasOwn(input,"memberLoads");
@@ -60,16 +67,31 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   const K=Array.from({length:count},()=>Array<number>(count).fill(0));
   const F=Array<number>(count).fill(0);
   const adjacency=Array.from({length:nodes.length},()=>new Set<number>());
-  const memberEnds=new Map<string,readonly [number,number]>();
+  type MemberRecord={
+    a:number;b:number;properties:ElasticFrameElementProperties;globalToLocal:number[][];
+  };
+  const memberEnds=new Map<string,MemberRecord>();
+  const rotationConnected=Array<boolean>(nodes.length).fill(false);
+  const memberKeys=["id","startNodeId","endNodeId","areaIn2","secondMomentIn4","elasticModulusPsi"];
   for(const m of Array.from(members)) {
-    if(!exact(m,["id","startNodeId","endNodeId","areaIn2","secondMomentIn4","elasticModulusPsi"])||
-       !validId(m.id)||memberEnds.has(m.id)) throw new Error("Invalid or repeated rigid frame member");
+    const rigid=exact(m,memberKeys);
+    const explicit=exact(m,[...memberKeys,"releaseStartRotation","releaseEndRotation"]);
+    if((!rigid&&!explicit)||!validId(m.id)||memberEnds.has(m.id)||
+       (explicit&&(typeof m.releaseStartRotation!=="boolean"||typeof m.releaseEndRotation!=="boolean")))
+      throw new Error("Invalid or repeated frame member or end release fields");
     const a=owner.get(m.startNodeId),b=owner.get(m.endNodeId);
     if(a===undefined||b===undefined||a===b||adjacency[a].has(b)) throw new Error("Invalid or duplicate frame member incidence");
-    memberEnds.set(m.id,[a,b]); adjacency[a].add(b); adjacency[b].add(a);
-    const {matrix}=elasticFrameElementGlobalStiffness({left:{xIn:nodes[a].xIn,yIn:nodes[a].yIn},
-      right:{xIn:nodes[b].xIn,yIn:nodes[b].yIn},areaIn2:m.areaIn2,secondMomentIn4:m.secondMomentIn4,
-      elasticModulusPsi:m.elasticModulusPsi,releaseLeftRotation:false,releaseRightRotation:false});
+    const releaseLeftRotation=explicit&&m.releaseStartRotation===true;
+    const releaseRightRotation=explicit&&m.releaseEndRotation===true;
+    const properties={areaIn2:m.areaIn2,secondMomentIn4:m.secondMomentIn4,
+      elasticModulusPsi:m.elasticModulusPsi,releaseLeftRotation,releaseRightRotation};
+    const {matrix,globalToLocalTransform,lengthIn}=elasticFrameElementGlobalStiffness({
+      left:{xIn:nodes[a].xIn,yIn:nodes[a].yIn},right:{xIn:nodes[b].xIn,yIn:nodes[b].yIn},...properties,
+    });
+    memberEnds.set(m.id,{a,b,properties:{...properties,lengthIn},globalToLocal:globalToLocalTransform});
+    adjacency[a].add(b); adjacency[b].add(a);
+    if(!releaseLeftRotation)rotationConnected[a]=true;
+    if(!releaseRightRotation)rotationConnected[b]=true;
     const g=[3*a,3*a+1,3*a+2,3*b,3*b+1,3*b+2];
     for(let i=0;i<6;i++)for(let j=0;j<6;j++) K[g[i]][g[j]]+=matrix[i][j];
   }
@@ -108,7 +130,10 @@ export function solveElasticFrame(input:ElasticFrameInput) {
       rotated=true;
       fixed.add(base+1);
     }
-    if(s.fixRotation)fixed.add(base+2);
+    if(s.fixRotation) {
+      if(!rotationConnected[i]) throw new Error("Rotational restraint has no connected member rotation");
+      fixed.add(base+2);
+    }
   }
   if(fixed.size<3) throw new Error("Unstable frame: insufficient restraints");
   const appliedResultants:number[][]=[];
@@ -118,16 +143,24 @@ export function solveElasticFrame(input:ElasticFrameInput) {
        loadNodes.has(f.nodeId)) throw new Error("Invalid or repeated frame load node");
     const i=owner.get(f.nodeId);
     if(i===undefined)throw new Error("Unknown frame load node");
+    if(f.momentLbIn!==0&&!rotationConnected[i])
+      throw new Error("Applied nodal moment has no connected member rotation");
     loadNodes.add(f.nodeId);
     F[3*i]=f.fxLb; F[3*i+1]=f.fyLb; F[3*i+2]=f.momentLbIn;
     appliedResultants.push([f.fxLb,f.fyLb,f.momentLbIn+
       (nodes[i].xIn-nodes[0].xIn)*f.fyLb-(nodes[i].yIn-nodes[0].yIn)*f.fxLb]);
   }
 
-  function assembleMemberAction(a:number,b:number,globalEquivalentLoad:readonly number[],
-    physicalResultant:{fxLb:number;fyLb:number;momentAboutLeftLbIn:number}) {
+  function assembleMemberAction(member:MemberRecord,globalEquivalentLoad:readonly number[],
+    localEquivalentLoad:readonly number[],physicalResultant:{fxLb:number;fyLb:number;momentAboutLeftLbIn:number}) {
+    const {a,b,properties,globalToLocal}=member;
+    let applied=globalEquivalentLoad;
+    if(properties.releaseLeftRotation||properties.releaseRightRotation) {
+      const condensed=condenseElasticFrameMemberLoad({...properties,localEquivalentLoad});
+      applied=globalToLocal.map((_,j)=>globalToLocal.reduce((sum,row,i)=>sum+row[j]*condensed[i],0));
+    }
     const dofs=[3*a,3*a+1,3*a+2,3*b,3*b+1,3*b+2];
-    dofs.forEach((dof,j)=>{F[dof]+=globalEquivalentLoad[j];});
+    dofs.forEach((dof,j)=>{F[dof]+=applied[j];});
     const {fxLb,fyLb,momentAboutLeftLbIn}=physicalResultant;
     appliedResultants.push([fxLb,fyLb,momentAboutLeftLbIn+
       (nodes[a].xIn-nodes[0].xIn)*fyLb-(nodes[a].yIn-nodes[0].yIn)*fxLb]);
@@ -139,14 +172,14 @@ export function solveElasticFrame(input:ElasticFrameInput) {
       loadedMembers.has(action.memberId)) throw new Error("Invalid or repeated frame member load");
     const ends=memberEnds.get(action.memberId);
     if (!ends) throw new Error("Unknown loaded frame member");
-    const [a,b]=ends;
+    const {a,b}=ends;
     const left={xIn:nodes[a].xIn,yIn:nodes[a].yIn},right={xIn:nodes[b].xIn,yIn:nodes[b].yIn};
-    const {globalEquivalentLoad,physicalResultant}=elasticFrameMemberUniformLoad({
+    const {globalEquivalentLoad,localEquivalentLoad,physicalResultant}=elasticFrameMemberUniformLoad({
       left,right,releaseLeftRotation:false,releaseRightRotation:false,
       basis:action.basis,qxLbPerIn:action.qxLbPerIn,qyLbPerIn:action.qyLbPerIn,
     });
     loadedMembers.add(action.memberId);
-    assembleMemberAction(a,b,globalEquivalentLoad,physicalResultant);
+    assembleMemberAction(ends,globalEquivalentLoad,localEquivalentLoad,physicalResultant);
   }
   const pointedMembers=new Set<string>();
   for (const action of Array.from(pointLoads)) {
@@ -154,14 +187,14 @@ export function solveElasticFrame(input:ElasticFrameInput) {
         pointedMembers.has(action.memberId)) throw new Error("Invalid or repeated frame member point load");
     const ends=memberEnds.get(action.memberId);
     if (!ends) throw new Error("Unknown point-loaded frame member");
-    const [a,b]=ends;
+    const {a,b}=ends;
     const left={xIn:nodes[a].xIn,yIn:nodes[a].yIn},right={xIn:nodes[b].xIn,yIn:nodes[b].yIn};
-    const {globalEquivalentLoad,physicalResultant}=elasticFrameMemberPointLoad({
+    const {globalEquivalentLoad,localEquivalentLoad,physicalResultant}=elasticFrameMemberPointLoad({
       left,right,releaseLeftRotation:false,releaseRightRotation:false,
       stationIn:action.stationIn,fxLb:action.fxLb,fyLb:action.fyLb,
     });
     pointedMembers.add(action.memberId);
-    assembleMemberAction(a,b,globalEquivalentLoad,physicalResultant);
+    assembleMemberAction(ends,globalEquivalentLoad,localEquivalentLoad,physicalResultant);
   }
   if (!finite(F)) throw new Error("Nonfinite assembled frame load");
 
@@ -185,7 +218,15 @@ export function solveElasticFrame(input:ElasticFrameInput) {
     return global;
   }
 
-  const free=Array.from({length:count},(_,i)=>i).filter(i=>!fixed.has(i));
+  // Ignore only rotational placeholders with zero incidence, never an
+  // actual translation or connected mechanism. Require structurally exact
+  // zero rows and RHS at omitted coordinates to catch assembly mismatches.
+  const absent=new Set(rotationConnected.flatMap((connected,i)=>connected?[]:[3*i+2]));
+  for(const i of absent) {
+    if(systemF[i]!==0||systemK[i].some(value=>value!==0)||systemK.some(row=>row[i]!==0))
+      throw new Error("Nonzero action or stiffness on an omitted frame rotation");
+  }
+  const free=Array.from({length:count},(_,i)=>i).filter(i=>!fixed.has(i)&&!absent.has(i));
   const diagonal=free.map(i=>Math.sqrt(systemK[i][i]));
   if(diagonal.some(x=>!(x>0)||!Number.isFinite(x)))throw new Error("Unstable or unsupported frame degree of freedom");
   // Equilibrate the stiffness diagonal before the SPD solve, since rotation
@@ -225,7 +266,7 @@ export function solveElasticFrame(input:ElasticFrameInput) {
     throw new Error("Frame solution exceeds free-DOF residual tolerance");
   const globalReactions=toGlobal(residual.map((r,i)=>fixed.has(i)?r:0));
   if(!finite(globalReactions))throw new Error("Nonfinite oriented frame reactions");
-  const displacements=Object.fromEntries(nodes.map((n,i)=>[n.id,{uxIn:globalQ[3*i],uyIn:globalQ[3*i+1],rotationRad:globalQ[3*i+2]}]));
+  const displacements=Object.fromEntries(nodes.map((n,i)=>[n.id,{uxIn:globalQ[3*i],uyIn:globalQ[3*i+1],rotationRad:rotationConnected[i]?globalQ[3*i+2]:null}]));
   const reactions=Object.fromEntries(nodes.map((n,i)=>[n.id,{fxLb:globalReactions[3*i],
     fyLb:globalReactions[3*i+1],momentLbIn:globalReactions[3*i+2]}]));
   // Balance original physical actions, not the equivalent nodal assembly.
@@ -240,5 +281,5 @@ export function solveElasticFrame(input:ElasticFrameInput) {
   return {displacements,reactions,equilibrium:{passes:true as const,
     forceXLb:errs[0],forceYLb:errs[1],momentLbIn:errs[2],originNodeId:nodes[0].id},
     status:"PRELIMINARY_NOT_ENGINEERED" as const,fabricationAuthorized:false as const,
-    scope:"Linear axial/bending frame with rigid member ends, ideal global or inclined restraints, nodal actions and bounded uniform or interior member forces; no shear deformation, end releases or section-demand recovery."};
+    scope:"Linear axial/bending frame with rigid or explicitly released member ends, ideal global or inclined restraints, nodal actions and bounded uniform or interior member forces; no shear deformation or section-demand recovery."};
 }
