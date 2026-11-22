@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 021 — 2026-11-22T01:47:54Z (UTC)
+
+**Reviewed implementation:** [`6b5c4c554b874dde8aa8ba8c7f52379abec5ed39`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/6b5c4c554b874dde8aa8ba8c7f52379abec5ed39). Baseline `4067f06`: 421 passing. Integrated `npm run check`: **431 passed, 0 failed, 0 skipped**. Six independent implementation, test and audit lanes. No release change.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `packages/analysis/src/elastic-frame-member-load.ts` and `tests/elastic-frame-member-load.test.mjs`: signed full-length uniform global force with explicit actual length or nonzero horizontal projection; independently computed midpoint physical resultant. |
+| 2 Lumber | Audited projection math, extreme-range holds and absent section-force recovery. No sizing/design value change. |
+| 3 Connector plates | Audited the USDA member releases and source gaps, recorded in `docs/references/usda-ppsa-frame-output-scope.md`. |
+| 4 Geometry | `tests/elastic-frame-member-geometry.test.mjs`: inclined signed resultant and exact end reversal for both load bases. |
+| 5 Manufacturing | Audited library isolation and fail-closed release. No shop, cut or machine output change. |
+| 6 Testing | `tests/elastic-frame-member-load-benchmark.test.mjs`: independent deflections and reactions for uniform simple beam and inclined cantilever; added invalid-scope and mixed-action regressions at integration. |
+| Integration | `packages/analysis/src/elastic-frame-solve.ts` and `README.md`: assemble optional uniform actions with nodal loads, check balance against physical actions, retain 50-ft guard. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. No member demand, licensed design or engineering approval inferred from those tests.
+
+**Next:** separately implement inclined support restraints, rotational release assembly and point member loads with independent checks. Shear and member section-resultants remain unavailable; full USDA comparison and fabrication remain held.
+
 ## Batch 020 — 2026-11-22T01:34:47Z (UTC)
 
 **Reviewed implementation:** [`88da003cd7e40265b3485697d2097130cd830b6c`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/88da003cd7e40265b3485697d2097130cd830b6c). Baseline `6523956`: 405 passing tests. Integrated `npm run check`: **421 passed, 0 failed, 0 skipped**. Six independent lanes; no change to fabrication release.
