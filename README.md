@@ -56,7 +56,7 @@ The default example solves a 30 ft common truss at 6:12 with a single illustrati
 npm start -- --span-ft 24 --pitch 5
 ```
 
-Select the mono demo with `npm start -- --family mono`. Its separate synthetic 1,000 lb point load acts at the first upper joint, one quarter of the span from the low bearing. Neither demonstration derives site or code loads. Other families are not exposed by the command.
+Select the mono demo with `npm start -- --family mono`. Its separate synthetic 1,000 lb point load acts at the first upper joint, one quarter of the span from the low bearing. Neither demonstration derives site or code loads. No other built-in demos are available.
 
 To save only the JSON, without npm's command banners:
 
@@ -70,7 +70,30 @@ For a picture, write a visibly watermarked, dimensionless review diagram. The SV
 npm start --silent -- --family mono --format svg > woodtruss-preview.svg
 ```
 
-Run `npm start --silent -- --capabilities` to see the demo families, formats and span limit. The separately listed library point-load variants are not additional CLI options or a list of complete truss designs.
+Run `npm start --silent -- --capabilities` to see the demo families, formats, span limit and supported authored point-load variants. These variants do not constitute complete truss designs.
+
+To run a single **authored, preliminary point-load study**, save a JSON input such as the following synthetic agricultural tied-gable example to `authored-case.json`:
+
+```json
+{
+  "schemaVersion": "woodtruss.authored-point-load-input.v1",
+  "variant": "agricultural-tied-gable",
+  "roof": { "family": "agricultural", "spanFt": 40, "pitchRisePer12": 4 },
+  "areaIn2": 5.25,
+  "elasticModulusPsi": 1000000,
+  "loadCase": {
+    "id": "example-1",
+    "description": "Illustrative signed forces, not project loads",
+    "jointLoads": [{ "nodeId": "Q1", "fyLb": -1600 }, { "nodeId": "Q3", "fxLb": 100, "fyLb": 400 }]
+  }
+}
+```
+
+```sh
+npm start --silent -- --explicit-point-load < authored-case.json
+```
+
+The JSON result repeats the input, modeled geometry, joint movements, reactions, axial forces and equilibrium checks. Positive force is rightward or upward, in pounds. Each existing joint can appear once. The agricultural variant is limited to its flat-bottom, level-bearing centerline model with no raised heel or overhang. No site loads, purlin distribution, design properties, allowable capacities or fabrication approval are inferred. Use the modeled node IDs, not drawing marks or field locations.
 
 For an attic **geometry-only** fit check, supply all four values:
 

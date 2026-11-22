@@ -1,7 +1,7 @@
 // Command-line demonstration only. This script has no production output path.
 import { analyzePreliminaryCommonTruss } from '../dist/analysis/src/common.js';
 import { analyzePreliminaryMonoTruss } from '../dist/analysis/src/mono-analysis.js';
-import { EXPLICIT_POINT_LOAD_VARIANTS } from '../dist/analysis/src/explicit-family-dispatch.js';
+import { analyzeExplicitFamily, EXPLICIT_POINT_LOAD_VARIANTS } from '../dist/analysis/src/explicit-family-dispatch.js';
 import { envelopePreliminaryCases } from '../dist/analysis/src/envelope.js';
 import { createPreliminaryTrussPackage } from '../dist/contracts/src/preview.js';
 import { createPreliminaryMaterialsReport } from '../dist/fabrication/src/preliminary-materials.js';
@@ -11,6 +11,7 @@ import { evaluateAtticClearanceLimits } from '../dist/geometry/src/attic-clearan
 
 const usage = 'Usage: npm start -- [--family common|mono] [--span-ft 30] [--pitch 6] [--format json|svg]\n'
   + '       npm start -- --attic-clearance --span-ft N --pitch N --room-width-ft N --room-height-ft N\n'
+  + '       npm start --silent -- --explicit-point-load < authored-case.json\n'
   + 'Use --capabilities by itself to list the supported scope.\n'
   + 'Runs a synthetic example: a 1,000 lb point load at the common ridge or mono quarter-point.';
 
@@ -34,7 +35,62 @@ function atticClearance(args) {
     scope:'Ideal centerlines only, no real wall thickness, member size, floor or structural verification.'},null,2)+'\n');
 }
 
+async function explicitPointLoad() {
+  const chunks = [];
+  let bytes = 0;
+  for await (const chunk of process.stdin) {
+    bytes += chunk.length;
+    if (bytes > 16_384) throw new Error('Authored case exceeds the 16 KiB input limit.');
+    chunks.push(chunk);
+  }
+  let input;
+  try { input = JSON.parse(new TextDecoder('utf-8', { fatal:true }).decode(Buffer.concat(chunks))); }
+  catch { throw new Error('Provide one UTF-8 JSON authored case on standard input.'); }
+  const only = (obj, keys) => obj !== null && typeof obj === 'object' && !Array.isArray(obj) &&
+    Object.keys(obj).every(key => keys.includes(key));
+  const nonempty = (v, max) => typeof v === 'string' && v.length <= max && v.trim().length > 0;
+  if (!only(input,['schemaVersion','variant','roof','areaIn2','elasticModulusPsi','loadCase']) ||
+      input.schemaVersion !== 'woodtruss.authored-point-load-input.v1' ||
+      !EXPLICIT_POINT_LOAD_VARIANTS.includes(input.variant) ||
+      !only(input.roof,['family','spanFt','pitchRisePer12','leftPitchRisePer12','rightPitchRisePer12',
+        'bottomPitchRisePer12','heelHeightIn','overhangIn']) ||
+      !Number.isFinite(input.roof.spanFt) ||
+      Object.entries(input.roof).some(([key,v]) => key === 'family' ? typeof v !== 'string' : !Number.isFinite(v)) ||
+      !Number.isFinite(input.areaIn2) || !Number.isFinite(input.elasticModulusPsi))
+    throw new Error('Invalid authored geometry, properties, scope, or schema.');
+  const load = input.loadCase;
+  if (!only(load,['id','description','jointLoads']) || !nonempty(load.id,80) || !nonempty(load.description,300) ||
+      !Array.isArray(load.jointLoads) || load.jointLoads.length < 1 || load.jointLoads.length > 32)
+    throw new Error('Provide one named and described authored case with 1 to 32 joint loads.');
+  const seenNodes = new Set();
+  for (const row of load.jointLoads) {
+    if (!only(row,['nodeId','fxLb','fyLb']) || !nonempty(row.nodeId,32) || seenNodes.has(row.nodeId) ||
+        (!Object.hasOwn(row,'fxLb') && !Object.hasOwn(row,'fyLb')) ||
+        ['fxLb','fyLb'].some(key => Object.hasOwn(row,key) && !Number.isFinite(row[key])))
+      throw new Error('Each authored joint must occur once with at least one finite signed force component in pounds.');
+    seenNodes.add(row.nodeId);
+  }
+  const solved = analyzeExplicitFamily(input);
+  if (solved.fabricationAuthorized !== false || solved.status !== 'PRELIMINARY_NOT_ENGINEERED')
+    throw new Error('Unexpected authored point-load release status.');
+  const output = {
+    schemaVersion:'woodtruss.authored-point-load-preview.v1', variant:solved.variant,
+    units:{length:'in',force:'lb',stress:'psi'}, input, model:solved.model, result:solved.result,
+    equilibrium:solved.equilibrium, warnings:solved.warnings, notice:'NOT FOR FABRICATION',
+    scope:'Illustrative pin-jointed response to the supplied point loads only. No site loads, code checks, member or connector capacity, or fabrication.',
+    status:solved.status, fabricationAuthorized:false,
+  };
+  process.stdout.write(JSON.stringify(output, (_key, value) => {
+    if (typeof value === 'number' && !Number.isFinite(value)) throw new Error('Nonfinite point-load output.');
+    return value;
+  }, 2)+'\n');
+}
+
 async function run(args) {
+  if (args.length === 1 && args[0] === '--explicit-point-load') {
+    await explicitPointLoad();
+    return;
+  }
   if (args[0] === '--attic-clearance') {
     atticClearance(args.slice(1));
     return;
@@ -47,7 +103,8 @@ async function run(args) {
       demoFormats: ['json', 'svg'],
       spanRangeFt: { minimum: 8, maximum: 50 },
       explicitPointLoadApiVariants: [...EXPLICIT_POINT_LOAD_VARIANTS],
-      explicitPointLoadApiScope: 'These variants are for the library dispatcher only, not the CLI or a complete family list.',
+      explicitPointLoadApiScope: 'These variants are available through the library dispatcher and the authored JSON CLI, not the built-in demo options or a complete family list.',
+      explicitPointLoadCli: { option:'--explicit-point-load', input:'stdin', schemaVersion:'woodtruss.authored-point-load-input.v1' },
       atticScope: { geometry: 'CENTERLINE_CLEARANCE_ONLY', analysisAvailable: false, cliOption: '--attic-clearance' },
       notice: 'NOT FOR FABRICATION',
       fabricationAuthorized: false,

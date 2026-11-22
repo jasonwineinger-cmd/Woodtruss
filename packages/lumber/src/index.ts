@@ -41,3 +41,4 @@ export { studyRectangularEccentricAxial, type RectangularEccentricAxialInput } f
 export { studyPreliminarySteppedAxialDeformation, type AxialStep,
   type SteppedAxialDeformationInput } from "./stepped-axial-deformation.js";
 export { studyIdealBuiltUpRectangularGeometry, type BuiltUpRectangle } from "./built-up-rectangular-geometry.js";
+export { studyRectangularNetSection, type RectangularSectionVoid, type RectangularNetSectionInput } from "./rectangular-net-section.js";

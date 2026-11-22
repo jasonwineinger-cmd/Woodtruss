@@ -5,6 +5,11 @@ import { fileURLToPath } from 'node:url';
 
 const script = fileURLToPath(new URL('../scripts/preview.mjs', import.meta.url));
 const run = (...args) => spawnSync(process.execPath, [script, ...args], { encoding: 'utf8' });
+const runCase = input => spawnSync(process.execPath, [script,'--explicit-point-load'], { encoding:'utf8', input });
+const authored = () => ({ schemaVersion:'woodtruss.authored-point-load-input.v1', variant:'agricultural-tied-gable',
+  roof:{family:'agricultural',spanFt:40,pitchRisePer12:4}, areaIn2:5.25, elasticModulusPsi:1_000_000,
+  loadCase:{id:'illustration-1',description:'Synthetic signed quarter-point case',
+    jointLoads:[{nodeId:'Q1',fyLb:-1600},{nodeId:'Q3',fxLb:100,fyLb:400}]} });
 
 test('CLI solves a real common-truss example and emits a review-only preview', () => {
   for (const [span, args] of [[30, []], [24, ['--span-ft', '24', '--pitch', '5']]]) {
@@ -47,18 +52,58 @@ test('CLI emits only a watermarked dimensionless schematic for each demo family'
   }
 });
 
-test('CLI capabilities separate runnable demos from the limited library dispatcher', () => {
+test('CLI capabilities distinguish built-in demos, authored point loads, and attic geometry', () => {
   const r = run('--capabilities');
   assert.equal(r.status, 0, r.stderr);
   const scope = JSON.parse(r.stdout);
   assert.deepEqual(scope.demoFamilies, ['common','mono']);
   assert.deepEqual(scope.spanRangeFt, { minimum:8, maximum:50 });
-  assert.deepEqual(scope.explicitPointLoadApiVariants, ['common-level','common-asymmetric','common-raised-heel','mono-level','scissor-level']);
-  assert.match(scope.explicitPointLoadApiScope, /not the CLI/);
+  assert.deepEqual(scope.explicitPointLoadApiVariants, ['common-level','common-asymmetric','common-raised-heel','mono-level','scissor-level','agricultural-tied-gable']);
+  assert.match(scope.explicitPointLoadApiScope, /not the built-in demo/);
+  assert.deepEqual(scope.explicitPointLoadCli,{ option:'--explicit-point-load',input:'stdin',schemaVersion:authored().schemaVersion });
   assert.deepEqual(scope.atticScope, { geometry:'CENTERLINE_CLEARANCE_ONLY', analysisAvailable:false, cliOption:'--attic-clearance' });
   assert.equal(scope.fabricationAuthorized,false);
   assert.equal(scope.notice,'NOT FOR FABRICATION');
   assert.equal(run('--capabilities','--family','mono').status,1);
+});
+
+test('CLI runs explicitly authored agricultural point loads, preserving signed demand and holding fabrication', () => {
+  const input = authored();
+  const r = runCase(JSON.stringify(input));
+  assert.equal(r.status,0,r.stderr);
+  const preview = JSON.parse(r.stdout);
+  assert.deepEqual(preview.input,input);
+  assert.equal(preview.variant,'agricultural-tied-gable');
+  assert.equal(preview.notice,'NOT FOR FABRICATION');
+  assert.equal(preview.fabricationAuthorized,false);
+  assert.ok(preview.equilibrium.global.passes && preview.equilibrium.joints.passes);
+  assert.ok(Math.abs(preview.result.reactionLb.E.y - (1600*120-400*360+100*40)/480) < 1e-6);
+  assert.ok(Math.abs(preview.result.reactionLb.L.x+100) < 1e-6);
+  assert.deepEqual(Object.keys(preview.result.displacementIn).sort(),preview.model.nodes.map(node=>node.id).sort());
+  input.roof.spanFt=50;
+  const max=runCase(JSON.stringify(input));
+  assert.equal(max.status,0,max.stderr);
+  assert.equal(JSON.parse(max.stdout).model.nodes.find(n=>n.id==='E').x,600);
+});
+
+test('authored point-load CLI rejects ambiguous or invalid data without partial output', () => {
+  for (const change of [
+    d=>{d.roof.spanFt=50.001}, d=>{d.roof.spanFt='40'}, d=>{d.variant='attic'},
+    d=>{d.roof.purlinStationsIn=[0,120]}, d=>{d.loadCase.jointLoads.push({nodeId:'Q1',fxLb:5})},
+    d=>{d.loadCase.jointLoads=[{nodeId:'Q1',fyLb:null}]}, d=>{d.loadCase.jointLoads=[{nodeId:'Q1'}]},
+    d=>{d.loadCase.jointLoads=[{nodeId:'not-a-joint',fyLb:-1}]},
+    d=>{d.fabricationAuthorized=true}, d=>{delete d.schemaVersion},
+  ]) {
+    const input=authored(); change(input);
+    const r=runCase(JSON.stringify(input));
+    assert.equal(r.status,1,r.stderr);
+    assert.equal(r.stdout,'');
+  }
+  for (const input of ['','[]','{} {}',' '.repeat(16_385)]) {
+    assert.equal(runCase(input).status,1);
+    assert.equal(runCase(input).stdout,'');
+  }
+  assert.equal(run('--explicit-point-load','--format','svg').status,1);
 });
 
 test('CLI attic clearance uses explicit geometry only and rejects unsupported spans or options', () => {

@@ -1,5 +1,6 @@
 import type { RoofInput } from "../../geometry/src/index.js";
 import { generateCommonTopology } from "../../geometry/src/topology.js";
+import { analyzePreliminaryAgriculturalGable, type PreliminaryAgriculturalGableInput } from "./agricultural-gable-analysis.js";
 import { analyzePreliminaryAsymmetricCommonTruss, type PreliminaryAsymmetricCommonInput } from "./asymmetric-common-analysis.js";
 import { makeExplicitLoadCase, type ExplicitLoadCase } from "./cases.js";
 import { auditGlobalEquilibrium } from "./equilibrium.js";
@@ -23,11 +24,12 @@ export type ExplicitFamilyRequest =
   | ({ variant:"common-asymmetric" } & PreliminaryAsymmetricCommonInput)
   | ({ variant:"common-raised-heel" } & PreliminaryRaisedHeelCommonInput)
   | ({ variant:"mono-level" } & PreliminaryMonoAnalysisInput)
-  | ({ variant:"scissor-level" } & PreliminaryScissorExplicitInput);
+  | ({ variant:"scissor-level" } & PreliminaryScissorExplicitInput)
+  | ({ variant:"agricultural-tied-gable"; roof: RoofInput & { family:"agricultural" } } & PreliminaryAgriculturalGableInput);
 
 /** This list covers this dispatcher only; it is not a repo-wide capability claim. */
 export const EXPLICIT_POINT_LOAD_VARIANTS = Object.freeze([
-  "common-level","common-asymmetric","common-raised-heel","mono-level","scissor-level",
+  "common-level","common-asymmetric","common-raised-heel","mono-level","scissor-level","agricultural-tied-gable",
 ] as const);
 
 /** Dispatch signed authored point loads only, without topology fallback or manufacturing approval. */
@@ -51,6 +53,11 @@ export function analyzeExplicitFamily(request: ExplicitFamilyRequest) {
     case "scissor-level":
       requireRoofKeys([...options,"family","pitchRisePer12","bottomPitchRisePer12"]);
       return { variant:request.variant,...analyzePreliminaryScissorExplicit(request) };
+    case "agricultural-tied-gable":
+      // Level-bearing tied gable only. Nothing infers purlin stations, roof
+      // load redistribution, or a code load case from the agricultural label.
+      requireRoofKeys([...options,"family","pitchRisePer12"]);
+      return { variant:request.variant,...analyzePreliminaryAgriculturalGable(request) };
     case "common-level":
       requireRoofKeys([...options,"family","pitchRisePer12","bottomPitchRisePer12"]);
       return { variant:request.variant,...analyzeCommonLevel(request) };
