@@ -173,4 +173,6 @@ The lumber documentation check separates the NDS rules from the matching edition
 
 The local-only companion `reviewLumberIntakeWithEditionEvidence` checks caller-supplied private bytes for both publications and their declared updates. It also checks the complete six existing reference-quantity receipts against independently declared Supplement artifact IDs for the same stock row. It does not read table contents, verify licenses, add perpendicular-to-grain compression, establish member fit, or authorize structural use.
 
+The library-only `reviewDatedLocalPlateReport` compares an independently expected issuer observation for an explicit day with exact product/report metadata and supplied authorized local bytes. A printed continuous window and a month-only renewal statement are not interchangeable. See the [TPI and ESR-1988 source scope](docs/references/tpi-2022-mitek-esr-1988-plate-source-boundary.md). The check does not contact the issuer, authenticate current status, select a plate or press, or verify capacity or release.
+
 Invalid arguments return a nonzero exit status. The preview always prohibits fabrication; it does not produce cut lists, plate selections, permit drawings, or machine instructions. Run `npm run check` to type-check, build, and run the tests.
