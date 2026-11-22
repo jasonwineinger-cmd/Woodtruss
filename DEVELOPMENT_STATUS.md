@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 033 — 2026-11-22T04:47:44Z (UTC)
+
+**Reviewed implementation:** [`77de05055e16235226bd8a9dbf57d705c0bb5ad2`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/77de05055e16235226bd8a9dbf57d705c0bb5ad2). Baseline `2bb439e`: 550 passing. Full `npm run check`: **560 passed, 0 failed, 0 skipped**. Six isolated engineering, evidence and test lanes.
+
+| Worker | Completed scope and changed files |
+| --- | --- |
+| 1 Structural | `elastic-frame-rectangular-stress-extrema.ts`: evaluate signed stress per face at verified coincident axial/moment cuts from one bounded solved member. Shear is retained only as force. |
+| 2 Lumber | `elastic-frame-rectangular-stress-extrema-boundary.test.mjs`: reject wrong axes, duplicate or unknown members and supplied strength or force records. Prove no change to the base solver results. |
+| 3 Connector plates | Independent derivative and localized plateau/jump audit. A section value is not plate demand, strength or physical load transfer. |
+| 4 Geometry | `elastic-frame-rectangular-stress-stations.ts`, corresponding tests: separate normalized branch candidates and exact end/point cuts; reject lost strict station distinctions. |
+| 5 Manufacturing/source | USDA reference note distinguishes modern signed face extrema from historical sampled stress values; independently verified mixed-load hand calculations, no release claim. |
+| 6 Testing | `elastic-frame-rectangular-stress-extrema-benchmark.test.mjs`: independent mixed loads, true face peaks separate from peak bending, axial jump, plateau and physical face invariance under reversal. |
+| Integration | `elastic-frame-solve.ts`, `README.md`: explicit section/member opts in to a single-state diagnostic. Original actions, solver checks, demands and fabrication lock unchanged. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. The stress output assumes an ideal gross rectangle, not a material, limit, buckling, code or connection check. Keep the 50-ft maximum.
+
+**Next:** Bind separately authored load states and explicit same-geometry case IDs so demand summaries can retain the state, exact member, face and point side that actually governed. Keep site rules, allowable values, physical grading and trusted engineering review as separate evidence.
+
 ## Batch 032 — 2026-11-22T04:32:46Z (UTC)
 
 **Reviewed implementation:** [`bca71bb8bcf2840b528ff9ecc6470c7f9709a9fe`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/bca71bb8bcf2840b528ff9ecc6470c7f9709a9fe). Baseline `827236a`: 539 passing. Full `npm run check`: **550 passed, 0 failed, 0 skipped**. Six isolated engineering, evidence and test lanes.
