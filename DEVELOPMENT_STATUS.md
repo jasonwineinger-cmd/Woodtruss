@@ -1,5 +1,23 @@
 # Woodtruss development status
 
+## Batch 068 — 2026-11-22T13:34:04Z (UTC)
+
+**Reviewed implementation:** [`2777848d8da8bf89739cf77aa7239ea671efb9fe`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/2777848d8da8bf89739cf77aa7239ea671efb9fe). Baseline `c6add41`: 786 passing. Full `npm run check`: **792 passed, 0 failed, 0 skipped**. Six independent implementation, testing, documentation and review lanes, plus root integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Explicit displacement review | `elastic-frame-authored-combination-displacements.ts` with shared frame/extent input, exact node and directed member selection and displacement study. The Mono wrappers and existing explicit joint behavior are preserved. |
+| 2 Independent pin-bar oracle | `authored-frame-displacements-inclined-triangle-benchmark.test.mjs`: hand stiffness/compatibility, signed reactions, tangent motion, directed bar extensions and false-equivalent vertical-only control. |
+| 3 Boundary QA | `authored-frame-displacements-explicit-boundaries.test.mjs`: translated 600-in extent, exact distinct station/endpoint identities, no cached authorities and unused out-of-range source hold. |
+| 4 Documentation | README and `explicit-authored-frame-displacements-boundary.md`: global translations, directed local section rotations, no measured deflection or release. |
+| 5 Read-only scope audit | Shared rotational DOF can be absent while actual section rotation remains finite; no silent zeros or coordinate substitution. |
+| 6 Independent statics audit | Recomputed triangle reaction, signed bar extension and constraints independently. A vertical-only model can match vertical reaction while missing the horizontal component and changing bottom bar tension. |
+| Root | `authored-frame-displacements-offset-bar.test.mjs`: elevated bearing synthetic fixture and exact local sample reversal, finite member section rotation with null nodal rotation. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Exact ideal model diagnostics do not establish a design deflection limit, real bearing, capacity or fabrication.
+
+**Next:** Bind independently declared directional material/section evidence to one exact authored family and selected demand state, or advance an equally distinct source-backed gap. Do not allow diagnostic model output to serve as material or connector approval.
+
 ## Batch 067 — 2026-11-22T13:18:08Z (UTC)
 
 **Reviewed implementation:** [`0d5e80140799ec4f908f211ceca7047d74d8a7cf`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/0d5e80140799ec4f908f211ceca7047d74d8a7cf). Baseline `3e4c2f8`: 781 passing. Full `npm run check`: **786 passed, 0 failed, 0 skipped**. Six independent implementation, testing, documentation and review lanes, plus root integration.
