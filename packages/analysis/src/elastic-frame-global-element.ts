@@ -1,8 +1,11 @@
 import {elasticFrameElementLocalStiffness, type ElasticFrameElementProperties} from "./elastic-frame-element.js";
 
+import {elasticFrameShearElementLocalStiffness} from "./elastic-frame-shear-element.js";
+
 export interface ElasticFrameGlobalElementProperties extends Omit<ElasticFrameElementProperties,"lengthIn"> {
   left:{xIn:number;yIn:number};
   right:{xIn:number;yIn:number};
+  shear?:{shearModulusPsi:number;effectiveShearAreaIn2:number};
 }
 
 /** Rotate a single preliminary planar element into supplied global X/Y coordinates.
@@ -37,8 +40,7 @@ export function elasticFrameElementGlobalStiffness(properties:ElasticFrameGlobal
     [0,0,0,negativeSine,cosine,0],
     [0,0,0,0,0,1],
   ];
-  const {matrix:localMatrix,localDofOrder:_,localAxes:__,...review}=
-    elasticFrameElementLocalStiffness({...properties,lengthIn});
+  const {matrix:localMatrix,...review}=localStiffness(lengthIn,properties);
 
   // d_local = T d_global; energy equivalence gives K_global = Tᵀ K_local T.
   const T=globalToLocalTransform;
@@ -52,6 +54,29 @@ export function elasticFrameElementGlobalStiffness(properties:ElasticFrameGlobal
     if(!Number.isFinite(value))throw new Error("Nonfinite elastic frame stiffness rotation");
     matrix[i][j]=matrix[j][i]=value===0?0:value;
   }
-  return {...review,matrix,globalToLocalTransform,lengthIn,directionCosines:{cosine,sine},
+  return {...review,matrix,localMatrix,globalToLocalTransform,lengthIn,directionCosines:{cosine,sine},
     globalDofOrder:["uxLeft","uyLeft","thetaLeft","uxRight","uyRight","thetaRight"] as const};
+}
+
+function localStiffness(lengthIn:number,properties:ElasticFrameGlobalElementProperties) {
+  const {areaIn2,secondMomentIn4,elasticModulusPsi,releaseLeftRotation,releaseRightRotation,shear}=properties;
+  const prismatic={lengthIn,areaIn2,secondMomentIn4,elasticModulusPsi};
+  if(!Object.hasOwn(properties,"shear")){
+    if(shear!==undefined)throw new Error("Elastic frame shear must be supplied as an explicit own input");
+    const {matrix,localDofOrder:_,localAxes:__,...review}=
+      elasticFrameElementLocalStiffness({...prismatic,releaseLeftRotation,releaseRightRotation});
+    return {matrix,...review};
+  }
+  if(!shear||typeof shear!=="object"||
+     (Object.getPrototypeOf(shear)!==Object.prototype&&Object.getPrototypeOf(shear)!==null)||
+     Reflect.ownKeys(shear).length!==2||
+     !["shearModulusPsi","effectiveShearAreaIn2"].every(key=>Object.prototype.propertyIsEnumerable.call(shear,key)))
+    throw new Error("Elastic frame shear requires exactly shearModulusPsi and effectiveShearAreaIn2");
+  if(releaseLeftRotation!==false||releaseRightRotation!==false)
+    throw new Error("Elastic frame shear requires both end rotation releases explicitly false");
+  const {matrix,shearFlexibility}=elasticFrameShearElementLocalStiffness({...prismatic,
+    shearModulusPsi:shear.shearModulusPsi,effectiveShearAreaIn2:shear.effectiveShearAreaIn2});
+  return {matrix,shearFlexibility,releasedRotationIndices:[] as number[],
+    status:"PRELIMINARY_NOT_ENGINEERED" as const,shearDeformationModeled:true as const,
+    globalAssemblyVerified:false as const,manufacturingApproved:false as const};
 }
