@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 057 — 2026-11-22T10:48:06Z (UTC)
+
+**Reviewed implementation:** [`612c93b315d178fa1b4fae9e368ffa5bb7e548ca`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/612c93b315d178fa1b4fae9e368ffa5bb7e548ca). Baseline `1583f22`: 723 passing. Full `npm run check`: **727 passed, 0 failed, 0 skipped**. Six parallel validation, independent source and review lanes plus integration.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Requirement identity | `tpsx-design-qc-requirement-rows.ts`: exact known joint label and placement, member cross-links and separately explicit area and tooth values; literal zero counts only. |
+| 2 Boundary cases | `tpsx-design-qc-requirements.test.mjs`: synthetic Gross/Net, row permutations, distinct zero combinations, malformed numbers and incomplete or foreign scope. |
+| 3 Independent local replay | Two private publisher sample projections reproduced 53 and 65 declared joint-member rows; six integer-zero tooth entries in the latter had separate positive areas. No sample files committed. |
+| 4 Boundary documentation | README and `tpsx-design-qc-requirements-boundary.md` distinguish source declarations from observations, capacity or acceptance. |
+| 5 Source audit | Reviewed exact publisher scope; sample methods are Gross, Net is a documented declaration only. No conversion or semantic acceptance. |
+| 6 Boundary oracle and root | `tpsx-design-qc-requirements-boundary.test.mjs` and `tpsx-design-qc-requirements.ts`: inputs must bind to same v0.9.4 design graph and stated inches; extra observations, authority and destinations held. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. No observation, capacity, acceptance semantics or fabrication authorized.
+
+**Next:** Rebalance to a scoped lumber assignment or optimization verification gap. Compare audit coverage for directed elastic-frame member geometry, section axis and modulus source before extending; no catalog defaults.
+
 ## Batch 056 — 2026-11-22T10:34:41Z (UTC)
 
 **Reviewed implementation:** [`44638ef2d2e89f23d6b60f3544a83270906b5125`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/44638ef2d2e89f23d6b60f3544a83270906b5125). Baseline `b71ca16`: 719 passing. Full `npm run check`: **723 passed, 0 failed, 0 skipped**. Six parallel link, boundary, source and review lanes plus integration.
