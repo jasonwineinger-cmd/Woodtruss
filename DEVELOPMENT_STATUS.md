@@ -1,5 +1,22 @@
 # Woodtruss development status
 
+## Batch 061 — 2026-11-22T11:49:16Z (UTC)
+
+**Reviewed implementation:** [`350025a2f93aae25074135ebc7a2da13f2e4d573`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/350025a2f93aae25074135ebc7a2da13f2e4d573). Baseline `61596de`: 747 passing. Full `npm run check`: **755 passed, 0 failed, 0 skipped**. Six independent count, boundary, source, documentation and verification lanes.
+
+| Worker | Scope |
+| --- | --- |
+| 1 Maximum coverage | `reported-stock-coverage-count.ts`: integral residual-path count only, bounded rows and links, each member needs one entire piece. |
+| 2 Evidence integration | `lumber-reported-stock-contention.test.mjs`: eligible locally dominated alternative, exact aliases do not duplicate quantities, conflicting aliases and missing evidence held. |
+| 3 Independent oracle | `reported-stock-coverage-count-benchmark.test.mjs`: independent exhaustive reference over 360 seeded sets and a larger exact synthetic case. |
+| 4 Scope | README and `reported-stock-contention-boundary.md`: scenario and alias boundaries, no allocations, nesting, recommendation, or engineering. |
+| 5 Audit | Verified that all evidence-eligible options, not only the individual frontier, contribute to the maximum scenario count, and zero stock cannot count. |
+| 6 Boundary tests and root | `reported-stock-contention-boundary.test.mjs` and `reported-stock-contention.ts`: exact bounded inputs, held shortfall and no identity, selected matches or private records in output. |
+
+**Estimates, unchanged:** lumber **20%**, plates **20%**, geometry/analysis **40%**, optimization **20%**, manufacturing/Panelizer **20%**. Reported counts are not verified stock, fabrication cuts, selection or reservations.
+
+**Next:** Rebalance to independent plate or structural check evidence, or scope a non-allocating reported-stock sensitivity comparison if it preserves exact case evidence and no authority.
+
 ## Batch 060 — 2026-11-22T11:33:08Z (UTC)
 
 **Reviewed implementation:** [`f7276010cf7d80166f40f0c14e9b632f4650f010`](https://github.com/jasonwineinger-cmd/Woodtruss/commit/f7276010cf7d80166f40f0c14e9b632f4650f010). Baseline `e0b6206`: 741 passing. Full `npm run check`: **747 passed, 0 failed, 0 skipped**. Six independent computation, integration, benchmark, documentation and review lanes.
